@@ -47,7 +47,7 @@ export function WorkExperienceForm({ data, onUpdate }: WorkExperienceFormProps) 
   const handleSave = (formData: WorkExperience) => {
     const newExperience = {
       ...formData,
-      id: editingId || crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}`
+      id: editingId || `work_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 
     if (editingId) {

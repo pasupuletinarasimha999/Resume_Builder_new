@@ -45,7 +45,7 @@ export function EducationForm({ data, onUpdate }: EducationFormProps) {
   const handleSave = (formData: Education) => {
     const newEducation = {
       ...formData,
-      id: editingId || crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}`
+      id: editingId || `edu_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 
     if (editingId) {

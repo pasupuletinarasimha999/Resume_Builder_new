@@ -1,4 +1,4 @@
-import type { SectionConfig } from '@/types/resume';
+import { SectionConfig, ResumeData } from '@/types/resume';
 
 export const resumeSections: SectionConfig[] = [
   { key: 'personalInfo', label: 'Basic' },
@@ -20,7 +20,7 @@ export const resumeSections: SectionConfig[] = [
   { key: 'extraCurricular', label: 'Extra Curricular Activities' },
 ];
 
-export const defaultResumeData = {
+export const defaultResumeData: ResumeData = {
   personalInfo: {
     fullName: 'Jack',
     email: 'jack@haveloc.com',
@@ -46,7 +46,7 @@ export const defaultResumeData = {
   extraCurricular: [],
 };
 
-export const sampleResumeData = {
+export const sampleResumeData: ResumeData = {
   personalInfo: {
     fullName: 'Alex Johnson',
     email: 'alex.johnson@email.com',
@@ -121,20 +121,20 @@ export const sampleResumeData = {
     }
   ],
   skills: [
-    { id: 'skill1', name: 'JavaScript', level: 'Expert', category: 'Programming Languages' },
-    { id: 'skill2', name: 'TypeScript', level: 'Advanced', category: 'Programming Languages' },
-    { id: 'skill3', name: 'Python', level: 'Intermediate', category: 'Programming Languages' },
-    { id: 'skill4', name: 'React', level: 'Expert', category: 'Frontend' },
-    { id: 'skill5', name: 'Vue.js', level: 'Intermediate', category: 'Frontend' },
-    { id: 'skill6', name: 'Node.js', level: 'Advanced', category: 'Backend' },
-    { id: 'skill7', name: 'Express.js', level: 'Advanced', category: 'Backend' },
-    { id: 'skill8', name: 'MongoDB', level: 'Intermediate', category: 'Databases' },
-    { id: 'skill9', name: 'PostgreSQL', level: 'Intermediate', category: 'Databases' }
+    { id: 'skill1', name: 'JavaScript', level: 'Expert' as const, category: 'Programming Languages' },
+    { id: 'skill2', name: 'TypeScript', level: 'Advanced' as const, category: 'Programming Languages' },
+    { id: 'skill3', name: 'Python', level: 'Intermediate' as const, category: 'Programming Languages' },
+    { id: 'skill4', name: 'React', level: 'Expert' as const, category: 'Frontend' },
+    { id: 'skill5', name: 'Vue.js', level: 'Intermediate' as const, category: 'Frontend' },
+    { id: 'skill6', name: 'Node.js', level: 'Advanced' as const, category: 'Backend' },
+    { id: 'skill7', name: 'Express.js', level: 'Advanced' as const, category: 'Backend' },
+    { id: 'skill8', name: 'MongoDB', level: 'Intermediate' as const, category: 'Databases' },
+    { id: 'skill9', name: 'PostgreSQL', level: 'Intermediate' as const, category: 'Databases' }
   ],
   languages: [
-    { id: 'lang1', name: 'English', proficiency: 'Native' },
-    { id: 'lang2', name: 'Spanish', proficiency: 'Conversational' },
-    { id: 'lang3', name: 'French', proficiency: 'Basic' }
+    { id: 'lang1', name: 'English', proficiency: 'Native' as const },
+    { id: 'lang2', name: 'Spanish', proficiency: 'Conversational' as const },
+    { id: 'lang3', name: 'French', proficiency: 'Basic' as const }
   ],
   socialMedia: [],
   awards: [],
