@@ -1,42 +1,48 @@
-# Resume Builder Improvements - Todo List
+# Resume Builder Clone - Todo List
 
-## Main Requirements
-- ✅ Set up main layout with larger preview section (60/40 split)
-- ✅ Add Calibri font family and standard resume font sizes
-- ✅ Add LinkedIn URL field to personal information
-- ✅ Add horizontal line separators after each section
-- ✅ Make preview A4-sized for accurate print preview
-- ✅ Implement core resume sections (Personal Info, Education, Work Experience, Skills)
-- ✅ Add proper spacing and line separation throughout
-- ✅ Test the application and add sample data
-- ✅ Add Projects section
-- [ ] Add remaining sections (Languages, etc.)
-- ✅ Test responsive design and print styles
-- ✅ Fixed TypeScript build errors
+## Core Layout & Structure
+- [x] completed: Create main layout with sidebar, form editor, and preview sections
+- [x] completed: Set up responsive design matching original
+- [x] completed: Implement sidebar navigation with all resume sections
 
-## Technical Tasks
-- ✅ Set up custom fonts in next.config.js and globals.css
-- ✅ Create resume state management
-- ✅ Build form components for each section
-- ✅ Create A4-sized preview component
-- ✅ Add export/print functionality
-- ✅ Style with proper typography hierarchy
+## Resume Data Management
+- [x] completed: Create TypeScript interfaces for resume data structure
+- [x] completed: Set up React Hook Form for form management
+- [x] completed: Implement local storage for save/load functionality
 
-## Current Status
-- ✅ Project created and dependencies installed
-- ✅ Development server started
-- ✅ Core components implemented
-- ✅ Main layout with improved preview size completed
-- ✅ CSS font loading issue fixed
-- ✅ Sample data functionality added
-- ✅ Print styles optimized for A4 paper
+## Resume Sections Implementation
+- [x] completed: Basic/Personal Information section (currently visible)
+- [x] completed: Education section
+- [x] completed: Work Experience section
+- [ ] Projects section
+- [ ] Skills section
+- [ ] Languages section
+- [ ] Social Media section
+- [ ] Awards section
+- [ ] Certification section
+- [ ] Publications section
+- [ ] Volunteering section
+- [ ] Competitions section
+- [ ] Conferences and Workshops section
 
-## Completed Features
-1. **Larger Preview Section**: 60/40 split instead of small sidebar preview
-2. **LinkedIn URL Field**: Added to personal information section
-3. **Section Separators**: Horizontal lines after each resume section
-4. **Calibri Font**: Professional resume typography
-5. **A4 Paper Format**: Accurate print preview sizing
-6. **Core Sections**: Personal Info, Work Experience, Education, Skills, Projects
-7. **Sample Data**: One-click sample resume loading
-8. **Export/Import**: JSON data save/load functionality
+## Live Preview
+- [x] completed: Create resume preview component
+- [x] completed: Implement real-time updates from form to preview
+- [x] completed: Style preview to match professional resume format
+
+## Additional Features
+- [ ] Templates/Reorder/Sample buttons functionality
+- [ ] Load Data and Save Data buttons
+- [ ] Dark mode toggle
+
+## PDF Export (NEW FEATURE)
+- [x] completed: Add PDF download button to UI
+- [x] completed: Implement PDF generation using html2canvas + jsPDF
+- [x] completed: Ensure PDF maintains resume formatting
+- [x] completed: Test PDF download functionality
+
+## Testing & Polish
+- [x] completed: Test all form validations
+- [x] completed: Ensure responsive design works correctly
+- [x] completed: Test PDF generation on different browsers
+- [x] completed: Final styling adjustments to match original
