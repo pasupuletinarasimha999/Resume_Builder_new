@@ -27,9 +27,6 @@
       "nursery": {
         "noImgElement": "off"
       },
-      "suspicious": {
-        "noExplicitAny": "off"
-      },
       "a11y": {
         "noAutofocus": "off",
         "noDistractingElements": "off",

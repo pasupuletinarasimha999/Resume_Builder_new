@@ -1,63 +1,70 @@
 export interface PersonalInfo {
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
   location: string;
   summary: string;
 }
 
-export interface EducationItem {
+export interface Education {
   id: string;
   institution: string;
   degree: string;
-  fieldOfStudy: string;
+  field: string;
   startDate: string;
   endDate: string;
+  gpa?: string;
   description?: string;
 }
 
-export interface ExperienceItem {
+export interface WorkExperience {
   id: string;
-  position: string;
   company: string;
-  location: string;
+  position: string;
   startDate: string;
   endDate: string;
   current: boolean;
   description: string;
+  location?: string;
 }
 
-export interface ProjectItem {
+export interface Project {
   id: string;
   name: string;
   description: string;
   technologies: string[];
-  link?: string;
   startDate: string;
   endDate: string;
+  url?: string;
+  github?: string;
 }
 
-export interface SkillItem {
+export interface Skill {
   id: string;
   name: string;
-  level: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
   category: string;
 }
 
-export interface LanguageItem {
-  id: string;
+export interface SkillCategory {
   name: string;
-  proficiency: string;
+  skills: Skill[];
 }
 
-export interface LinkItem {
+export interface Language {
+  id: string;
+  name: string;
+  proficiency: 'Basic' | 'Conversational' | 'Fluent' | 'Native';
+}
+
+export interface SocialMedia {
   id: string;
   platform: string;
   url: string;
   username: string;
 }
 
-export interface AwardItem {
+export interface Award {
   id: string;
   title: string;
   issuer: string;
@@ -65,61 +72,61 @@ export interface AwardItem {
   description?: string;
 }
 
-export interface CertificationItem {
+export interface Certification {
   id: string;
   name: string;
   issuer: string;
-  issueDate: string;
-  expiryDate?: string;
+  date: string;
+  expirationDate?: string;
   credentialId?: string;
   url?: string;
 }
 
-export interface PublicationItem {
+export interface Publication {
   id: string;
   title: string;
+  authors: string[];
   publication: string;
   date: string;
   url?: string;
-  description?: string;
 }
 
-export interface VolunteeringItem {
+export interface Volunteering {
   id: string;
   organization: string;
   role: string;
   startDate: string;
   endDate: string;
+  current: boolean;
   description: string;
 }
 
-export interface CompetitionItem {
+export interface Competition {
   id: string;
   name: string;
-  organizer: string;
-  date: string;
   position: string;
+  date: string;
   description?: string;
 }
 
-export interface ConferenceItem {
+export interface Conference {
   id: string;
   name: string;
-  organizer: string;
+  role: 'Attendee' | 'Speaker' | 'Organizer';
   date: string;
-  role: string;
+  location: string;
   description?: string;
 }
 
-export interface TestScoreItem {
+export interface TestScore {
   id: string;
   testName: string;
   score: string;
+  maxScore?: string;
   date: string;
-  validUntil?: string;
 }
 
-export interface PatentItem {
+export interface Patent {
   id: string;
   title: string;
   patentNumber: string;
@@ -127,20 +134,18 @@ export interface PatentItem {
   description?: string;
 }
 
-export interface ScholarshipItem {
+export interface Scholarship {
   id: string;
   name: string;
   amount: string;
   date: string;
-  provider: string;
   description?: string;
 }
 
-export interface ExtracurricularItem {
+export interface ExtraCurricular {
   id: string;
   activity: string;
   role: string;
-  organization: string;
   startDate: string;
   endDate: string;
   description?: string;
@@ -148,22 +153,28 @@ export interface ExtracurricularItem {
 
 export interface ResumeData {
   personalInfo: PersonalInfo;
-  education: EducationItem[];
-  experience: ExperienceItem[];
-  projects: ProjectItem[];
-  skills: SkillItem[];
-  languages: LanguageItem[];
-  links: LinkItem[];
-  awards: AwardItem[];
-  certifications: CertificationItem[];
-  publications: PublicationItem[];
-  volunteering: VolunteeringItem[];
-  competitions: CompetitionItem[];
-  conferences: ConferenceItem[];
-  testScores: TestScoreItem[];
-  patents: PatentItem[];
-  scholarships: ScholarshipItem[];
-  extracurricular: ExtracurricularItem[];
+  education: Education[];
+  workExperience: WorkExperience[];
+  projects: Project[];
+  skills: Skill[];
+  languages: Language[];
+  socialMedia: SocialMedia[];
+  awards: Award[];
+  certifications: Certification[];
+  publications: Publication[];
+  volunteering: Volunteering[];
+  competitions: Competition[];
+  conferences: Conference[];
+  testScores: TestScore[];
+  patents: Patent[];
+  scholarships: Scholarship[];
+  extraCurricular: ExtraCurricular[];
 }
 
-export type SectionKey = keyof Omit<ResumeData, 'personalInfo'>;
+export type SectionKey = keyof ResumeData;
+
+export interface SectionConfig {
+  key: SectionKey;
+  label: string;
+  icon?: string;
+}
