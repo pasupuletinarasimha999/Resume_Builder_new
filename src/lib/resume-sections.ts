@@ -52,7 +52,7 @@ export const sampleResumeData: ResumeData = {
     email: 'alex.johnson@email.com',
     phone: '+1 (555) 123-4567',
     location: 'San Francisco, CA',
-    summary: "Experienced Software Engineer with 5+ years developing scalable web applications. Passionate about clean code, user experience, and innovative solutions. Led teams of 4+ developers and increased application performance by 40%."
+    summary: "Senior Software Engineer with over 5+ years of experience specializing in full-stack development, microservices architecture, and cloud technologies. Proven expertise in leading cross-functional teams, optimizing application performance, and delivering scalable solutions that serve millions of users. Passionate about clean code, user experience, and implementing innovative technologies to solve complex business challenges."
   },
   education: [
     {
@@ -81,41 +81,41 @@ export const sampleResumeData: ResumeData = {
       id: 'work1',
       company: 'TechCorp Inc.',
       position: 'Senior Software Engineer',
-      startDate: '2022-03',
-      endDate: '2024-12',
+      startDate: 'Mar 2022',
+      endDate: 'Present',
       current: true,
       location: 'San Francisco, CA',
-      description: 'Led development of microservices architecture serving 1M+ users. Implemented CI/CD pipelines reducing deployment time by 60%. Mentored 3 junior developers and conducted code reviews.'
+      description: '• Led development of microservices architecture serving 1M+ users, improving system scalability by 40%\n• Implemented CI/CD pipelines reducing deployment time by 60% and minimizing production issues\n• Mentored 3 junior developers and conducted comprehensive code reviews to maintain code quality\n• Designed and implemented RESTful APIs handling 10,000+ requests per minute\n• Collaborated with cross-functional teams to deliver features ahead of schedule'
     },
     {
       id: 'work2',
       company: 'StartupXYZ',
       position: 'Full Stack Developer',
-      startDate: '2021-06',
-      endDate: '2022-02',
+      startDate: 'Jun 2021',
+      endDate: 'Feb 2022',
       current: false,
       location: 'Remote',
-      description: 'Built responsive web applications using React and Node.js. Collaborated with design team to implement pixel-perfect UI components. Optimized database queries resulting in 30% faster load times.'
+      description: '• Built responsive web applications using React and Node.js, serving 50,000+ active users\n• Collaborated with design team to implement pixel-perfect UI components using modern CSS frameworks\n• Optimized database queries resulting in 30% faster load times and improved user experience\n• Implemented user authentication and authorization systems using JWT tokens\n• Developed automated testing suites achieving 90%+ code coverage'
     }
   ],
   projects: [
     {
       id: 'proj1',
       name: 'E-Commerce Platform',
-      description: 'Built a full-stack e-commerce platform with React, Node.js, and MongoDB. Features include user authentication, payment processing, and admin dashboard.',
-      technologies: ['React', 'Node.js', 'MongoDB', 'Stripe API', 'JWT'],
-      startDate: '2023-01',
-      endDate: '2023-03',
+      description: '• Built a full-stack e-commerce platform serving 10,000+ products with React, Node.js, and MongoDB\n• Implemented secure payment processing using Stripe API with 99.9% transaction success rate\n• Developed comprehensive admin dashboard for inventory management and analytics\n• Integrated user authentication and authorization with role-based access control\n• Achieved 95+ Google PageSpeed score through performance optimization techniques',
+      technologies: ['React', 'Node.js', 'MongoDB', 'Stripe API', 'JWT', 'Redis'],
+      startDate: 'Jan 2023',
+      endDate: 'Mar 2023',
       url: 'https://demo-ecommerce.com',
       github: 'https://github.com/alexjohnson/ecommerce'
     },
     {
       id: 'proj2',
-      name: 'Task Management App',
-      description: 'Developed a collaborative task management application with real-time updates using Socket.io and Redux for state management.',
-      technologies: ['React', 'Redux', 'Socket.io', 'Express.js', 'PostgreSQL'],
-      startDate: '2022-08',
-      endDate: '2022-10',
+      name: 'Task Management System',
+      description: '• Developed collaborative task management application with real-time updates for 500+ concurrent users\n• Implemented advanced filtering and search functionality using Elasticsearch\n• Built responsive UI with drag-and-drop functionality and real-time notifications\n• Designed scalable database schema supporting complex project hierarchies\n• Deployed using Docker containers with automated CI/CD pipeline',
+      technologies: ['React', 'Redux', 'Socket.io', 'Express.js', 'PostgreSQL', 'Docker'],
+      startDate: 'Aug 2022',
+      endDate: 'Oct 2022',
       url: '',
       github: 'https://github.com/alexjohnson/taskmanager'
     }
