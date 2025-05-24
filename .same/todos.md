@@ -11,7 +11,8 @@
 - ✅ Test the application and add sample data
 - ✅ Add Projects section
 - [ ] Add remaining sections (Languages, etc.)
-- [ ] Test responsive design and print styles
+- ✅ Test responsive design and print styles
+- ✅ Fixed TypeScript build errors
 
 ## Technical Tasks
 - ✅ Set up custom fonts in next.config.js and globals.css

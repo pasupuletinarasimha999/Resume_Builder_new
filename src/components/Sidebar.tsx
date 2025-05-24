@@ -129,15 +129,15 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
         }
       ],
       skills: [
-        { id: '1', name: 'JavaScript', category: 'Programming Languages', level: 'Expert' },
-        { id: '2', name: 'Python', category: 'Programming Languages', level: 'Advanced' },
-        { id: '3', name: 'React', category: 'Frameworks & Libraries', level: 'Expert' },
-        { id: '4', name: 'Node.js', category: 'Frameworks & Libraries', level: 'Advanced' },
-        { id: '5', name: 'PostgreSQL', category: 'Databases', level: 'Advanced' },
-        { id: '6', name: 'AWS', category: 'Cloud & DevOps', level: 'Intermediate' },
-        { id: '7', name: 'Docker', category: 'Cloud & DevOps', level: 'Intermediate' },
-        { id: '8', name: 'Leadership', category: 'Soft Skills', level: 'Advanced' },
-        { id: '9', name: 'Problem Solving', category: 'Soft Skills', level: 'Expert' }
+        { id: '1', name: 'JavaScript', category: 'Programming Languages', level: 'Expert' as const },
+        { id: '2', name: 'Python', category: 'Programming Languages', level: 'Advanced' as const },
+        { id: '3', name: 'React', category: 'Frameworks & Libraries', level: 'Expert' as const },
+        { id: '4', name: 'Node.js', category: 'Frameworks & Libraries', level: 'Advanced' as const },
+        { id: '5', name: 'PostgreSQL', category: 'Databases', level: 'Advanced' as const },
+        { id: '6', name: 'AWS', category: 'Cloud & DevOps', level: 'Intermediate' as const },
+        { id: '7', name: 'Docker', category: 'Cloud & DevOps', level: 'Intermediate' as const },
+        { id: '8', name: 'Leadership', category: 'Soft Skills', level: 'Advanced' as const },
+        { id: '9', name: 'Problem Solving', category: 'Soft Skills', level: 'Expert' as const }
       ],
       projects: [
         {
