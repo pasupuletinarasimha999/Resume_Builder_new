@@ -1,280 +1,166 @@
 'use client';
 
-import { ResumeData } from '@/types/resume';
-import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
-import { useRef } from 'react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { useResume } from '@/context/ResumeContext';
+import { Separator } from '@/components/ui/separator';
 
-interface ResumePreviewProps {
-  data: ResumeData;
-}
-
-export function ResumePreview({ data }: ResumePreviewProps) {
-  const resumeRef = useRef<HTMLDivElement>(null);
-
-  const downloadPDF = async () => {
-    if (!resumeRef.current) return;
-
-    try {
-      // Create canvas from the resume element
-      const canvas = await html2canvas(resumeRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: 794, // A4 width in pixels at 96 DPI
-        height: 1123 // A4 height in pixels at 96 DPI
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-
-      // Create PDF
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / (imgWidth * 0.264583), pdfHeight / (imgHeight * 0.264583));
-      const imgX = (pdfWidth - (imgWidth * 0.264583 * ratio)) / 2;
-      const imgY = 0;
-
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * 0.264583 * ratio, imgHeight * 0.264583 * ratio);
-      pdf.save(`${data.personalInfo.fullName || 'Resume'}.pdf`);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
-    }
-  };
+export function ResumePreview() {
+  const { resumeData } = useResume();
+  const { personalInfo, education, workExperience, projects, skills } = resumeData;
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg">
-      {/* PDF Download Button */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Preview</h3>
-        <Button
-          onClick={downloadPDF}
-          size="sm"
-          className="bg-green-600 hover:bg-green-700 text-white"
-        >
-          <Download size={16} className="mr-2" />
-          Download PDF
-        </Button>
-      </div>
-
-      {/* Resume Content */}
-      <div className="overflow-y-auto" style={{ height: '800px' }}>
-        <div
-          ref={resumeRef}
-          className="bg-white text-black p-12 font-sans"
-          style={{
-            width: '794px',
-            minHeight: '1123px',
-            fontSize: '14px',
-            lineHeight: '1.4',
-            fontFamily: 'Arial, sans-serif'
-          }}
-        >
-          {/* Header Section */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-3 text-black">
-              {data.personalInfo.fullName || 'Your Name'}
-            </h1>
-            <div className="text-sm text-gray-700 mb-4">
-              {[
-                data.personalInfo.email,
-                data.personalInfo.phone,
-                data.personalInfo.location
-              ].filter(Boolean).join(' | ')}
-            </div>
-            {/* Thick horizontal line */}
-            <div className="w-full h-1 bg-black mb-6"></div>
-          </div>
-
-          {/* Summary Section */}
-          {data.personalInfo.summary && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4 text-black">Summary</h2>
-              <p className="text-sm text-gray-800 leading-relaxed mb-6">
-                {data.personalInfo.summary}
-              </p>
-            </div>
+    <div className="a4-preview resume-font">
+      {/* Header Section */}
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold mb-2 text-black">{personalInfo.fullName || 'Your Name'}</h1>
+        <div className="text-sm text-gray-700 flex items-center justify-center gap-2 flex-wrap">
+          {personalInfo.email && <span>{personalInfo.email}</span>}
+          {personalInfo.email && personalInfo.phone && <span>|</span>}
+          {personalInfo.phone && <span>{personalInfo.phone}</span>}
+          {(personalInfo.email || personalInfo.phone) && personalInfo.location && <span>|</span>}
+          {personalInfo.location && <span>{personalInfo.location}</span>}
+          {(personalInfo.email || personalInfo.phone || personalInfo.location) && personalInfo.linkedin && <span>|</span>}
+          {personalInfo.linkedin && (
+            <a href={personalInfo.linkedin} className="text-blue-600 hover:underline">
+              LinkedIn
+            </a>
           )}
-
-          {/* Experience Section */}
-          {data.workExperience.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4 text-black">Experience</h2>
-              {data.workExperience.map((exp, index) => (
-                <div key={exp.id} className="mb-6">
-                  {/* Company and Date */}
-                  <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="text-lg font-bold text-black">{exp.company}</h3>
-                    <span className="text-sm text-gray-700">
-                      {exp.startDate} – {exp.current ? 'Present' : exp.endDate}
-                    </span>
-                  </div>
-                  {/* Position and Location */}
-                  <div className="flex justify-between items-baseline mb-3">
-                    <span className="text-sm text-gray-800">
-                      {exp.position} · Full-Time
-                    </span>
-                    <span className="text-sm text-gray-700">
-                      {exp.location}
-                    </span>
-                  </div>
-                  {/* Description with bullet points */}
-                  <div className="text-sm text-gray-800 leading-relaxed">
-                    {exp.description.split('\n').map((line, i) => {
-                      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
-                        return (
-                          <div key={i} className="ml-4 mb-1">
-                            • {line.trim().replace(/^[•-]\s*/, '')}
-                          </div>
-                        );
-                      }
-                      return line.trim() ? (
-                        <p key={i} className="mb-2">{line.trim()}</p>
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Projects Section */}
-          {data.projects.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4 text-black border-b border-gray-400 pb-1">Projects</h2>
-              {data.projects.map((project) => (
-                <div key={project.id} className="mb-6">
-                  {/* Project Name and Date */}
-                  <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="text-lg font-bold text-black">{project.name}</h3>
-                    <span className="text-sm text-gray-700">
-                      {project.startDate} – {project.endDate}
-                    </span>
-                  </div>
-                  {/* Technologies */}
-                  {project.technologies.length > 0 && (
-                    <div className="text-sm text-gray-700 mb-3">
-                      {project.technologies.join(', ')}
-                    </div>
-                  )}
-                  {/* Description with bullet points */}
-                  <div className="text-sm text-gray-800 leading-relaxed">
-                    {project.description.split('\n').map((line, i) => {
-                      if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
-                        return (
-                          <div key={i} className="ml-4 mb-1">
-                            • {line.trim().replace(/^[•-]\s*/, '')}
-                          </div>
-                        );
-                      }
-                      return line.trim() ? (
-                        <p key={i} className="mb-2">{line.trim()}</p>
-                      ) : null;
-                    })}
-                  </div>
-                  {/* Project Links */}
-                  {(project.url || project.github) && (
-                    <div className="text-sm text-blue-600 mt-2">
-                      {project.url && <span>Live: {project.url}</span>}
-                      {project.url && project.github && <span> | </span>}
-                      {project.github && <span>GitHub: {project.github}</span>}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Education Section */}
-          {data.education.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4 text-black">Education</h2>
-              {data.education.map((edu) => (
-                <div key={edu.id} className="mb-4">
-                  {/* Institution and Date */}
-                  <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="text-lg font-bold text-black">{edu.institution}</h3>
-                    <span className="text-sm text-gray-700">
-                      {edu.startDate} – {edu.endDate}
-                    </span>
-                  </div>
-                  {/* Degree and GPA */}
-                  <div className="flex justify-between items-baseline mb-2">
-                    <span className="text-sm text-gray-800">
-                      {edu.degree} in {edu.field}
-                    </span>
-                    {edu.gpa && (
-                      <span className="text-sm text-gray-700">
-                        GPA: {edu.gpa}
-                      </span>
-                    )}
-                  </div>
-                  {/* Description */}
-                  {edu.description && (
-                    <p className="text-sm text-gray-800 leading-relaxed">
-                      {edu.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Skills Section */}
-          {data.skills.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4 text-black">Technical Skills</h2>
-              <div className="space-y-2">
-                {data.skills.reduce((acc: { name: string; skills: typeof data.skills }[], skill) => {
-                  const existingCategory = acc.find(cat => cat.name === skill.category);
-                  if (existingCategory) {
-                    existingCategory.skills.push(skill);
-                  } else {
-                    acc.push({ name: skill.category, skills: [skill] });
-                  }
-                  return acc;
-                }, []).map((category) => (
-                  <div key={category.name} className="mb-3">
-                    <span className="text-sm font-semibold text-black mr-2">
-                      {category.name}:
-                    </span>
-                    <span className="text-sm text-gray-800">
-                      {category.skills.map((skill) => skill.name).join(', ')}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Languages Section */}
-          {data.languages.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold mb-4 text-black">Languages</h2>
-              <div className="space-y-1">
-                {data.languages.map((lang) => (
-                  <div key={lang.id} className="text-sm text-gray-800">
-                    <span className="font-medium">{lang.name}</span> - {lang.proficiency}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Additional sections can be added here following the same pattern */}
         </div>
       </div>
+
+      <Separator className="mb-6 border-gray-400" />
+
+      {/* Professional Summary */}
+      {personalInfo.summary && (
+        <>
+          <div className="mb-6">
+            <h2 className="text-lg font-bold mb-3 text-black uppercase">PROFESSIONAL SUMMARY</h2>
+            <p className="text-sm text-gray-800 leading-relaxed">{personalInfo.summary}</p>
+          </div>
+          <Separator className="mb-6 border-gray-400" />
+        </>
+      )}
+
+      {/* Work Experience */}
+      {workExperience.length > 0 && (
+        <>
+          <div className="mb-6">
+            <h2 className="text-lg font-bold mb-3 text-black uppercase">WORK EXPERIENCE</h2>
+            <div className="space-y-4">
+              {workExperience.map((exp) => (
+                <div key={exp.id}>
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="text-base font-semibold text-black">{exp.position}</h3>
+                    <span className="text-sm text-gray-700">
+                      {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="text-sm font-medium text-gray-800">{exp.company}</h4>
+                    {exp.location && <span className="text-sm text-gray-600">{exp.location}</span>}
+                  </div>
+                  {exp.description && (
+                    <p className="text-sm text-gray-700 leading-relaxed">{exp.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          <Separator className="mb-6 border-gray-400" />
+        </>
+      )}
+
+      {/* Education */}
+      {education.length > 0 && (
+        <>
+          <div className="mb-6">
+            <h2 className="text-lg font-bold mb-3 text-black uppercase">EDUCATION</h2>
+            <div className="space-y-3">
+              {education.map((edu) => (
+                <div key={edu.id}>
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="text-base font-semibold text-black">
+                      {edu.degree} in {edu.field}
+                    </h3>
+                    <span className="text-sm text-gray-700">
+                      {edu.startDate} - {edu.endDate}
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-medium text-gray-800 mb-1">{edu.institution}</h4>
+                  {edu.gpa && (
+                    <p className="text-sm text-gray-700">GPA: {edu.gpa}</p>
+                  )}
+                  {edu.description && (
+                    <p className="text-sm text-gray-700 leading-relaxed mt-1">{edu.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          <Separator className="mb-6 border-gray-400" />
+        </>
+      )}
+
+      {/* Projects */}
+      {projects.length > 0 && (
+        <>
+          <div className="mb-6">
+            <h2 className="text-lg font-bold mb-3 text-black uppercase">PROJECTS</h2>
+            <div className="space-y-4">
+              {projects.map((project) => (
+                <div key={project.id}>
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="text-base font-semibold text-black">{project.name}</h3>
+                    <span className="text-sm text-gray-700">
+                      {project.startDate} {project.endDate && `- ${project.endDate}`}
+                    </span>
+                  </div>
+                  {project.technologies.length > 0 && (
+                    <p className="text-sm text-gray-600 mb-1">
+                      <span className="font-medium">Technologies:</span> {project.technologies.join(', ')}
+                    </p>
+                  )}
+                  {project.description && (
+                    <p className="text-sm text-gray-700 leading-relaxed">{project.description}</p>
+                  )}
+                  <div className="flex gap-4 mt-1">
+                    {project.url && (
+                      <a href={project.url} className="text-sm text-blue-600 hover:underline">
+                        Live Demo
+                      </a>
+                    )}
+                    {project.github && (
+                      <a href={project.github} className="text-sm text-blue-600 hover:underline">
+                        GitHub
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Separator className="mb-6 border-gray-400" />
+        </>
+      )}
+
+      {/* Skills */}
+      {skills.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-lg font-bold mb-3 text-black uppercase">SKILLS</h2>
+          <div className="grid grid-cols-1 gap-2">
+            {Array.from(new Set(skills.map(s => s.category))).map(category => (
+              <div key={category}>
+                <span className="text-sm font-semibold text-black">{category}: </span>
+                <span className="text-sm text-gray-700">
+                  {skills
+                    .filter(s => s.category === category)
+                    .map(s => s.name)
+                    .join(', ')}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
