@@ -30,16 +30,17 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    padding: '15mm', // Reduced margins for more content space
+    padding: '10mm', // Further reduced top margin
+    paddingTop: '8mm', // Minimal top padding to reduce gap
     fontFamily: 'Helvetica',
     fontSize: 11,
     lineHeight: 1.4,
   },
   header: {
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 16,
     borderBottom: '2pt solid #000000',
-    paddingBottom: 12,
+    paddingBottom: 8,
   },
   name: {
     fontSize: 18,
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   section: {
-    marginBottom: 8,
+    marginBottom: 6,
   },
   sectionTitle: {
     fontSize: 12,
@@ -97,6 +98,17 @@ const styles = StyleSheet.create({
     lineHeight: 1.3,
     textAlign: 'justify',
     marginTop: 2,
+  },
+  skillCategory: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    marginBottom: 3,
+  },
+  skillList: {
+    fontSize: 8,
+    lineHeight: 1.3,
+    marginLeft: 8,
+    marginBottom: 6,
   },
   summary: {
     fontSize: 10,
@@ -279,11 +291,11 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
       {/* Skills */}
       {sections.skills.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>SKILLS</Text>
+          <Text style={styles.sectionTitle}>TECHNICAL SKILLS</Text>
           {sections.skills.map((skill) => (
-            <View key={skill.id} style={styles.sectionItem}>
-              <Text style={styles.itemTitle}>{skill.category}</Text>
-              <Text style={styles.itemDescription}>{skill.skills}</Text>
+            <View key={skill.id} style={[styles.sectionItem, { marginBottom: 8 }]}>
+              <Text style={styles.skillCategory}>{skill.category}:</Text>
+              <Text style={styles.skillList}>{skill.skills}</Text>
             </View>
           ))}
         </View>

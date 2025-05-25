@@ -51,9 +51,12 @@ interface ResumeSections {
 // Helper function to render rich text content in preview
 function renderRichTextContent(htmlContent: string) {
   if (!htmlContent) return null
-  
+
   // Only render on client side to avoid SSR issues
-  if (typeof window === 'undefined') return null
+  if (typeof window === 'undefined') {
+    // Return server-safe fallback
+    return <div>{htmlContent.replace(/<[^>]*>/g, '')}</div>
+  }
 
   // Create a temporary div to parse HTML
   const tempDiv = document.createElement('div')
