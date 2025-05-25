@@ -30,10 +30,10 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    padding: '72pt', // 1 inch margins on all sides (72pt = 1 inch)
+    padding: '25mm', // 25mm margins on all sides (about 1 inch)
     fontFamily: 'Helvetica',
     fontSize: 11,
-    lineHeight: 1.15, // Updated to match requirement
+    lineHeight: 1.4,
   },
   header: {
     textAlign: 'center',
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   contactInfo: {
-    fontSize: 11,
+    fontSize: 9,
     color: '#333333',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     textTransform: 'uppercase',
     borderBottom: '1pt solid #cccccc',
@@ -81,26 +81,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemDate: {
-    fontSize: 11,
+    fontSize: 9,
     color: '#666666',
     fontStyle: 'italic',
     textAlign: 'right',
   },
   itemSubtitle: {
-    fontSize: 11,
+    fontSize: 10,
     fontStyle: 'italic',
     marginBottom: 4,
     color: '#333333',
   },
   itemDescription: {
-    fontSize: 11,
-    lineHeight: 1.15,
+    fontSize: 9,
+    lineHeight: 1.3,
     textAlign: 'justify',
     marginTop: 2,
   },
   summary: {
-    fontSize: 11,
-    lineHeight: 1.15,
+    fontSize: 10,
+    lineHeight: 1.4,
     textAlign: 'justify',
   },
   bulletPoint: {

@@ -461,9 +461,9 @@ export default function ResumePage() {
                   maxWidth: '460px',
                   minHeight: '650px',
                   margin: '0 auto',
-                  padding: '72px', // 1 inch = 72pt
-                  fontSize: '11pt', // Standard body text size
-                  lineHeight: '1.15', // Requested line spacing
+                  padding: '20px',
+                  fontSize: '9pt',
+                  lineHeight: '1.3',
                   color: '#000000',
                   transform: 'scale(1)',
                   transformOrigin: 'top left',
@@ -473,7 +473,7 @@ export default function ResumePage() {
                 {/* Header */}
                 <div className="text-center mb-6 border-b-2 border-gray-900 pb-4">
                   <h1 style={{
-                    fontSize: '18pt',
+                    fontSize: '14pt',
                     fontWeight: 'bold',
                     marginBottom: '8px',
                     textTransform: 'uppercase',
@@ -482,7 +482,7 @@ export default function ResumePage() {
                     {resumeData.fullName}
                   </h1>
                   <div style={{
-                    fontSize: '11pt',
+                    fontSize: '8pt',
                     color: '#333333',
                     display: 'flex',
                     alignItems: 'center',
@@ -502,7 +502,7 @@ export default function ResumePage() {
                 {resumeData.summary && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '14pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
@@ -512,8 +512,8 @@ export default function ResumePage() {
                       PROFESSIONAL SUMMARY
                     </h2>
                     <div style={{
-                      fontSize: '11pt',
-                      lineHeight: '1.15',
+                      fontSize: '9pt',
+                      lineHeight: '1.3',
                       textAlign: 'justify'
                     }}>
                       {resumeData.summary}
@@ -525,7 +525,7 @@ export default function ResumePage() {
                 {sections.education.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '14pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
@@ -569,8 +569,8 @@ export default function ResumePage() {
                         {edu.description && (
                           <div style={{
                             margin: '4px 0 0 0',
-                            fontSize: '11pt',
-                            lineHeight: '1.15'
+                            fontSize: '8pt',
+                            lineHeight: '1.2'
                           }}>
                             {renderRichTextContent(edu.description as string)}
                           </div>
@@ -584,7 +584,7 @@ export default function ResumePage() {
                 {sections.experience.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '14pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
@@ -628,8 +628,8 @@ export default function ResumePage() {
                         {exp.description && (
                           <div style={{
                             margin: '4px 0 0 0',
-                            fontSize: '11pt',
-                            lineHeight: '1.15'
+                            fontSize: '8pt',
+                            lineHeight: '1.2'
                           }}>
                             {renderRichTextContent(exp.description as string)}
                           </div>
@@ -643,7 +643,7 @@ export default function ResumePage() {
                 {sections.projects.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '14pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
@@ -700,8 +700,8 @@ export default function ResumePage() {
                         {project.description && (
                           <div style={{
                             margin: '4px 0 0 0',
-                            fontSize: '11pt',
-                            lineHeight: '1.15'
+                            fontSize: '8pt',
+                            lineHeight: '1.2'
                           }}>
                             {renderRichTextContent(project.description as string)}
                           </div>
@@ -715,7 +715,7 @@ export default function ResumePage() {
                 {sections.skills.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '14pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
