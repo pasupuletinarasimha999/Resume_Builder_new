@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     textTransform: 'uppercase',
     borderBottom: '1pt solid #cccccc',
