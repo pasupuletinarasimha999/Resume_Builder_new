@@ -8,7 +8,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { PDFDownload } from '@/components/PDFDownload'
 import { ResumeSection } from '@/components/ResumeSection'
-import { renderRichText, RichTextEditor } from '@/components/ui/rich-text-editor'
+import { renderRichText } from '@/components/ui/rich-text-editor'
+import dynamic from 'next/dynamic'
+
+const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor').then(mod => ({ default: mod.RichTextEditor })), {
+  ssr: false,
+  loading: () => <div className="h-32 bg-gray-100 rounded-md animate-pulse" />
+})
 import { ClientOnlyRichText } from '@/components/ClientOnlyRichText'
 
 // Resume sections with icons

@@ -3,6 +3,7 @@
 ## Current Task
 - [x] **completed** Modify skills section layout to display "Category: Skills" on the same line instead of separate lines
 - [x] **completed** Add rich text editor to professional summary section
+- [x] **completed** Fix SSR build error with rich text editor
 
 ## Changes Required
 - [x] Update the skills section rendering in the preview to display category and skills inline
@@ -11,6 +12,8 @@
 - [x] Replace the basic textarea in professional summary with rich text editor
 - [x] Update the summary rendering in preview to support rich text formatting
 - [x] Ensure rich text content is properly saved and loaded
+- [x] Fix "document is not defined" error during Next.js build/SSR
+- [x] Ensure rich text editor only renders on client side
 
 ## Status
 - ✅ Identified the issue in the `renderPreviewSection` function for the 'skills' case
@@ -23,3 +26,6 @@
 - ✅ Updated PDF rendering to support rich text formatting using `renderFormattedText`
 - ✅ Imported RichTextEditor component and replaced Textarea
 - ✅ Fixed linting errors and maintained proper styling
+- ✅ Fixed SSR error by using dynamic import with ssr: false for RichTextEditor
+- ✅ Build process now completes successfully
+- ✅ Rich text editor loads only on client side with loading placeholder
