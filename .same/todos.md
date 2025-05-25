@@ -11,6 +11,17 @@
 - [x] Test changes by running development server
 - [x] Create version after changes are complete
 
+## New Task: Implement Save/Load Data Functionality
+
+### Tasks to Complete:
+- [x] Examine current data structure and state management
+- [x] Create Save Data button that downloads JSON file with all resume data
+- [x] Create Load Data button that uploads and loads JSON file
+- [x] Add file input for JSON upload
+- [x] Implement data validation for loaded JSON
+- [x] Test save/load functionality
+- [x] Create version after implementation
+
 ### Current Certificate Font Sizes:
 - Certificate name: 8pt, bold
 - Certificate issuer: 7pt, italic, color #555555

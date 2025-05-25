@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -108,6 +108,7 @@ function formatDateToMMYYYY(dateString: string): string {
 export default function ResumePage() {
   const [activeSection, setActiveSection] = useState('basic')
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [resumeData, setResumeData] = useState<ResumeData>({
     fullName: 'Alex Johnson',
     email: 'alex.johnson@email.com',
@@ -300,6 +301,65 @@ export default function ResumePage() {
     }))
   }
 
+  // Save data functionality
+  const handleSaveData = () => {
+    const dataToSave = {
+      resumeData,
+      sections,
+      timestamp: new Date().toISOString(),
+      version: "1.0"
+    }
+
+    const jsonString = JSON.stringify(dataToSave, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `resume-data-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // Load data functionality
+  const handleLoadData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    if (!file.name.endsWith('.json')) {
+      alert('Please select a valid JSON file.')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const jsonData = JSON.parse(e.target?.result as string)
+
+        // Validate the JSON structure
+        if (!jsonData.resumeData || !jsonData.sections) {
+          alert('Invalid file format. Please select a valid resume data file.')
+          return
+        }
+
+        // Update the state with loaded data
+        setResumeData(jsonData.resumeData)
+        setSections(jsonData.sections)
+
+        alert('Resume data loaded successfully!')
+      } catch (error) {
+        alert('Error reading file. Please ensure it\'s a valid JSON file.')
+        console.error('JSON parsing error:', error)
+      }
+    }
+
+    reader.readAsText(file)
+    // Reset the file input so the same file can be loaded again if needed
+    event.target.value = ''
+  }
+
   const sectionConfigs = {
     education: {
       title: 'Education',
@@ -416,15 +476,24 @@ export default function ResumePage() {
 
           {/* Action buttons */}
           <div className="flex gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleLoadData}
+              style={{ display: 'none' }}
+            />
             <Button
               size="sm"
               className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
+              onClick={() => fileInputRef.current?.click()}
             >
               📁 Load Data
             </Button>
             <Button
               size="sm"
               className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
+              onClick={handleSaveData}
             >
               💾 Save Data
             </Button>
