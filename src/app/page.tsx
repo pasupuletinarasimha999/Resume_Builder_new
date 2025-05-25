@@ -675,14 +675,14 @@ export default function ResumePage() {
                         </div>
                         <div style={{
                           fontSize: '9pt',
-                          marginBottom: '4px',
+                          marginBottom: '0px',
                           fontStyle: 'italic'
                         }}>
                           {edu.degree} {edu.field && `in ${edu.field}`}
                         </div>
                         {edu.description && (
                           <div style={{
-                            margin: '1px 0 0 0',
+                            margin: '0px 0 0 0',
                             fontSize: '8pt',
                             lineHeight: '1.2'
                           }}>
@@ -741,7 +741,7 @@ export default function ResumePage() {
                           justifyContent: 'space-between',
                           alignItems: 'center',
                           fontSize: '9pt',
-                          marginBottom: '4px',
+                          marginBottom: '0px',
                           marginTop: '0px',
                           fontStyle: 'italic'
                         }}>
@@ -757,7 +757,7 @@ export default function ResumePage() {
                         </div>
                         {exp.description && (
                           <div style={{
-                            margin: '1px 0 0 0',
+                            margin: '0px 0 0 0',
                             fontSize: '8pt',
                             lineHeight: '1.2'
                           }}>

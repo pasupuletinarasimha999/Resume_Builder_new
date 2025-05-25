@@ -27,10 +27,17 @@
   - Between category and skills: marginBottom reduced from 2px to 1px
   - Added marginBottom to skills text for better control
 - [x] Reduced gaps between bullet points and titles in all sections (BOTH PREVIEW & PDF)
-  - Education section: margin reduced from 4px to 1px between title and description
-  - Experience section: margin reduced from 4px to 1px between company and bullet points
+  - Education section: margin reduced from 4px to 1px, then to 0px between title and description
+  - Experience section: margin reduced from 4px to 1px, then to 0px between company and bullet points
   - Projects section: margin reduced from 4px to 1px between project info and description
   - PDF bullet points: marginBottom reduced from 1 to 0 for tighter spacing
+- [x] Further reduced gaps to near zero in Professional Experience & Education
+  - Company/location row marginBottom: 4px → 0px
+  - Education degree row marginBottom: 4px → 0px
+  - Description marginTop: 1px → 0px for both sections
+  - PDF itemSubtitle marginBottom: 4 → 0
+  - PDF itemDescription marginTop: 1 → 0
+  - PDF companyLocationRow marginBottom: 4 → 0
 
 ## Current Status
 ✅ All requested changes completed for BOTH preview AND PDF download! The resume now has:

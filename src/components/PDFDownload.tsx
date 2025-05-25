@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   companyLocationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: 0,
     marginTop: 0,
   },
   itemTitle: {
@@ -104,14 +104,14 @@ const styles = StyleSheet.create({
   itemSubtitle: {
     fontSize: 10,
     fontStyle: 'italic',
-    marginBottom: 4,
+    marginBottom: 0,
     color: '#333333',
   },
   itemDescription: {
     fontSize: 10,
     lineHeight: 1.3,
     textAlign: 'justify',
-    marginTop: 1,
+    marginTop: 0,
   },
   skillCategory: {
     fontSize: 10,
