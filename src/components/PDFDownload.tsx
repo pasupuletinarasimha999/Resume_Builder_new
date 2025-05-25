@@ -1,8 +1,13 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
+import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'
+
+interface SectionItem {
+  id: string
+  isPresent?: boolean
+  [key: string]: string | boolean | undefined
+}
 
 interface PDFDownloadProps {
   resumeData: {
@@ -12,102 +17,289 @@ interface PDFDownloadProps {
     location: string
     summary: string
   }
+  sections: {
+    education: SectionItem[]
+    experience: SectionItem[]
+    projects: SectionItem[]
+    skills: SectionItem[]
+  }
 }
 
-export function PDFDownload({ resumeData }: PDFDownloadProps) {
-  const downloadPDF = async () => {
-    const element = document.getElementById('resume-preview')
-    if (!element) {
-      console.error('Resume preview element not found')
-      return
+// PDF Styles with proper margins
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+    padding: '25mm', // 25mm margins on all sides (about 1 inch)
+    fontFamily: 'Helvetica',
+    fontSize: 11,
+    lineHeight: 1.4,
+  },
+  header: {
+    textAlign: 'center',
+    marginBottom: 24,
+    borderBottom: '2pt solid #000000',
+    paddingBottom: 12,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  contactInfo: {
+    fontSize: 9,
+    color: '#333333',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  section: {
+    marginBottom: 18,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    borderBottom: '1pt solid #cccccc',
+    paddingBottom: 4,
+    marginBottom: 10,
+  },
+  sectionItem: {
+    marginBottom: 12,
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  itemTitle: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  itemDate: {
+    fontSize: 9,
+    color: '#666666',
+    fontStyle: 'italic',
+    textAlign: 'right',
+  },
+  itemSubtitle: {
+    fontSize: 10,
+    fontStyle: 'italic',
+    marginBottom: 4,
+    color: '#333333',
+  },
+  itemDescription: {
+    fontSize: 9,
+    lineHeight: 1.3,
+    textAlign: 'justify',
+    marginTop: 2,
+  },
+  summary: {
+    fontSize: 10,
+    lineHeight: 1.4,
+    textAlign: 'justify',
+  },
+  bulletPoint: {
+    marginLeft: 10,
+    marginBottom: 2,
+  },
+})
+
+// Helper function to format dates
+const formatDate = (dateString: string): string => {
+  if (!dateString) return ''
+  if (dateString.toLowerCase() === 'present' || dateString.toLowerCase() === 'current') {
+    return 'Present'
+  }
+
+  if (/^\d{2}-\d{4}$/.test(dateString)) {
+    const [month, year] = dateString.split('-')
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ]
+    const monthIndex = Number.parseInt(month) - 1
+    if (monthIndex >= 0 && monthIndex < 12) {
+      return `${monthNames[monthIndex]} ${year}`
     }
+  }
 
+  return dateString
+}
+
+// Helper function to convert rich text to plain text for PDF while preserving structure
+const convertRichTextToPlain = (htmlContent: string): string => {
+  if (!htmlContent) return ''
+
+  return htmlContent
+    .replace(/<strong>(.*?)<\/strong>/g, '$1')
+    .replace(/<b>(.*?)<\/b>/g, '$1')
+    .replace(/<ul>/g, '')
+    .replace(/<\/ul>/g, '')
+    .replace(/<ol>/g, '')
+    .replace(/<\/ol>/g, '')
+    .replace(/<li>/g, '• ')
+    .replace(/<\/li>/g, '\n')
+    .replace(/<br\s*\/?>/g, '\n')
+    .replace(/<div>/g, '')
+    .replace(/<\/div>/g, '\n')
+    .replace(/<p>/g, '')
+    .replace(/<\/p>/g, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\n\n+/g, '\n')
+    .replace(/^\n+|\n+$/g, '')
+    .trim()
+}
+
+// PDF Document Component
+const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.name}>{resumeData.fullName}</Text>
+        <View style={styles.contactInfo}>
+          <Text>{resumeData.email}</Text>
+          <Text> • </Text>
+          <Text>{resumeData.phone}</Text>
+          <Text> • </Text>
+          <Text>{resumeData.location}</Text>
+        </View>
+      </View>
+
+      {/* Professional Summary */}
+      {resumeData.summary && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>PROFESSIONAL SUMMARY</Text>
+          <Text style={styles.summary}>{resumeData.summary}</Text>
+        </View>
+      )}
+
+      {/* Education */}
+      {sections.education.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>EDUCATION</Text>
+          {sections.education.map((edu) => (
+            <View key={edu.id} style={styles.sectionItem}>
+              <View style={styles.itemHeader}>
+                <Text style={styles.itemTitle}>{edu.school}</Text>
+                <Text style={styles.itemDate}>
+                  {(edu.startDate || edu.endDate) &&
+                    `${edu.startDate ? formatDate(edu.startDate as string) : ''}${edu.startDate && edu.endDate ? ' - ' : ''}${edu.endDate ? formatDate(edu.endDate as string) : ''}`
+                  }
+                </Text>
+              </View>
+              <Text style={styles.itemSubtitle}>
+                {edu.degree} {edu.field && `in ${edu.field}`}
+              </Text>
+              {edu.description && (
+                <Text style={styles.itemDescription}>
+                  {convertRichTextToPlain(edu.description as string)}
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Experience */}
+      {sections.experience.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>PROFESSIONAL EXPERIENCE</Text>
+          {sections.experience.map((exp) => (
+            <View key={exp.id} style={styles.sectionItem}>
+              <View style={styles.itemHeader}>
+                <Text style={styles.itemTitle}>{exp.position}</Text>
+                <Text style={styles.itemDate}>
+                  {(exp.startDate || exp.endDate) &&
+                    `${exp.startDate ? formatDate(exp.startDate as string) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate ? formatDate(exp.endDate as string) : ''}`
+                  }
+                </Text>
+              </View>
+              <Text style={styles.itemSubtitle}>
+                {exp.company} {exp.location && `• ${exp.location}`}
+              </Text>
+              {exp.description && (
+                <Text style={styles.itemDescription}>
+                  {convertRichTextToPlain(exp.description as string)}
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Projects */}
+      {sections.projects.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>PROJECTS</Text>
+          {sections.projects.map((project) => (
+            <View key={project.id} style={styles.sectionItem}>
+              <View style={styles.itemHeader}>
+                <Text style={styles.itemTitle}>{project.name}</Text>
+                <Text style={styles.itemDate}>
+                  {(project.startDate || project.endDate) &&
+                    `${project.startDate ? formatDate(project.startDate as string) : ''}${project.startDate && project.endDate ? ' - ' : ''}${project.endDate ? formatDate(project.endDate as string) : ''}`
+                  }
+                </Text>
+              </View>
+              {project.technologies && (
+                <Text style={styles.itemSubtitle}>
+                  Technologies: {project.technologies}
+                </Text>
+              )}
+              {project.url && (
+                <Text style={[styles.itemSubtitle, { color: '#0066cc' }]}>
+                  {project.url}
+                </Text>
+              )}
+              {project.description && (
+                <Text style={styles.itemDescription}>
+                  {convertRichTextToPlain(project.description as string)}
+                </Text>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Skills */}
+      {sections.skills.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>SKILLS</Text>
+          {sections.skills.map((skill) => (
+            <View key={skill.id} style={styles.sectionItem}>
+              <Text style={styles.itemTitle}>{skill.category}</Text>
+              <Text style={styles.itemDescription}>{skill.skills}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </Page>
+  </Document>
+)
+
+export function PDFDownload({ resumeData, sections }: PDFDownloadProps) {
+  const downloadPDF = async () => {
     try {
-      // Create a temporary container with proper A4 dimensions
-      const tempContainer = document.createElement('div')
-      tempContainer.style.position = 'absolute'
-      tempContainer.style.left = '-9999px'
-      tempContainer.style.top = '0'
-      tempContainer.style.width = '794px' // A4 width in pixels at 96 DPI
-      tempContainer.style.backgroundColor = '#ffffff'
-      tempContainer.style.fontFamily = 'Calibri, Arial, sans-serif'
+      // Generate PDF blob with proper text content
+      const blob = await pdf(<ResumeDocument resumeData={resumeData} sections={sections} />).toBlob()
 
-      // Clone the resume content
-      const clonedElement = element.cloneNode(true) as HTMLElement
-      clonedElement.style.width = '794px' // A4 width in pixels
-      clonedElement.style.minHeight = '1123px' // A4 height in pixels
-      clonedElement.style.padding = '60px' // Proper padding
-      clonedElement.style.fontSize = '11pt'
-      clonedElement.style.lineHeight = '1.4'
-      clonedElement.style.transform = 'none'
-      clonedElement.style.margin = '0'
-      clonedElement.style.boxSizing = 'border-box'
+      // Create download link
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${resumeData.fullName.replace(/\s+/g, '_')}_Resume.pdf`
+      document.body.appendChild(link)
+      link.click()
 
-      // Ensure all text elements maintain proper sizing
-      const allTextElements = clonedElement.querySelectorAll('*')
-      for (const el of allTextElements) {
-        const element = el as HTMLElement
-        if (element.style.fontSize?.includes('pt')) {
-          // Keep existing pt sizes
-        } else {
-          // Set relative font sizes for proper PDF scaling
-          const computedStyle = window.getComputedStyle(element)
-          const fontSize = computedStyle.fontSize
-          if (fontSize) {
-            const sizeInPx = Number.parseFloat(fontSize)
-            const sizeInPt = (sizeInPx * 0.75).toFixed(1) // Convert px to pt
-            element.style.fontSize = `${sizeInPt}pt`
-          }
-        }
-        element.style.fontFamily = 'Calibri, Arial, sans-serif'
-      }
-
-      tempContainer.appendChild(clonedElement)
-      document.body.appendChild(tempContainer)
-
-      // Create canvas from the temporary container
-      const canvas = await html2canvas(tempContainer, {
-        scale: 2, // Higher quality
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: 794, // A4 width in pixels
-        height: Math.max(1123, tempContainer.scrollHeight) // A4 height or content height
-      })
-
-      // Remove temporary container
-      document.body.removeChild(tempContainer)
-
-      // Calculate dimensions for A4
-      const imgData = canvas.toDataURL('image/png', 1.0)
-      const pdf = new jsPDF('p', 'mm', 'a4')
-
-      // A4 dimensions in mm
-      const pdfWidth = 210
-      const pdfHeight = 297
-
-      // Calculate the height of the image in mm based on A4 width
-      const imgWidth = pdfWidth
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width
-
-      // Add pages as needed
-      let heightLeft = imgHeight
-      let position = 0
-
-      // Add first page
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, Math.min(imgHeight, pdfHeight))
-      heightLeft -= pdfHeight
-
-      // Add additional pages if needed
-      while (heightLeft > 0) {
-        position -= pdfHeight
-        pdf.addPage()
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
-        heightLeft -= pdfHeight
-      }
-
-      // Download the PDF
-      pdf.save(`${resumeData.fullName.replace(/\s+/g, '_')}_Resume.pdf`)
+      // Cleanup
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
     } catch (error) {
       console.error('Error generating PDF:', error)
     }

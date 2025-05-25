@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { PDFDownload } from '@/components/PDFDownload'
 import { ResumeSection } from '@/components/ResumeSection'
+import { renderRichText } from '@/components/ui/rich-text-editor'
 
 // Resume sections with icons
 const resumeSections = [
@@ -36,7 +37,8 @@ interface ResumeData {
 
 interface SectionItem {
   id: string
-  [key: string]: string | undefined
+  isPresent?: boolean
+  [key: string]: string | boolean | undefined
 }
 
 interface ResumeSections {
@@ -44,6 +46,66 @@ interface ResumeSections {
   experience: SectionItem[]
   projects: SectionItem[]
   skills: SectionItem[]
+}
+
+// Helper function to render rich text content in preview
+function renderRichTextContent(htmlContent: string) {
+  if (!htmlContent) return null
+
+  // Create a temporary div to parse HTML
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = htmlContent
+
+  // Handle different HTML elements
+  const result: React.ReactNode[] = []
+  let key = 0
+
+  const processNode = (node: Node): React.ReactNode => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent?.trim()
+      return text ? <span key={key++}>{text}</span> : null
+    }
+
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const element = node as HTMLElement
+      const children = Array.from(element.childNodes).map(processNode).filter(Boolean)
+
+      switch (element.tagName.toLowerCase()) {
+        case 'strong':
+        case 'b':
+          return <strong key={key++}>{children}</strong>
+        case 'ul':
+          return (
+            <ul key={key++} style={{ margin: '4px 0 0 20px', padding: 0, fontSize: '8pt', lineHeight: '1.2' }}>
+              {children}
+            </ul>
+          )
+        case 'ol':
+          return (
+            <ol key={key++} style={{ margin: '4px 0 0 20px', padding: 0, fontSize: '8pt', lineHeight: '1.2' }}>
+              {children}
+            </ol>
+          )
+        case 'li':
+          return <li key={key++} style={{ marginBottom: '2px' }}>{children}</li>
+        case 'br':
+          return <br key={key++} />
+        case 'div':
+        case 'p':
+          return <div key={key++}>{children}</div>
+        default:
+          return <span key={key++}>{children}</span>
+      }
+    }
+    return null
+  }
+
+  for (const node of Array.from(tempDiv.childNodes)) {
+    const processed = processNode(node)
+    if (processed) result.push(processed)
+  }
+
+  return result.length > 0 ? result : null
 }
 
 // Helper function to format date to MM-YYYY or month name format
@@ -119,7 +181,7 @@ export default function ResumePage() {
     }))
   }
 
-  const updateSectionItem = (sectionName: keyof ResumeSections, id: string, field: string, value: string) => {
+  const updateSectionItem = (sectionName: keyof ResumeSections, id: string, field: string, value: string | boolean) => {
     setSections(prev => ({
       ...prev,
       [sectionName]: prev[sectionName].map(item =>
@@ -144,7 +206,7 @@ export default function ResumePage() {
         { key: 'field', label: 'Field of Study', type: 'text' as const, placeholder: 'e.g., Computer Science' },
         { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 09-2020)' },
         { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 06-2024)' },
-        { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Relevant coursework, achievements, etc.' }
+        { key: 'description', label: 'Description', type: 'richtext' as const, placeholder: 'Relevant coursework, achievements, etc.' }
       ]
     },
     experience: {
@@ -155,7 +217,7 @@ export default function ResumePage() {
         { key: 'location', label: 'Location', type: 'text' as const, placeholder: 'e.g., San Francisco, CA' },
         { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 01-2022)' },
         { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., Present)' },
-        { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Key responsibilities and achievements...' }
+        { key: 'description', label: 'Description', type: 'richtext' as const, placeholder: 'Key responsibilities and achievements...' }
       ]
     },
     projects: {
@@ -166,7 +228,7 @@ export default function ResumePage() {
         { key: 'url', label: 'Project URL', type: 'text' as const, placeholder: 'https://github.com/...' },
         { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 03-2023)' },
         { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 08-2023)' },
-        { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Brief description of the project...' }
+        { key: 'description', label: 'Description', type: 'richtext' as const, placeholder: 'Brief description of the project...' }
       ]
     },
     skills: {
@@ -217,7 +279,7 @@ export default function ResumePage() {
             >
               💾 Save Data
             </Button>
-            <PDFDownload resumeData={resumeData} />
+            <PDFDownload resumeData={resumeData} sections={sections} />
           </div>
         </div>
       </div>
@@ -349,6 +411,7 @@ export default function ResumePage() {
                 onUpdateItem={(id, field, value) => updateSectionItem('experience', id, field, value)}
                 onDeleteItem={(id) => deleteSectionItem('experience', id)}
                 fields={sectionConfigs.experience.fields}
+                isExperience={true}
               />
             )}
 
@@ -504,18 +567,13 @@ export default function ResumePage() {
                           {edu.degree} {edu.field && `in ${edu.field}`}
                         </div>
                         {edu.description && (
-                          <ul style={{
-                            margin: '4px 0 0 20px',
-                            padding: 0,
+                          <div style={{
+                            margin: '4px 0 0 0',
                             fontSize: '8pt',
                             lineHeight: '1.2'
                           }}>
-                            {edu.description.split('\n').filter(line => line.trim()).map((line) => (
-                              <li key={`${edu.id}-edu-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
-                                {line.trim()}
-                              </li>
-                            ))}
-                          </ul>
+                            {renderRichTextContent(edu.description as string)}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -568,18 +626,13 @@ export default function ResumePage() {
                           {exp.company} {exp.location && `• ${exp.location}`}
                         </div>
                         {exp.description && (
-                          <ul style={{
-                            margin: '4px 0 0 20px',
-                            padding: 0,
+                          <div style={{
+                            margin: '4px 0 0 0',
                             fontSize: '8pt',
                             lineHeight: '1.2'
                           }}>
-                            {exp.description.split('\n').filter(line => line.trim()).map((line) => (
-                              <li key={`${exp.id}-exp-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
-                                {line.trim()}
-                              </li>
-                            ))}
-                          </ul>
+                            {renderRichTextContent(exp.description as string)}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -645,18 +698,13 @@ export default function ResumePage() {
                           </div>
                         )}
                         {project.description && (
-                          <ul style={{
-                            margin: '4px 0 0 20px',
-                            padding: 0,
+                          <div style={{
+                            margin: '4px 0 0 0',
                             fontSize: '8pt',
                             lineHeight: '1.2'
                           }}>
-                            {project.description.split('\n').filter(line => line.trim()).map((line) => (
-                              <li key={`${project.id}-proj-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
-                                {line.trim()}
-                              </li>
-                            ))}
-                          </ul>
+                            {renderRichTextContent(project.description as string)}
+                          </div>
                         )}
                       </div>
                     ))}
