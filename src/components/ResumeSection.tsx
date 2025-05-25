@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { MonthYearInput } from '@/components/ui/month-year-input'
 import { Plus, Trash2 } from 'lucide-react'
 
 interface SectionItem {
@@ -81,6 +82,14 @@ export function ResumeSection({
                           onChange={(e) => onUpdateItem(item.id, field.key, e.target.value)}
                           placeholder={field.placeholder}
                           rows={3}
+                          className="mt-1"
+                        />
+                      ) : field.key.toLowerCase().includes('date') ? (
+                        <MonthYearInput
+                          id={`${item.id}-${field.key}`}
+                          value={item[field.key] || ''}
+                          onChange={(value) => onUpdateItem(item.id, field.key, value)}
+                          placeholder={field.placeholder}
                           className="mt-1"
                         />
                       ) : (

@@ -46,27 +46,40 @@ interface ResumeSections {
   skills: SectionItem[]
 }
 
-// Helper function to format date to MM-YYYY
+// Helper function to format date to MM-YYYY or month name format
 function formatDateToMMYYYY(dateString: string): string {
   if (!dateString) return ''
-
-  // If already in MM-YYYY format, return as is
-  if (/^\d{2}-\d{4}$/.test(dateString)) {
-    return dateString
-  }
 
   // Handle "Present" or similar text
   if (dateString.toLowerCase() === 'present' || dateString.toLowerCase() === 'current') {
     return 'Present'
   }
 
-  // Try to parse as date and convert to MM-YYYY
+  // If already in MM-YYYY format, convert to "Month YYYY" format for better readability
+  if (/^\d{2}-\d{4}$/.test(dateString)) {
+    const [month, year] = dateString.split('-')
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ]
+    const monthIndex = Number.parseInt(month) - 1
+    if (monthIndex >= 0 && monthIndex < 12) {
+      return `${monthNames[monthIndex]} ${year}`
+    }
+    return dateString
+  }
+
+  // Try to parse as date and convert to "Month YYYY"
   try {
     const date = new Date(dateString)
     if (!Number.isNaN(date.getTime())) {
-      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const monthNames = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ]
+      const month = monthNames[date.getMonth()]
       const year = date.getFullYear()
-      return `${month}-${year}`
+      return `${month} ${year}`
     }
   } catch (error) {
     // If parsing fails, return the original string
@@ -381,14 +394,17 @@ export default function ResumePage() {
                 id="resume-preview"
                 style={{
                   fontFamily: 'Calibri, Arial, sans-serif',
-                  width: '210mm',
-                  minHeight: '297mm',
-                  maxWidth: '100%',
+                  width: '100%',
+                  maxWidth: '21cm',
+                  minHeight: '29.7cm',
                   margin: '0 auto',
-                  padding: '20mm',
+                  padding: '2cm',
                   fontSize: '11pt',
                   lineHeight: '1.4',
-                  color: '#000000'
+                  color: '#000000',
+                  transform: 'scale(0.45)',
+                  transformOrigin: 'top left',
+                  position: 'relative'
                 }}
               >
                 {/* Header */}
@@ -475,8 +491,8 @@ export default function ResumePage() {
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
-                            {edu.startDate && edu.endDate &&
-                              `${formatDateToMMYYYY(edu.startDate)} - ${formatDateToMMYYYY(edu.endDate)}`
+                            {(edu.startDate || edu.endDate) &&
+                              `${edu.startDate ? formatDateToMMYYYY(edu.startDate) : ''}${edu.startDate && edu.endDate ? ' - ' : ''}${edu.endDate ? formatDateToMMYYYY(edu.endDate) : ''}`
                             }
                           </span>
                         </div>
@@ -539,8 +555,8 @@ export default function ResumePage() {
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
-                            {exp.startDate && exp.endDate &&
-                              `${formatDateToMMYYYY(exp.startDate)} - ${formatDateToMMYYYY(exp.endDate)}`
+                            {(exp.startDate || exp.endDate) &&
+                              `${exp.startDate ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate ? formatDateToMMYYYY(exp.endDate) : ''}`
                             }
                           </span>
                         </div>
@@ -603,8 +619,8 @@ export default function ResumePage() {
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
-                            {project.startDate && project.endDate &&
-                              `${formatDateToMMYYYY(project.startDate)} - ${formatDateToMMYYYY(project.endDate)}`
+                            {(project.startDate || project.endDate) &&
+                              `${project.startDate ? formatDateToMMYYYY(project.startDate) : ''}${project.startDate && project.endDate ? ' - ' : ''}${project.endDate ? formatDateToMMYYYY(project.endDate) : ''}`
                             }
                           </span>
                         </div>
