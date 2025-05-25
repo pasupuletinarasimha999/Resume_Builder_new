@@ -10,6 +10,11 @@
 - [completed] Implement collapsible sidebar with icons and hover tooltips
 - [completed] Move action buttons (Load Data, Save Data, Download PDF) to top header
 - [completed] Add dark gray sidebar with proper hover effects and icon tooltips
+- [completed] Format resume with standard A4 size and professional styling
+- [completed] Apply Calibri font family throughout the resume
+- [completed] Implement proper bullet points and headings formatting
+- [completed] Change date format to MM-YYYY across all sections
+- [completed] Add professional resume styling with proper font sizes and spacing
 - [ ] Create resume preview component
 - [ ] Fix PDF download functionality to prevent extra white pages
 - [ ] Apply the purple/gray theme from reference site

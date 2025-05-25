@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Professional resume font stack - Calibri is the standard */
+.calibri-font {
+  font-family: 'Calibri', 'Trebuchet MS', Arial, sans-serif;
+}
+
+/* Professional resume print styles */
+@media print {
+  .resume-preview {
+    font-family: 'Calibri', Arial, sans-serif !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+    color: #000000 !important;
+    background: white !important;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

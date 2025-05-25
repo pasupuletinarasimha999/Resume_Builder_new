@@ -46,6 +46,36 @@ interface ResumeSections {
   skills: SectionItem[]
 }
 
+// Helper function to format date to MM-YYYY
+function formatDateToMMYYYY(dateString: string): string {
+  if (!dateString) return ''
+
+  // If already in MM-YYYY format, return as is
+  if (/^\d{2}-\d{4}$/.test(dateString)) {
+    return dateString
+  }
+
+  // Handle "Present" or similar text
+  if (dateString.toLowerCase() === 'present' || dateString.toLowerCase() === 'current') {
+    return 'Present'
+  }
+
+  // Try to parse as date and convert to MM-YYYY
+  try {
+    const date = new Date(dateString)
+    if (!Number.isNaN(date.getTime())) {
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const year = date.getFullYear()
+      return `${month}-${year}`
+    }
+  } catch (error) {
+    // If parsing fails, return the original string
+    return dateString
+  }
+
+  return dateString
+}
+
 export default function ResumePage() {
   const [activeSection, setActiveSection] = useState('basic')
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
@@ -99,8 +129,8 @@ export default function ResumePage() {
         { key: 'school', label: 'School/University', type: 'text' as const, placeholder: 'e.g., MIT' },
         { key: 'degree', label: 'Degree', type: 'text' as const, placeholder: 'e.g., Bachelor of Science' },
         { key: 'field', label: 'Field of Study', type: 'text' as const, placeholder: 'e.g., Computer Science' },
-        { key: 'startDate', label: 'Start Date', type: 'date' as const },
-        { key: 'endDate', label: 'End Date', type: 'date' as const },
+        { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 09-2020)' },
+        { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 06-2024)' },
         { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Relevant coursework, achievements, etc.' }
       ]
     },
@@ -110,8 +140,8 @@ export default function ResumePage() {
         { key: 'company', label: 'Company', type: 'text' as const, placeholder: 'e.g., Google' },
         { key: 'position', label: 'Position', type: 'text' as const, placeholder: 'e.g., Software Engineer' },
         { key: 'location', label: 'Location', type: 'text' as const, placeholder: 'e.g., San Francisco, CA' },
-        { key: 'startDate', label: 'Start Date', type: 'date' as const },
-        { key: 'endDate', label: 'End Date', type: 'date' as const },
+        { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 01-2022)' },
+        { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., Present)' },
         { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Key responsibilities and achievements...' }
       ]
     },
@@ -121,8 +151,8 @@ export default function ResumePage() {
         { key: 'name', label: 'Project Name', type: 'text' as const, placeholder: 'e.g., Resume Builder App' },
         { key: 'technologies', label: 'Technologies', type: 'text' as const, placeholder: 'e.g., React, Node.js, MongoDB' },
         { key: 'url', label: 'Project URL', type: 'text' as const, placeholder: 'https://github.com/...' },
-        { key: 'startDate', label: 'Start Date', type: 'date' as const },
-        { key: 'endDate', label: 'End Date', type: 'date' as const },
+        { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 03-2023)' },
+        { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 08-2023)' },
         { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Brief description of the project...' }
       ]
     },
@@ -346,42 +376,130 @@ export default function ResumePage() {
           {/* Preview */}
           <div className="w-96 bg-gray-100 p-4 overflow-y-auto">
             <div className="bg-white rounded-lg shadow-lg">
-              <div className="p-8 bg-white text-black min-h-full" id="resume-preview">
+              <div
+                className="bg-white text-black"
+                id="resume-preview"
+                style={{
+                  fontFamily: 'Calibri, Arial, sans-serif',
+                  width: '210mm',
+                  minHeight: '297mm',
+                  maxWidth: '100%',
+                  margin: '0 auto',
+                  padding: '20mm',
+                  fontSize: '11pt',
+                  lineHeight: '1.4',
+                  color: '#000000'
+                }}
+              >
                 {/* Header */}
-                <div className="text-center mb-8 border-b border-gray-300 pb-6">
-                  <h1 className="text-3xl font-bold mb-2">{resumeData.fullName}</h1>
-                  <div className="text-sm text-gray-600 flex items-center justify-center gap-2 flex-wrap">
+                <div className="text-center mb-6 border-b-2 border-gray-900 pb-4">
+                  <h1 style={{
+                    fontSize: '18pt',
+                    fontWeight: 'bold',
+                    marginBottom: '8px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    {resumeData.fullName}
+                  </h1>
+                  <div style={{
+                    fontSize: '10pt',
+                    color: '#333333',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    flexWrap: 'wrap'
+                  }}>
                     <span>{resumeData.email}</span>
-                    <span>|</span>
+                    <span>•</span>
                     <span>{resumeData.phone}</span>
-                    <span>|</span>
+                    <span>•</span>
                     <span>{resumeData.location}</span>
                   </div>
                 </div>
 
-                {/* Summary */}
-                <div className="mb-8">
-                  <h2 className="text-xl font-bold mb-3 text-gray-900">SUMMARY</h2>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {resumeData.summary}
-                  </p>
-                </div>
+                {/* Professional Summary */}
+                {resumeData.summary && (
+                  <div className="mb-6">
+                    <h2 style={{
+                      fontSize: '12pt',
+                      fontWeight: 'bold',
+                      marginBottom: '8px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '2px'
+                    }}>
+                      PROFESSIONAL SUMMARY
+                    </h2>
+                    <div style={{
+                      fontSize: '11pt',
+                      lineHeight: '1.4',
+                      textAlign: 'justify'
+                    }}>
+                      {resumeData.summary}
+                    </div>
+                  </div>
+                )}
 
                 {/* Education */}
                 {sections.education.length > 0 && (
-                  <div className="mb-8">
-                    <h2 className="text-xl font-bold mb-3 text-gray-900">EDUCATION</h2>
+                  <div className="mb-6">
+                    <h2 style={{
+                      fontSize: '12pt',
+                      fontWeight: 'bold',
+                      marginBottom: '8px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '2px'
+                    }}>
+                      EDUCATION
+                    </h2>
                     {sections.education.map((edu) => (
-                      <div key={edu.id} className="mb-4">
-                        <div className="flex justify-between items-start mb-1">
-                          <h3 className="font-semibold text-gray-900">{edu.school}</h3>
-                          <span className="text-sm text-gray-600">
-                            {edu.startDate && edu.endDate && `${edu.startDate} - ${edu.endDate}`}
+                      <div key={edu.id} style={{ marginBottom: '12px' }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          marginBottom: '4px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '11pt',
+                            fontWeight: 'bold',
+                            margin: 0
+                          }}>
+                            {edu.school}
+                          </h3>
+                          <span style={{
+                            fontSize: '10pt',
+                            color: '#666666',
+                            fontStyle: 'italic'
+                          }}>
+                            {edu.startDate && edu.endDate &&
+                              `${formatDateToMMYYYY(edu.startDate)} - ${formatDateToMMYYYY(edu.endDate)}`
+                            }
                           </span>
                         </div>
-                        <p className="text-sm text-gray-700 mb-1">{edu.degree} {edu.field && `in ${edu.field}`}</p>
+                        <div style={{
+                          fontSize: '11pt',
+                          marginBottom: '4px',
+                          fontStyle: 'italic'
+                        }}>
+                          {edu.degree} {edu.field && `in ${edu.field}`}
+                        </div>
                         {edu.description && (
-                          <p className="text-sm text-gray-600">{edu.description}</p>
+                          <ul style={{
+                            margin: '4px 0 0 20px',
+                            padding: 0,
+                            fontSize: '10pt',
+                            lineHeight: '1.3'
+                          }}>
+                            {edu.description.split('\n').filter(line => line.trim()).map((line) => (
+                              <li key={`${edu.id}-edu-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
+                                {line.trim()}
+                              </li>
+                            ))}
+                          </ul>
                         )}
                       </div>
                     ))}
@@ -390,19 +508,62 @@ export default function ResumePage() {
 
                 {/* Experience */}
                 {sections.experience.length > 0 && (
-                  <div className="mb-8">
-                    <h2 className="text-xl font-bold mb-3 text-gray-900">EXPERIENCE</h2>
+                  <div className="mb-6">
+                    <h2 style={{
+                      fontSize: '12pt',
+                      fontWeight: 'bold',
+                      marginBottom: '8px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '2px'
+                    }}>
+                      PROFESSIONAL EXPERIENCE
+                    </h2>
                     {sections.experience.map((exp) => (
-                      <div key={exp.id} className="mb-4">
-                        <div className="flex justify-between items-start mb-1">
-                          <h3 className="font-semibold text-gray-900">{exp.position}</h3>
-                          <span className="text-sm text-gray-600">
-                            {exp.startDate && exp.endDate && `${exp.startDate} - ${exp.endDate}`}
+                      <div key={exp.id} style={{ marginBottom: '12px' }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          marginBottom: '4px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '11pt',
+                            fontWeight: 'bold',
+                            margin: 0
+                          }}>
+                            {exp.position}
+                          </h3>
+                          <span style={{
+                            fontSize: '10pt',
+                            color: '#666666',
+                            fontStyle: 'italic'
+                          }}>
+                            {exp.startDate && exp.endDate &&
+                              `${formatDateToMMYYYY(exp.startDate)} - ${formatDateToMMYYYY(exp.endDate)}`
+                            }
                           </span>
                         </div>
-                        <p className="text-sm text-gray-700 mb-1">{exp.company} {exp.location && `- ${exp.location}`}</p>
+                        <div style={{
+                          fontSize: '11pt',
+                          marginBottom: '4px',
+                          fontStyle: 'italic'
+                        }}>
+                          {exp.company} {exp.location && `• ${exp.location}`}
+                        </div>
                         {exp.description && (
-                          <p className="text-sm text-gray-600">{exp.description}</p>
+                          <ul style={{
+                            margin: '4px 0 0 20px',
+                            padding: 0,
+                            fontSize: '10pt',
+                            lineHeight: '1.3'
+                          }}>
+                            {exp.description.split('\n').filter(line => line.trim()).map((line) => (
+                              <li key={`${exp.id}-exp-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
+                                {line.trim()}
+                              </li>
+                            ))}
+                          </ul>
                         )}
                       </div>
                     ))}
@@ -411,24 +572,75 @@ export default function ResumePage() {
 
                 {/* Projects */}
                 {sections.projects.length > 0 && (
-                  <div className="mb-8">
-                    <h2 className="text-xl font-bold mb-3 text-gray-900">PROJECTS</h2>
+                  <div className="mb-6">
+                    <h2 style={{
+                      fontSize: '12pt',
+                      fontWeight: 'bold',
+                      marginBottom: '8px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '2px'
+                    }}>
+                      PROJECTS
+                    </h2>
                     {sections.projects.map((project) => (
-                      <div key={project.id} className="mb-4">
-                        <div className="flex justify-between items-start mb-1">
-                          <h3 className="font-semibold text-gray-900">{project.name}</h3>
-                          <span className="text-sm text-gray-600">
-                            {project.startDate && project.endDate && `${project.startDate} - ${project.endDate}`}
+                      <div key={project.id} style={{ marginBottom: '12px' }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          marginBottom: '4px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '11pt',
+                            fontWeight: 'bold',
+                            margin: 0
+                          }}>
+                            {project.name}
+                          </h3>
+                          <span style={{
+                            fontSize: '10pt',
+                            color: '#666666',
+                            fontStyle: 'italic'
+                          }}>
+                            {project.startDate && project.endDate &&
+                              `${formatDateToMMYYYY(project.startDate)} - ${formatDateToMMYYYY(project.endDate)}`
+                            }
                           </span>
                         </div>
                         {project.technologies && (
-                          <p className="text-sm text-gray-700 mb-1">Technologies: {project.technologies}</p>
+                          <div style={{
+                            fontSize: '10pt',
+                            marginBottom: '4px',
+                            fontStyle: 'italic',
+                            color: '#333333'
+                          }}>
+                            <strong>Technologies:</strong> {project.technologies}
+                          </div>
                         )}
                         {project.url && (
-                          <p className="text-sm text-blue-600 mb-1">{project.url}</p>
+                          <div style={{
+                            fontSize: '10pt',
+                            marginBottom: '4px',
+                            color: '#0066cc',
+                            wordBreak: 'break-all'
+                          }}>
+                            {project.url}
+                          </div>
                         )}
                         {project.description && (
-                          <p className="text-sm text-gray-600">{project.description}</p>
+                          <ul style={{
+                            margin: '4px 0 0 20px',
+                            padding: 0,
+                            fontSize: '10pt',
+                            lineHeight: '1.3'
+                          }}>
+                            {project.description.split('\n').filter(line => line.trim()).map((line) => (
+                              <li key={`${project.id}-proj-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
+                                {line.trim()}
+                              </li>
+                            ))}
+                          </ul>
                         )}
                       </div>
                     ))}
@@ -437,12 +649,33 @@ export default function ResumePage() {
 
                 {/* Skills */}
                 {sections.skills.length > 0 && (
-                  <div className="mb-8">
-                    <h2 className="text-xl font-bold mb-3 text-gray-900">SKILLS</h2>
+                  <div className="mb-6">
+                    <h2 style={{
+                      fontSize: '12pt',
+                      fontWeight: 'bold',
+                      marginBottom: '8px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '2px'
+                    }}>
+                      TECHNICAL SKILLS
+                    </h2>
                     {sections.skills.map((skill) => (
-                      <div key={skill.id} className="mb-2">
-                        <h3 className="font-semibold text-gray-900 text-sm">{skill.category}</h3>
-                        <p className="text-sm text-gray-700">{skill.skills}</p>
+                      <div key={skill.id} style={{ marginBottom: '8px' }}>
+                        <div style={{
+                          fontSize: '11pt',
+                          fontWeight: 'bold',
+                          marginBottom: '2px'
+                        }}>
+                          {skill.category}:
+                        </div>
+                        <div style={{
+                          fontSize: '10pt',
+                          lineHeight: '1.3',
+                          marginLeft: '10px'
+                        }}>
+                          {skill.skills}
+                        </div>
                       </div>
                     ))}
                   </div>
