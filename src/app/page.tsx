@@ -581,7 +581,7 @@ export default function ResumePage() {
                 {/* Header */}
                 <div className="text-center mb-6 border-b-2 border-gray-900 pb-4">
                   <h1 style={{
-                    fontSize: '14pt',
+                    fontSize: '12pt',
                     fontWeight: 'bold',
                     marginBottom: '8px',
                     textTransform: 'uppercase',

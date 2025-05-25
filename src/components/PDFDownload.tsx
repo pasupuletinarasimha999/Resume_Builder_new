@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   name: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     textTransform: 'uppercase',
     letterSpacing: 1,
