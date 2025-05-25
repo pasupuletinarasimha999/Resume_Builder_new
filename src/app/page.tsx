@@ -267,12 +267,12 @@ export default function ResumePage() {
       {
         id: 'lang1',
         language: 'English',
-        proficiency: 'Native'
+        proficiency: 'Native Proficiency'
       },
       {
         id: 'lang2',
         language: 'Spanish',
-        proficiency: 'Fluent'
+        proficiency: 'Professional Working'
       }
     ],
     social: [
@@ -383,7 +383,19 @@ export default function ResumePage() {
       title: 'Languages',
       fields: [
         { key: 'language', label: 'Language', type: 'text' as const, placeholder: 'e.g., English' },
-        { key: 'proficiency', label: 'Proficiency Level', type: 'text' as const, placeholder: 'e.g., Native, Fluent, Intermediate, Basic' }
+        {
+          key: 'proficiency',
+          label: 'Proficiency Level',
+          type: 'select' as const,
+          placeholder: 'Select proficiency level',
+          options: [
+            'Fundamental Proficiency',
+            'Elementary',
+            'Limited Working',
+            'Professional Working',
+            'Native Proficiency'
+          ]
+        }
       ]
     },
     social: {

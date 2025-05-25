@@ -29,6 +29,11 @@
 - Update PDF export to include new sections
 - Fixed hydration issues with SSR rendering
 
+### ✅ Recently Completed
+- Updated Languages section to use dropdown for proficiency levels
+- Added predefined proficiency options: Fundamental Proficiency, Elementary, Limited Working, Professional Working, Native Proficiency
+- Enhanced ResumeSection component to support select field type
+
 ### 🔄 In Progress
 - Final testing of all functionality
 

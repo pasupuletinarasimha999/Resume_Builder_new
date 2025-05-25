@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { MonthYearInput } from '@/components/ui/month-year-input'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Plus, Trash2 } from 'lucide-react'
 
 interface SectionItem {
@@ -26,8 +27,9 @@ interface ResumeSectionProps {
   fields: Array<{
     key: string
     label: string
-    type: 'text' | 'textarea' | 'date' | 'richtext'
+    type: 'text' | 'textarea' | 'date' | 'richtext' | 'select'
     placeholder?: string
+    options?: string[]
   }>
   isExperience?: boolean // Special flag for work experience section
 }
@@ -124,6 +126,22 @@ export function ResumeSection({
                           rows={3}
                           className="mt-1"
                         />
+                      ) : field.type === 'select' ? (
+                        <Select
+                          value={item[field.key] as string || ''}
+                          onValueChange={(value) => onUpdateItem(item.id, field.key, value)}
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder={field.placeholder} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {field.options?.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       ) : field.key.toLowerCase().includes('date') ? (
                         <MonthYearInput
                           id={`${item.id}-${field.key}`}
