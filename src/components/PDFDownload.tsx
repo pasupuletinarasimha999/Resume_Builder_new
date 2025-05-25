@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textTransform: 'uppercase',
     borderBottom: '1pt solid #cccccc',
-    paddingBottom: 4,
-    marginBottom: 6,
+    paddingBottom: 2,
+    marginBottom: 4,
   },
   sectionItem: {
     marginBottom: 6,

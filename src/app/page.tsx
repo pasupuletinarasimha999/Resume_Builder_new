@@ -700,10 +700,10 @@ export default function ResumePage() {
                     <h2 style={{
                       fontSize: '8pt',
                       fontWeight: 'bold',
-                      marginBottom: '10px',
+                      marginBottom: '6px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '2px'
                     }}>
                       PROFESSIONAL EXPERIENCE
                     </h2>
