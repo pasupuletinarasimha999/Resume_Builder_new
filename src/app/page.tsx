@@ -20,11 +20,7 @@ const resumeSections = [
   { id: 'languages', name: 'Languages', icon: 'https://ext.same-assets.com/3442189925/3304711307.svg' },
   { id: 'social', name: 'Social Media', icon: 'https://ext.same-assets.com/3442189925/3272116947.svg' },
   { id: 'awards', name: 'Awards', icon: 'https://ext.same-assets.com/3442189925/1967388618.svg' },
-  { id: 'certification', name: 'Certification', icon: 'https://ext.same-assets.com/3442189925/3927218253.svg' },
-  { id: 'publications', name: 'Publications', icon: 'https://ext.same-assets.com/3442189925/3561037935.svg' },
-  { id: 'volunteering', name: 'Volunteering', icon: 'https://ext.same-assets.com/3442189925/1132317054.svg' },
-  { id: 'competitions', name: 'Competitions', icon: 'https://ext.same-assets.com/3442189925/2555040435.svg' },
-  { id: 'conferences', name: 'Conferences and Workshops', icon: 'https://ext.same-assets.com/3442189925/1581566948.svg' }
+  { id: 'certification', name: 'Certification', icon: 'https://ext.same-assets.com/3442189925/3927218253.svg' }
 ]
 
 interface ResumeData {
