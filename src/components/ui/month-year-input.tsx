@@ -10,6 +10,7 @@ interface MonthYearInputProps {
   onChange?: (value: string) => void
   placeholder?: string
   className?: string
+  disabled?: boolean
 }
 
 export function MonthYearInput({
@@ -17,7 +18,8 @@ export function MonthYearInput({
   value = '',
   onChange,
   placeholder = 'MM-YYYY (e.g., 05-2024)',
-  className
+  className,
+  disabled = false
 }: MonthYearInputProps) {
   const [inputValue, setInputValue] = useState(value)
 
@@ -91,6 +93,7 @@ export function MonthYearInput({
       onBlur={handleBlur}
       placeholder={placeholder}
       className={className}
+      disabled={disabled}
     />
   )
 }

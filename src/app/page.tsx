@@ -555,7 +555,7 @@ export default function ResumePage() {
                             fontStyle: 'italic'
                           }}>
                             {(edu.startDate || edu.endDate) &&
-                              `${edu.startDate ? formatDateToMMYYYY(edu.startDate) : ''}${edu.startDate && edu.endDate ? ' - ' : ''}${edu.endDate ? formatDateToMMYYYY(edu.endDate) : ''}`
+                              `${edu.startDate && typeof edu.startDate === 'string' ? formatDateToMMYYYY(edu.startDate) : ''}${edu.startDate && edu.endDate ? ' - ' : ''}${edu.endDate && typeof edu.endDate === 'string' ? formatDateToMMYYYY(edu.endDate) : ''}`
                             }
                           </span>
                         </div>
@@ -614,7 +614,7 @@ export default function ResumePage() {
                             fontStyle: 'italic'
                           }}>
                             {(exp.startDate || exp.endDate) &&
-                              `${exp.startDate ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate ? formatDateToMMYYYY(exp.endDate) : ''}`
+                              `${exp.startDate && typeof exp.startDate === 'string' ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate && typeof exp.endDate === 'string' ? formatDateToMMYYYY(exp.endDate) : ''}`
                             }
                           </span>
                         </div>
@@ -673,7 +673,7 @@ export default function ResumePage() {
                             fontStyle: 'italic'
                           }}>
                             {(project.startDate || project.endDate) &&
-                              `${project.startDate ? formatDateToMMYYYY(project.startDate) : ''}${project.startDate && project.endDate ? ' - ' : ''}${project.endDate ? formatDateToMMYYYY(project.endDate) : ''}`
+                              `${project.startDate && typeof project.startDate === 'string' ? formatDateToMMYYYY(project.startDate) : ''}${project.startDate && project.endDate ? ' - ' : ''}${project.endDate && typeof project.endDate === 'string' ? formatDateToMMYYYY(project.endDate) : ''}`
                             }
                           </span>
                         </div>
