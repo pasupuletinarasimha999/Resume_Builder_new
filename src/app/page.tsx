@@ -11,6 +11,8 @@ import { ResumeSection } from '@/components/ResumeSection'
 import { ResumeChecker } from '@/components/ResumeChecker'
 import { renderRichText } from '@/components/ui/rich-text-editor'
 import dynamic from 'next/dynamic'
+import { AISuggestions } from '@/components/AISuggestions'
+import { JobMatcher } from '@/components/JobMatcher'
 
 const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor').then(mod => ({ default: mod.RichTextEditor })), {
   ssr: false,
@@ -133,6 +135,7 @@ export default function ResumePage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
   const [showReorderModal, setShowReorderModal] = useState(false)
   const [showResumeChecker, setShowResumeChecker] = useState(false)
+  const [showJobMatcher, setShowJobMatcher] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Convert resumeSections to state for reordering
@@ -450,6 +453,31 @@ export default function ResumePage() {
       { id: 'awards', name: 'Awards', icon: 'https://ext.same-assets.com/3442189925/1967388618.svg' },
       { id: 'certifications', name: 'Certifications', icon: 'https://ext.same-assets.com/3442189925/3927218253.svg' }
     ])
+  }
+
+  const handleApplyAISuggestion = (sectionName: string, content: string) => {
+    // Apply AI suggestion to the appropriate section
+    if (sectionName === 'summary') {
+      setResumeData(prev => ({ ...prev, summary: content }))
+    }
+    // Add more cases as needed
+  }
+
+  const handleApplyJobOptimizations = (optimizations: any) => {
+    // Apply job-specific optimizations
+    if (optimizations.summary) {
+      setResumeData(prev => ({ ...prev, summary: optimizations.summary }))
+    }
+    if (optimizations.experience) {
+      // Update experience with optimized descriptions
+      setSections(prev => ({
+        ...prev,
+        experience: optimizations.experience.map((opt: any) => {
+          const existing = prev.experience.find(exp => exp.id === opt.id)
+          return existing ? { ...existing, description: opt.optimizedDescription } : opt
+        })
+      }))
+    }
   }
 
   const sectionConfigs = {
@@ -1094,6 +1122,13 @@ export default function ResumePage() {
             </Button>
             <Button
               size="sm"
+              className="bg-orange-600 hover:bg-orange-700 text-white text-xs px-3 py-1"
+              onClick={() => setShowJobMatcher(true)}
+            >
+              🎯 Job Matcher
+            </Button>
+            <Button
+              size="sm"
               className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1"
               onClick={() => setShowResumeChecker(true)}
             >
@@ -1217,54 +1252,166 @@ export default function ResumePage() {
                       placeholder="Write a brief professional summary..."
                       className="mt-1"
                     />
+
+                    {/* AI Suggestions for Summary */}
+                    <AISuggestions
+                      sectionType="summary"
+                      currentContent={resumeData.summary}
+                      context={{
+                        targetRole: "Software Engineer", // This could be made dynamic
+                        experienceLevel: "senior"
+                      }}
+                      onApplySuggestion={(content) => handleInputChange('summary', content)}
+                      onEnhanceContent={(enhanced) => handleInputChange('summary', enhanced)}
+                    />
                   </div>
                 </CardContent>
               </Card>
             )}
 
             {activeSection === 'education' && (
-              <ResumeSection
-                title={sectionConfigs.education.title}
-                items={sections.education}
-                onAddItem={() => addSectionItem('education')}
-                onUpdateItem={(id, field, value) => updateSectionItem('education', id, field, value)}
-                onDeleteItem={(id) => deleteSectionItem('education', id)}
-                fields={sectionConfigs.education.fields}
-              />
+              <>
+                <ResumeSection
+                  title={sectionConfigs.education.title}
+                  items={sections.education}
+                  onAddItem={() => addSectionItem('education')}
+                  onUpdateItem={(id, field, value) => updateSectionItem('education', id, field, value)}
+                  onDeleteItem={(id) => deleteSectionItem('education', id)}
+                  fields={sectionConfigs.education.fields}
+                />
+
+                {/* AI Suggestions for Education */}
+                <AISuggestions
+                  sectionType="education"
+                  context={{
+                    industry: "Technology",
+                    experienceLevel: "senior"
+                  }}
+                  onApplySuggestion={(content) => {
+                    // Add new education item with AI suggestion
+                    const newId = Math.random().toString(36).substr(2, 9)
+                    setSections(prev => ({
+                      ...prev,
+                      education: [...prev.education, {
+                        id: newId,
+                        description: content,
+                        school: "AI Suggested",
+                        degree: "Degree",
+                        field: "Field of Study"
+                      }]
+                    }))
+                  }}
+                />
+              </>
             )}
 
             {activeSection === 'experience' && (
-              <ResumeSection
-                title={sectionConfigs.experience.title}
-                items={sections.experience}
-                onAddItem={() => addSectionItem('experience')}
-                onUpdateItem={(id, field, value) => updateSectionItem('experience', id, field, value)}
-                onDeleteItem={(id) => deleteSectionItem('experience', id)}
-                fields={sectionConfigs.experience.fields}
-                isExperience={true}
-              />
+              <>
+                <ResumeSection
+                  title={sectionConfigs.experience.title}
+                  items={sections.experience}
+                  onAddItem={() => addSectionItem('experience')}
+                  onUpdateItem={(id, field, value) => updateSectionItem('experience', id, field, value)}
+                  onDeleteItem={(id) => deleteSectionItem('experience', id)}
+                  fields={sectionConfigs.experience.fields}
+                  isExperience={true}
+                />
+
+                {/* AI Suggestions for Experience */}
+                <AISuggestions
+                  sectionType="experience"
+                  context={{
+                    position: "Software Engineer",
+                    company: "Tech Company",
+                    industry: "Technology",
+                    experienceLevel: "senior"
+                  }}
+                  onApplySuggestion={(content) => {
+                    // Add new experience item with AI suggestion
+                    const newId = Math.random().toString(36).substr(2, 9)
+                    setSections(prev => ({
+                      ...prev,
+                      experience: [...prev.experience, {
+                        id: newId,
+                        description: content,
+                        company: "AI Suggested Company",
+                        position: "Position Title",
+                        location: "Location",
+                        startDate: "MM-YYYY",
+                        endDate: "MM-YYYY"
+                      }]
+                    }))
+                  }}
+                />
+              </>
             )}
 
             {activeSection === 'projects' && (
-              <ResumeSection
-                title={sectionConfigs.projects.title}
-                items={sections.projects}
-                onAddItem={() => addSectionItem('projects')}
-                onUpdateItem={(id, field, value) => updateSectionItem('projects', id, field, value)}
-                onDeleteItem={(id) => deleteSectionItem('projects', id)}
-                fields={sectionConfigs.projects.fields}
-              />
+              <>
+                <ResumeSection
+                  title={sectionConfigs.projects.title}
+                  items={sections.projects}
+                  onAddItem={() => addSectionItem('projects')}
+                  onUpdateItem={(id, field, value) => updateSectionItem('projects', id, field, value)}
+                  onDeleteItem={(id) => deleteSectionItem('projects', id)}
+                  fields={sectionConfigs.projects.fields}
+                />
+
+                {/* AI Suggestions for Projects */}
+                <AISuggestions
+                  sectionType="projects"
+                  context={{
+                    industry: "Technology",
+                    experienceLevel: "senior"
+                  }}
+                  onApplySuggestion={(content) => {
+                    const newId = Math.random().toString(36).substr(2, 9)
+                    setSections(prev => ({
+                      ...prev,
+                      projects: [...prev.projects, {
+                        id: newId,
+                        description: content,
+                        name: "AI Suggested Project",
+                        technologies: "React, Node.js, MongoDB",
+                        url: "https://github.com/username/project"
+                      }]
+                    }))
+                  }}
+                />
+              </>
             )}
 
             {activeSection === 'skills' && (
-              <ResumeSection
-                title={sectionConfigs.skills.title}
-                items={sections.skills}
-                onAddItem={() => addSectionItem('skills')}
-                onUpdateItem={(id, field, value) => updateSectionItem('skills', id, field, value)}
-                onDeleteItem={(id) => deleteSectionItem('skills', id)}
-                fields={sectionConfigs.skills.fields}
-              />
+              <>
+                <ResumeSection
+                  title={sectionConfigs.skills.title}
+                  items={sections.skills}
+                  onAddItem={() => addSectionItem('skills')}
+                  onUpdateItem={(id, field, value) => updateSectionItem('skills', id, field, value)}
+                  onDeleteItem={(id) => deleteSectionItem('skills', id)}
+                  fields={sectionConfigs.skills.fields}
+                />
+
+                {/* AI Suggestions for Skills */}
+                <AISuggestions
+                  sectionType="skills"
+                  context={{
+                    targetRole: "Software Engineer",
+                    industry: "Technology"
+                  }}
+                  onApplySuggestion={(content) => {
+                    const newId = Math.random().toString(36).substr(2, 9)
+                    setSections(prev => ({
+                      ...prev,
+                      skills: [...prev.skills, {
+                        id: newId,
+                        category: "AI Suggested",
+                        skills: content
+                      }]
+                    }))
+                  }}
+                />
+              </>
             )}
 
             {activeSection === 'languages' && (
@@ -1417,425 +1564,6 @@ export default function ResumePage() {
                 {sectionOrder.filter(section => section.id !== 'basic').map(section =>
                   renderPreviewSection(section.id)
                 ).filter(Boolean)}
-
-                {/* OLD HARDCODED SECTIONS - TO BE REMOVED */}
-                {false && sections.education.length > 0 && (
-                  <div className="mb-4">
-                    <h2 style={{
-                      fontSize: '8pt',
-                      fontWeight: 'bold',
-                      marginBottom: '10px',
-                      textTransform: 'uppercase',
-                      borderBottom: '1px solid #ccc',
-                      paddingBottom: '0px'
-                    }}>
-                      EDUCATION
-                    </h2>
-                    {sections.education.map((edu) => (
-                      <div key={edu.id} style={{ marginBottom: '6px' }}>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          marginBottom: '4px'
-                        }}>
-                          <h3 style={{
-                            fontSize: '9pt',
-                            fontWeight: 'bold',
-                            margin: 0
-                          }}>
-                            {edu.school}
-                          </h3>
-                          <span style={{
-                            fontSize: '8pt',
-                            color: '#000000',
-                            fontStyle: 'italic'
-                          }}>
-                            {(edu.startDate || edu.endDate) &&
-                              `${edu.startDate && typeof edu.startDate === 'string' ? formatDateToMMYYYY(edu.startDate) : ''}${edu.startDate && edu.endDate ? ' - ' : ''}${edu.endDate && typeof edu.endDate === 'string' ? formatDateToMMYYYY(edu.endDate) : ''}`
-                            }
-                          </span>
-                        </div>
-                        <div style={{
-                          fontSize: '9pt',
-                          marginBottom: '0px',
-                          fontStyle: 'italic'
-                        }}>
-                          {edu.degree} {edu.field && `in ${edu.field}`}
-                        </div>
-                        {edu.description && (
-                          <div style={{
-                            margin: '0px 0 0 0',
-                            fontSize: '8pt',
-                            lineHeight: '1.2'
-                          }}>
-                            {renderRichTextContent(edu.description as string)}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Experience */}
-                {sections.experience.length > 0 && (
-                  <div className="mb-4">
-                    <h2 style={{
-                      fontSize: '8pt',
-                      fontWeight: 'bold',
-                      marginBottom: '6px',
-                      textTransform: 'uppercase',
-                      borderBottom: '1px solid #ccc',
-                      paddingBottom: '0px'
-                    }}>
-                      PROFESSIONAL EXPERIENCE
-                    </h2>
-                    {sections.experience.map((exp) => (
-                      <div key={exp.id} style={{ marginBottom: '6px' }}>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          marginBottom: '0px'
-                        }}>
-                          <h3 style={{
-                            fontSize: '9pt',
-                            fontWeight: 'bold',
-                            margin: 0
-                          }}>
-                            {exp.position}
-                          </h3>
-                          <div style={{
-                            textAlign: 'right',
-                            fontSize: '8pt',
-                            color: '#000000',
-                            fontStyle: 'italic',
-                            lineHeight: '1.2'
-                          }}>
-                            <div>
-                              {(exp.startDate || exp.endDate) &&
-                                `${exp.startDate && typeof exp.startDate === 'string' ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate && typeof exp.endDate === 'string' ? formatDateToMMYYYY(exp.endDate) : ''}`
-                              }
-                            </div>
-                          </div>
-                        </div>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          fontSize: '9pt',
-                          marginBottom: '0px',
-                          marginTop: '0px',
-                          fontStyle: 'italic'
-                        }}>
-                          <span>{exp.company}</span>
-                          {exp.location && (
-                            <span style={{
-                              fontSize: '8pt',
-                              color: '#000000'
-                            }}>
-                              {exp.location}
-                            </span>
-                          )}
-                        </div>
-                        {exp.description && (
-                          <div style={{
-                            margin: '0px 0 0 0',
-                            fontSize: '8pt',
-                            lineHeight: '1.2'
-                          }}>
-                            {renderRichTextContent(exp.description as string)}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Projects */}
-                {sections.projects.length > 0 && (
-                  <div className="mb-4">
-                    <h2 style={{
-                      fontSize: '8pt',
-                      fontWeight: 'bold',
-                      marginBottom: '10px',
-                      textTransform: 'uppercase',
-                      borderBottom: '1px solid #ccc',
-                      paddingBottom: '0px'
-                    }}>
-                      PROJECTS
-                    </h2>
-                    {sections.projects.map((project) => (
-                      <div key={project.id} style={{ marginBottom: '6px' }}>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          marginBottom: '4px'
-                        }}>
-                          <h3 style={{
-                            fontSize: '9pt',
-                            fontWeight: 'bold',
-                            margin: 0
-                          }}>
-                            {project.name}
-                          </h3>
-                          <span style={{
-                            fontSize: '8pt',
-                            color: '#000000',
-                            fontStyle: 'italic'
-                          }}>
-                            {(project.startDate || project.endDate) &&
-                              `${project.startDate && typeof project.startDate === 'string' ? formatDateToMMYYYY(project.startDate) : ''}${project.startDate && project.endDate ? ' - ' : ''}${project.endDate && typeof project.endDate === 'string' ? formatDateToMMYYYY(project.endDate) : ''}`
-                            }
-                          </span>
-                        </div>
-                        {project.technologies && (
-                          <div style={{
-                            fontSize: '8pt',
-                            marginBottom: '4px',
-                            fontStyle: 'italic',
-                            color: '#333333'
-                          }}>
-                            <strong>Technologies:</strong> {project.technologies}
-                          </div>
-                        )}
-                        {project.url && (
-                          <div style={{
-                            fontSize: '8pt',
-                            marginBottom: '4px',
-                            color: '#0066cc',
-                            wordBreak: 'break-all'
-                          }}>
-                            {project.url}
-                          </div>
-                        )}
-                        {project.description && (
-                          <div style={{
-                            margin: '1px 0 0 0',
-                            fontSize: '8pt',
-                            lineHeight: '1.2'
-                          }}>
-                            {renderRichTextContent(project.description as string)}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Skills */}
-                {sections.skills.length > 0 && (
-                  <div className="mb-4">
-                    <h2 style={{
-                      fontSize: '8pt',
-                      fontWeight: 'bold',
-                      marginBottom: '10px',
-                      textTransform: 'uppercase',
-                      borderBottom: '1px solid #ccc',
-                      paddingBottom: '0px'
-                    }}>
-                      TECHNICAL SKILLS
-                    </h2>
-                    {sections.skills.map((skill) => (
-                      <div key={skill.id} style={{ marginBottom: '2px' }}>
-                        <div style={{
-                          fontSize: '9pt',
-                          lineHeight: '1.4'
-                        }}>
-                          <span style={{ fontWeight: 'bold' }}>{skill.category}:</span> {skill.skills}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Languages */}
-                {sections.languages.length > 0 && (
-                  <div className="mb-4">
-                    <h2 style={{
-                      fontSize: '8pt',
-                      fontWeight: 'bold',
-                      marginBottom: '10px',
-                      textTransform: 'uppercase',
-                      borderBottom: '1px solid #ccc',
-                      paddingBottom: '0px'
-                    }}>
-                      LANGUAGES
-                    </h2>
-                    <div style={{
-                      fontSize: '10pt',
-                      lineHeight: '1.3'
-                    }}>
-                      {sections.languages
-                        .map((language) => `${language.language} [${language.proficiency}]`)
-                        .join(', ')
-                      }
-                    </div>
-                  </div>
-                )}
-
-                {/* Social Media */}
-                {sections.social.length > 0 && (
-                  <div className="mb-4">
-                    <h2 style={{
-                      fontSize: '8pt',
-                      fontWeight: 'bold',
-                      marginBottom: '10px',
-                      textTransform: 'uppercase',
-                      borderBottom: '1px solid #ccc',
-                      paddingBottom: '0px'
-                    }}>
-                      SOCIAL MEDIA
-                    </h2>
-                    {sections.social.map((social) => (
-                      <div key={social.id} style={{ marginBottom: '4px' }}>
-                        <div style={{
-                          fontSize: '9pt',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
-                        }}>
-                          <span style={{ fontWeight: 'bold' }}>{social.platform}:</span>
-                          <span style={{
-                            fontSize: '8pt',
-                            color: '#0066cc',
-                            wordBreak: 'break-all'
-                          }}>
-                            {social.url}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Awards */}
-                {sections.awards.length > 0 && (
-                  <div className="mb-4">
-                    <h2 style={{
-                      fontSize: '8pt',
-                      fontWeight: 'bold',
-                      marginBottom: '10px',
-                      textTransform: 'uppercase',
-                      borderBottom: '1px solid #ccc',
-                      paddingBottom: '0px'
-                    }}>
-                      AWARDS & ACHIEVEMENTS
-                    </h2>
-                    {sections.awards.map((award) => (
-                      <div key={award.id} style={{ marginBottom: '6px' }}>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          marginBottom: '2px'
-                        }}>
-                          <h3 style={{
-                            fontSize: '9pt',
-                            fontWeight: 'bold',
-                            margin: 0
-                          }}>
-                            {award.title}
-                          </h3>
-                          <span style={{
-                            fontSize: '8pt',
-                            color: '#000000',
-                            fontStyle: 'italic'
-                          }}>
-                            {award.date && typeof award.date === 'string' ? formatDateToMMYYYY(award.date) : ''}
-                          </span>
-                        </div>
-                        <div style={{
-                          fontSize: '9pt',
-                          marginBottom: '2px',
-                          fontStyle: 'italic'
-                        }}>
-                          {award.organization}
-                        </div>
-                        {award.description && (
-                          <div style={{
-                            margin: '2px 0 0 0',
-                            fontSize: '8pt',
-                            lineHeight: '1.2'
-                          }}>
-                            {award.description}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Certifications */}
-                {sections.certifications.length > 0 && (
-                  <div className="mb-4">
-                    <h2 style={{
-                      fontSize: '8pt',
-                      fontWeight: 'bold',
-                      marginBottom: '10px',
-                      textTransform: 'uppercase',
-                      borderBottom: '1px solid #ccc',
-                      paddingBottom: '0px'
-                    }}>
-                      CERTIFICATIONS
-                    </h2>
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '10px',
-                      width: '100%'
-                    }}>
-                      {sections.certifications.map((cert) => (
-                        <div key={cert.id} style={{
-                          padding: '6px',
-                          border: '1px solid #d0d0d0',
-                          borderRadius: '4px',
-                          backgroundColor: '#f8f8f8',
-                          minHeight: '70px',
-                          marginBottom: '4px'
-                        }}>
-                          <h3 style={{
-                            fontSize: '8pt',
-                            fontWeight: 'bold',
-                            margin: '0 0 3px 0',
-                            lineHeight: '1.1'
-                          }}>
-                            {cert.name}
-                          </h3>
-                          <div style={{
-                            fontSize: '7pt',
-                            marginBottom: '2px',
-                            fontStyle: 'italic',
-                            color: '#555555'
-                          }}>
-                            {cert.issuer}
-                          </div>
-                          <div style={{
-                            fontSize: '7pt',
-                            color: '#666666',
-                            fontWeight: 'bold',
-                            marginBottom: '2px'
-                          }}>
-                            {cert.date && cert.expiryDate ?
-                              `${formatDateToMMYYYY(cert.date as string)} - ${formatDateToMMYYYY(cert.expiryDate as string)}` :
-                              cert.date ? formatDateToMMYYYY(cert.date as string) : ''
-                            }
-                          </div>
-                          {cert.credentialId && (
-                            <div style={{
-                              fontSize: '6pt',
-                              color: '#777777'
-                            }}>
-                              ID: {cert.credentialId}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {/* END OLD HARDCODED SECTIONS */}
               </div>
             </div>
           </div>
@@ -1849,6 +1577,14 @@ export default function ResumePage() {
         sections={sections}
         isOpen={showResumeChecker}
         onClose={() => setShowResumeChecker(false)}
+      />
+
+      <JobMatcher
+        resumeData={resumeData}
+        sections={sections}
+        isOpen={showJobMatcher}
+        onClose={() => setShowJobMatcher(false)}
+        onApplyOptimizations={handleApplyJobOptimizations}
       />
     </div>
   )
