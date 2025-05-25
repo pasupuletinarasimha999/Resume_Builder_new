@@ -387,22 +387,22 @@ export default function ResumePage() {
           </div>
 
           {/* Preview */}
-          <div className="w-96 bg-gray-100 p-4 overflow-y-auto">
-            <div className="bg-white rounded-lg shadow-lg">
+          <div className="w-[500px] bg-gray-100 p-4 overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-lg p-2">
               <div
                 className="bg-white text-black"
                 id="resume-preview"
                 style={{
                   fontFamily: 'Calibri, Arial, sans-serif',
                   width: '100%',
-                  maxWidth: '21cm',
-                  minHeight: '29.7cm',
+                  maxWidth: '460px',
+                  minHeight: '650px',
                   margin: '0 auto',
-                  padding: '2cm',
-                  fontSize: '11pt',
-                  lineHeight: '1.4',
+                  padding: '20px',
+                  fontSize: '9pt',
+                  lineHeight: '1.3',
                   color: '#000000',
-                  transform: 'scale(0.45)',
+                  transform: 'scale(1)',
                   transformOrigin: 'top left',
                   position: 'relative'
                 }}
@@ -410,7 +410,7 @@ export default function ResumePage() {
                 {/* Header */}
                 <div className="text-center mb-6 border-b-2 border-gray-900 pb-4">
                   <h1 style={{
-                    fontSize: '18pt',
+                    fontSize: '14pt',
                     fontWeight: 'bold',
                     marginBottom: '8px',
                     textTransform: 'uppercase',
@@ -419,7 +419,7 @@ export default function ResumePage() {
                     {resumeData.fullName}
                   </h1>
                   <div style={{
-                    fontSize: '10pt',
+                    fontSize: '8pt',
                     color: '#333333',
                     display: 'flex',
                     alignItems: 'center',
@@ -439,18 +439,18 @@ export default function ResumePage() {
                 {resumeData.summary && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '12pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
-                      marginBottom: '8px',
+                      marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '2px'
+                      paddingBottom: '4px'
                     }}>
                       PROFESSIONAL SUMMARY
                     </h2>
                     <div style={{
-                      fontSize: '11pt',
-                      lineHeight: '1.4',
+                      fontSize: '9pt',
+                      lineHeight: '1.3',
                       textAlign: 'justify'
                     }}>
                       {resumeData.summary}
@@ -462,12 +462,12 @@ export default function ResumePage() {
                 {sections.education.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '12pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
-                      marginBottom: '8px',
+                      marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '2px'
+                      paddingBottom: '4px'
                     }}>
                       EDUCATION
                     </h2>
@@ -480,14 +480,14 @@ export default function ResumePage() {
                           marginBottom: '4px'
                         }}>
                           <h3 style={{
-                            fontSize: '11pt',
+                            fontSize: '9pt',
                             fontWeight: 'bold',
                             margin: 0
                           }}>
                             {edu.school}
                           </h3>
                           <span style={{
-                            fontSize: '10pt',
+                            fontSize: '8pt',
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
@@ -497,7 +497,7 @@ export default function ResumePage() {
                           </span>
                         </div>
                         <div style={{
-                          fontSize: '11pt',
+                          fontSize: '9pt',
                           marginBottom: '4px',
                           fontStyle: 'italic'
                         }}>
@@ -507,8 +507,8 @@ export default function ResumePage() {
                           <ul style={{
                             margin: '4px 0 0 20px',
                             padding: 0,
-                            fontSize: '10pt',
-                            lineHeight: '1.3'
+                            fontSize: '8pt',
+                            lineHeight: '1.2'
                           }}>
                             {edu.description.split('\n').filter(line => line.trim()).map((line) => (
                               <li key={`${edu.id}-edu-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
@@ -526,12 +526,12 @@ export default function ResumePage() {
                 {sections.experience.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '12pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
-                      marginBottom: '8px',
+                      marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '2px'
+                      paddingBottom: '4px'
                     }}>
                       PROFESSIONAL EXPERIENCE
                     </h2>
@@ -544,14 +544,14 @@ export default function ResumePage() {
                           marginBottom: '4px'
                         }}>
                           <h3 style={{
-                            fontSize: '11pt',
+                            fontSize: '9pt',
                             fontWeight: 'bold',
                             margin: 0
                           }}>
                             {exp.position}
                           </h3>
                           <span style={{
-                            fontSize: '10pt',
+                            fontSize: '8pt',
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
@@ -561,7 +561,7 @@ export default function ResumePage() {
                           </span>
                         </div>
                         <div style={{
-                          fontSize: '11pt',
+                          fontSize: '9pt',
                           marginBottom: '4px',
                           fontStyle: 'italic'
                         }}>
@@ -571,8 +571,8 @@ export default function ResumePage() {
                           <ul style={{
                             margin: '4px 0 0 20px',
                             padding: 0,
-                            fontSize: '10pt',
-                            lineHeight: '1.3'
+                            fontSize: '8pt',
+                            lineHeight: '1.2'
                           }}>
                             {exp.description.split('\n').filter(line => line.trim()).map((line) => (
                               <li key={`${exp.id}-exp-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
@@ -590,12 +590,12 @@ export default function ResumePage() {
                 {sections.projects.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '12pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
-                      marginBottom: '8px',
+                      marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '2px'
+                      paddingBottom: '4px'
                     }}>
                       PROJECTS
                     </h2>
@@ -608,14 +608,14 @@ export default function ResumePage() {
                           marginBottom: '4px'
                         }}>
                           <h3 style={{
-                            fontSize: '11pt',
+                            fontSize: '9pt',
                             fontWeight: 'bold',
                             margin: 0
                           }}>
                             {project.name}
                           </h3>
                           <span style={{
-                            fontSize: '10pt',
+                            fontSize: '8pt',
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
@@ -626,7 +626,7 @@ export default function ResumePage() {
                         </div>
                         {project.technologies && (
                           <div style={{
-                            fontSize: '10pt',
+                            fontSize: '8pt',
                             marginBottom: '4px',
                             fontStyle: 'italic',
                             color: '#333333'
@@ -636,7 +636,7 @@ export default function ResumePage() {
                         )}
                         {project.url && (
                           <div style={{
-                            fontSize: '10pt',
+                            fontSize: '8pt',
                             marginBottom: '4px',
                             color: '#0066cc',
                             wordBreak: 'break-all'
@@ -648,8 +648,8 @@ export default function ResumePage() {
                           <ul style={{
                             margin: '4px 0 0 20px',
                             padding: 0,
-                            fontSize: '10pt',
-                            lineHeight: '1.3'
+                            fontSize: '8pt',
+                            lineHeight: '1.2'
                           }}>
                             {project.description.split('\n').filter(line => line.trim()).map((line) => (
                               <li key={`${project.id}-proj-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
@@ -667,27 +667,27 @@ export default function ResumePage() {
                 {sections.skills.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '12pt',
+                      fontSize: '10pt',
                       fontWeight: 'bold',
-                      marginBottom: '8px',
+                      marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '2px'
+                      paddingBottom: '4px'
                     }}>
                       TECHNICAL SKILLS
                     </h2>
                     {sections.skills.map((skill) => (
                       <div key={skill.id} style={{ marginBottom: '8px' }}>
                         <div style={{
-                          fontSize: '11pt',
+                          fontSize: '9pt',
                           fontWeight: 'bold',
                           marginBottom: '2px'
                         }}>
                           {skill.category}:
                         </div>
                         <div style={{
-                          fontSize: '10pt',
-                          lineHeight: '1.3',
+                          fontSize: '8pt',
+                          lineHeight: '1.2',
                           marginLeft: '10px'
                         }}>
                           {skill.skills}
