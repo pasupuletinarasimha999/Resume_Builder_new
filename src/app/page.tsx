@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { PDFDownload } from '@/components/PDFDownload'
 import { ResumeSection } from '@/components/ResumeSection'
 import { renderRichText } from '@/components/ui/rich-text-editor'
+import { ClientOnlyRichText } from '@/components/ClientOnlyRichText'
 
 // Resume sections with icons
 const resumeSections = [
@@ -53,85 +54,12 @@ interface ResumeSections {
 function renderRichTextContent(htmlContent: string) {
   if (!htmlContent) return null
 
-  // Only render on client side to avoid SSR issues
-  if (typeof window === 'undefined') {
-    // Return server-safe fallback - strip HTML tags for plain text
-    const plainText = htmlContent.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ')
-    return <div style={{ fontSize: '8pt', lineHeight: '1.2' }}>{plainText}</div>
-  }
-
-  // Create a temporary div to parse HTML
-  const tempDiv = document.createElement('div')
-  tempDiv.innerHTML = htmlContent
-
-  // Handle different HTML elements
-  const result: React.ReactNode[] = []
-  let key = 0
-
-  const processNode = (node: Node): React.ReactNode => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.textContent?.trim()
-      return text ? <span key={key++}>{text}</span> : null
-    }
-
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      const element = node as HTMLElement
-      const children = Array.from(element.childNodes).map(processNode).filter(Boolean)
-
-      switch (element.tagName.toLowerCase()) {
-        case 'strong':
-        case 'b':
-          return <strong key={key++}>{children}</strong>
-        case 'ul':
-          return (
-            <ul key={key++} style={{
-              margin: '2px 0 0 16px',
-              padding: 0,
-              fontSize: '9pt',
-              lineHeight: '1.2',
-              listStyleType: 'disc',
-              listStylePosition: 'outside'
-            }}>
-              {children}
-            </ul>
-          )
-        case 'ol':
-          return (
-            <ol key={key++} style={{
-              margin: '2px 0 0 16px',
-              padding: 0,
-              fontSize: '9pt',
-              lineHeight: '1.2',
-              listStyleType: 'decimal',
-              listStylePosition: 'outside'
-            }}>
-              {children}
-            </ol>
-          )
-        case 'li':
-          return <li key={key++} style={{
-            marginBottom: '2px',
-            paddingLeft: '4px',
-            display: 'list-item'
-          }}>{children}</li>
-        case 'br':
-          return <br key={key++} />
-        case 'div':
-        case 'p':
-          return <div key={key++}>{children}</div>
-        default:
-          return <span key={key++}>{children}</span>
-      }
-    }
-    return null
-  }
-
-  for (const node of Array.from(tempDiv.childNodes)) {
-    const processed = processNode(node)
-    if (processed) result.push(processed)
-  }
-
-  return result.length > 0 ? result : null
+  return (
+    <ClientOnlyRichText
+      content={htmlContent}
+      style={{ fontSize: '8pt', lineHeight: '1.2' }}
+    />
+  )
 }
 
 // Helper function to format date to MM-YYYY or month name format
@@ -273,6 +201,16 @@ export default function ResumePage() {
         id: 'lang2',
         language: 'Spanish',
         proficiency: 'Professional Working'
+      },
+      {
+        id: 'lang3',
+        language: 'Telugu',
+        proficiency: 'Native Proficiency'
+      },
+      {
+        id: 'lang4',
+        language: 'French',
+        proficiency: 'Elementary'
       }
     ],
     social: [
@@ -303,9 +241,33 @@ export default function ResumePage() {
         id: 'cert1',
         name: 'AWS Certified Solutions Architect',
         issuer: 'Amazon Web Services',
-        date: '08-2023',
+        date: 'Aug 2021',
         credentialId: 'AWS-CSA-2023-001',
-        expiryDate: '08-2026'
+        expiryDate: 'Aug 2025'
+      },
+      {
+        id: 'cert2',
+        name: 'Google Cloud Professional Developer',
+        issuer: 'Google Cloud',
+        date: 'Mar 2022',
+        credentialId: 'GCP-PD-2022-456',
+        expiryDate: 'Mar 2024'
+      },
+      {
+        id: 'cert3',
+        name: 'Microsoft Azure Fundamentals',
+        issuer: 'Microsoft',
+        date: 'Jan 2023',
+        credentialId: 'AZ-900-789',
+        expiryDate: 'Jan 2026'
+      },
+      {
+        id: 'cert4',
+        name: 'Certified Kubernetes Administrator',
+        issuer: 'Cloud Native Computing Foundation',
+        date: 'Sep 2023',
+        credentialId: 'CKA-2023-012',
+        expiryDate: 'Sep 2026'
       }
     ]
   })
@@ -420,8 +382,8 @@ export default function ResumePage() {
       fields: [
         { key: 'name', label: 'Certification Name', type: 'text' as const, placeholder: 'e.g., AWS Certified Solutions Architect' },
         { key: 'issuer', label: 'Issuing Organization', type: 'text' as const, placeholder: 'e.g., Amazon Web Services' },
-        { key: 'date', label: 'Issue Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 08-2023)' },
-        { key: 'expiryDate', label: 'Expiry Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 08-2026) or leave blank if no expiry' },
+        { key: 'date', label: 'Issue Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., Aug 2021)' },
+        { key: 'expiryDate', label: 'Expiry Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., Aug 2025) - Will show as range: Aug 2021 - Aug 2025' },
         { key: 'credentialId', label: 'Credential ID', type: 'text' as const, placeholder: 'e.g., AWS-CSA-2023-001' }
       ]
     }
@@ -644,6 +606,7 @@ export default function ResumePage() {
                 onUpdateItem={(id, field, value) => updateSectionItem('languages', id, field, value)}
                 onDeleteItem={(id) => deleteSectionItem('languages', id)}
                 fields={sectionConfigs.languages.fields}
+                isLanguages={true}
               />
             )}
 
@@ -677,6 +640,7 @@ export default function ResumePage() {
                 onUpdateItem={(id, field, value) => updateSectionItem('certifications', id, field, value)}
                 onDeleteItem={(id) => deleteSectionItem('certifications', id)}
                 fields={sectionConfigs.certifications.fields}
+                isCertifications={true}
               />
             )}
 
@@ -1024,25 +988,15 @@ export default function ResumePage() {
                     }}>
                       LANGUAGES
                     </h2>
-                    {sections.languages.map((language) => (
-                      <div key={language.id} style={{ marginBottom: '4px' }}>
-                        <div style={{
-                          fontSize: '9pt',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
-                        }}>
-                          <span style={{ fontWeight: 'bold' }}>{language.language}</span>
-                          <span style={{
-                            fontSize: '8pt',
-                            fontStyle: 'italic',
-                            color: '#333333'
-                          }}>
-                            {language.proficiency}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                    <div style={{
+                      fontSize: '9pt',
+                      lineHeight: '1.3'
+                    }}>
+                      {sections.languages
+                        .map((language) => `${language.language} [${language.proficiency}]`)
+                        .join(', ')
+                      }
+                    </div>
                   </div>
                 )}
 
@@ -1151,55 +1105,59 @@ export default function ResumePage() {
                     }}>
                       CERTIFICATIONS
                     </h2>
-                    {sections.certifications.map((cert) => (
-                      <div key={cert.id} style={{ marginBottom: '6px' }}>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          marginBottom: '2px'
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '10px',
+                      width: '100%'
+                    }}>
+                      {sections.certifications.map((cert) => (
+                        <div key={cert.id} style={{
+                          padding: '6px',
+                          border: '1px solid #d0d0d0',
+                          borderRadius: '4px',
+                          backgroundColor: '#f8f8f8',
+                          minHeight: '70px',
+                          marginBottom: '4px'
                         }}>
                           <h3 style={{
-                            fontSize: '9pt',
+                            fontSize: '8pt',
                             fontWeight: 'bold',
-                            margin: 0
+                            margin: '0 0 3px 0',
+                            lineHeight: '1.1'
                           }}>
                             {cert.name}
                           </h3>
-                          <span style={{
-                            fontSize: '8pt',
-                            color: '#000000',
-                            fontStyle: 'italic'
-                          }}>
-                            {cert.date && typeof cert.date === 'string' ? formatDateToMMYYYY(cert.date) : ''}
-                          </span>
-                        </div>
-                        <div style={{
-                          fontSize: '9pt',
-                          marginBottom: '2px',
-                          fontStyle: 'italic'
-                        }}>
-                          {cert.issuer}
-                        </div>
-                        {cert.credentialId && (
                           <div style={{
-                            fontSize: '8pt',
+                            fontSize: '7pt',
                             marginBottom: '2px',
-                            color: '#333333'
+                            fontStyle: 'italic',
+                            color: '#555555'
                           }}>
-                            <strong>Credential ID:</strong> {cert.credentialId}
+                            {cert.issuer}
                           </div>
-                        )}
-                        {cert.expiryDate && (
                           <div style={{
-                            fontSize: '8pt',
-                            color: '#333333'
+                            fontSize: '7pt',
+                            color: '#666666',
+                            fontWeight: 'bold',
+                            marginBottom: '2px'
                           }}>
-                            <strong>Expires:</strong> {typeof cert.expiryDate === 'string' ? formatDateToMMYYYY(cert.expiryDate) : ''}
+                            {cert.date && cert.expiryDate ?
+                              `${formatDateToMMYYYY(cert.date as string)} - ${formatDateToMMYYYY(cert.expiryDate as string)}` :
+                              cert.date ? formatDateToMMYYYY(cert.date as string) : ''
+                            }
                           </div>
-                        )}
-                      </div>
-                    ))}
+                          {cert.credentialId && (
+                            <div style={{
+                              fontSize: '6pt',
+                              color: '#777777'
+                            }}>
+                              ID: {cert.credentialId}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

@@ -32,6 +32,8 @@ interface ResumeSectionProps {
     options?: string[]
   }>
   isExperience?: boolean // Special flag for work experience section
+  isCertifications?: boolean // Special flag for certifications section
+  isLanguages?: boolean // Special flag for languages section
 }
 
 export function ResumeSection({
@@ -41,7 +43,9 @@ export function ResumeSection({
   onUpdateItem,
   onDeleteItem,
   fields,
-  isExperience = false
+  isExperience = false,
+  isCertifications = false,
+  isLanguages = false
 }: ResumeSectionProps) {
   return (
     <Card className="rounded-xl p-6">
@@ -64,7 +68,7 @@ export function ResumeSection({
             <p>No items added yet. Click "Add New Item" to get started.</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className={isCertifications ? "grid grid-cols-1 lg:grid-cols-2 gap-6" : "space-y-6"}>
             {items.map((item) => (
               <div key={item.id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-end">
@@ -163,6 +167,30 @@ export function ResumeSection({
                     </div>
                   ))}
                 </div>
+
+                {/* Special preview for languages showing comma-separated format */}
+                {isLanguages && items.length > 0 && (
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="text-sm font-medium text-blue-700 mb-2">Preview:</div>
+                    <div className="text-sm text-blue-600">
+                      {items
+                        .filter(lang => lang.language && lang.proficiency)
+                        .map((lang) => `${lang.language} [${lang.proficiency}]`)
+                        .join(', ')
+                      }
+                    </div>
+                  </div>
+                )}
+
+                {/* Special preview for certifications showing date range format */}
+                {isCertifications && item.date && item.expiryDate && (
+                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="text-sm font-medium text-green-700 mb-2">Date Range Preview:</div>
+                    <div className="text-sm text-green-600">
+                      {item.date} - {item.expiryDate}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
