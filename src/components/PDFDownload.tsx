@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'
 
@@ -214,7 +215,7 @@ const DEFAULT_SECTION_ORDER = [
 // Individual PDF section rendering functions
 const renderEducationPDF = (educationData: SectionItem[]) => {
   if (educationData.length === 0) return null
-  
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>EDUCATION</Text>
@@ -244,7 +245,7 @@ const renderEducationPDF = (educationData: SectionItem[]) => {
 
 const renderExperiencePDF = (experienceData: SectionItem[]) => {
   if (experienceData.length === 0) return null
-  
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>PROFESSIONAL EXPERIENCE</Text>
@@ -281,7 +282,7 @@ const renderExperiencePDF = (experienceData: SectionItem[]) => {
 
 const renderProjectsPDF = (projectsData: SectionItem[]) => {
   if (projectsData.length === 0) return null
-  
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>PROJECTS</Text>
@@ -318,7 +319,7 @@ const renderProjectsPDF = (projectsData: SectionItem[]) => {
 
 const renderSkillsPDF = (skillsData: SectionItem[]) => {
   if (skillsData.length === 0) return null
-  
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>TECHNICAL SKILLS</Text>
@@ -334,7 +335,7 @@ const renderSkillsPDF = (skillsData: SectionItem[]) => {
 
 const renderLanguagesPDF = (languagesData: SectionItem[]) => {
   if (languagesData.length === 0) return null
-  
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>LANGUAGES</Text>
@@ -350,7 +351,7 @@ const renderLanguagesPDF = (languagesData: SectionItem[]) => {
 
 const renderSocialPDF = (socialData: SectionItem[]) => {
   if (socialData.length === 0) return null
-  
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>SOCIAL MEDIA</Text>
@@ -370,7 +371,7 @@ const renderSocialPDF = (socialData: SectionItem[]) => {
 
 const renderAwardsPDF = (awardsData: SectionItem[]) => {
   if (awardsData.length === 0) return null
-  
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>AWARDS & ACHIEVEMENTS</Text>
@@ -394,7 +395,7 @@ const renderAwardsPDF = (awardsData: SectionItem[]) => {
 
 const renderCertificationsPDF = (certificationsData: SectionItem[]) => {
   if (certificationsData.length === 0) return null
-  
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>CERTIFICATIONS</Text>
@@ -519,7 +520,14 @@ const ResumeDocument = ({ resumeData, sections, sectionOrder }: PDFDownloadProps
         {resumeData.summary && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>PROFESSIONAL SUMMARY</Text>
-            <Text style={styles.summary}>{resumeData.summary}</Text>
+            <View>
+              {renderFormattedText(resumeData.summary)?.map((textElement) =>
+                React.cloneElement(textElement, {
+                  key: textElement.key,
+                  style: [styles.summary, textElement.props.style]
+                })
+              )}
+            </View>
           </View>
         )}
 

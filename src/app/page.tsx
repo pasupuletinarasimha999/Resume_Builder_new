@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { PDFDownload } from '@/components/PDFDownload'
 import { ResumeSection } from '@/components/ResumeSection'
-import { renderRichText } from '@/components/ui/rich-text-editor'
+import { renderRichText, RichTextEditor } from '@/components/ui/rich-text-editor'
 import { ClientOnlyRichText } from '@/components/ClientOnlyRichText'
 
 // Resume sections with icons
@@ -735,21 +735,12 @@ export default function ResumePage() {
               TECHNICAL SKILLS
             </h2>
             {sections.skills.map((skill) => (
-              <div key={skill.id} style={{ marginBottom: '0px' }}>
-                <div style={{
-                  fontSize: '10pt',
-                  fontWeight: 'bold',
-                  marginBottom: '1px'
-                }}>
-                  {skill.category}:
-                </div>
+              <div key={skill.id} style={{ marginBottom: '2px' }}>
                 <div style={{
                   fontSize: '9pt',
-                  lineHeight: '1.4',
-                  marginLeft: '10px',
-                  marginBottom: '1px'
+                  lineHeight: '1.4'
                 }}>
-                  {skill.skills}
+                  <span style={{ fontWeight: 'bold' }}>{skill.category}:</span> {skill.skills}
                 </div>
               </div>
             ))}
@@ -1186,12 +1177,10 @@ export default function ResumePage() {
 
                   <div>
                     <Label htmlFor="summary">Professional Summary</Label>
-                    <Textarea
-                      id="summary"
-                      placeholder="Write a brief professional summary..."
-                      rows={4}
+                    <RichTextEditor
                       value={resumeData.summary}
-                      onChange={(e) => handleInputChange('summary', e.target.value)}
+                      onChange={(value) => handleInputChange('summary', value)}
+                      placeholder="Write a brief professional summary..."
                       className="mt-1"
                     />
                   </div>
@@ -1375,7 +1364,7 @@ export default function ResumePage() {
                       lineHeight: '1.3',
                       textAlign: 'justify'
                     }}>
-                      {resumeData.summary}
+                      {renderRichTextContent(resumeData.summary)}
                     </div>
                   </div>
                 )}
@@ -1605,21 +1594,12 @@ export default function ResumePage() {
                       TECHNICAL SKILLS
                     </h2>
                     {sections.skills.map((skill) => (
-                      <div key={skill.id} style={{ marginBottom: '0px' }}>
+                      <div key={skill.id} style={{ marginBottom: '2px' }}>
                         <div style={{
                           fontSize: '9pt',
-                          fontWeight: 'bold',
-                          marginBottom: '1px'
+                          lineHeight: '1.4'
                         }}>
-                          {skill.category}:
-                        </div>
-                        <div style={{
-                          fontSize: '8pt',
-                          lineHeight: '1.4',
-                          marginLeft: '10px',
-                          marginBottom: '3px'
-                        }}>
-                          {skill.skills}
+                          <span style={{ fontWeight: 'bold' }}>{skill.category}:</span> {skill.skills}
                         </div>
                       </div>
                     ))}
