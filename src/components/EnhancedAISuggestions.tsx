@@ -143,7 +143,7 @@ export function EnhancedAISuggestions({ onApplySuggestion }: EnhancedAISuggestio
     try {
       const context = {
         targetRole: summaryData.targetRole,
-        yearsOfExperience: summaryData.yearsOfExperience ? Number.parseInt(summaryData.yearsOfExperience) : undefined,
+        yearsOfExperience: summaryData.yearsOfExperience ? parseInt(summaryData.yearsOfExperience) : undefined,
         industryFocus: summaryData.industryFocus,
         skills: summaryData.keySkills ? summaryData.keySkills.split(',').map(s => s.trim()) : undefined
       }
