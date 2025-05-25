@@ -734,19 +734,25 @@ export default function ResumePage() {
                                 `${exp.startDate && typeof exp.startDate === 'string' ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate && typeof exp.endDate === 'string' ? formatDateToMMYYYY(exp.endDate) : ''}`
                               }
                             </div>
-                            {exp.location && (
-                              <div style={{ marginTop: '1px' }}>
-                                {exp.location}
-                              </div>
-                            )}
                           </div>
                         </div>
                         <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
                           fontSize: '9pt',
                           marginBottom: '4px',
                           fontStyle: 'italic'
                         }}>
-                          {exp.company}
+                          <span>{exp.company}</span>
+                          {exp.location && (
+                            <span style={{
+                              fontSize: '8pt',
+                              color: '#666666'
+                            }}>
+                              {exp.location}
+                            </span>
+                          )}
                         </div>
                         {exp.description && (
                           <div style={{
