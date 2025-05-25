@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { PDFDownload } from '@/components/PDFDownload'
 import { ResumeSection } from '@/components/ResumeSection'
+import { ResumeChecker } from '@/components/ResumeChecker'
 import { renderRichText } from '@/components/ui/rich-text-editor'
 import dynamic from 'next/dynamic'
 
@@ -131,6 +132,7 @@ export default function ResumePage() {
   const [activeSection, setActiveSection] = useState('basic')
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
   const [showReorderModal, setShowReorderModal] = useState(false)
+  const [showResumeChecker, setShowResumeChecker] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Convert resumeSections to state for reordering
@@ -1090,6 +1092,13 @@ export default function ResumePage() {
             >
               💾 Save Data
             </Button>
+            <Button
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1"
+              onClick={() => setShowResumeChecker(true)}
+            >
+              📊 Check Resume
+            </Button>
             <PDFDownload resumeData={resumeData} sections={sections} sectionOrder={sectionOrder} />
           </div>
         </div>
@@ -1834,6 +1843,13 @@ export default function ResumePage() {
       </div>
 
       <ReorderModal />
+
+      <ResumeChecker
+        resumeData={resumeData}
+        sections={sections}
+        isOpen={showResumeChecker}
+        onClose={() => setShowResumeChecker(false)}
+      />
     </div>
   )
 }
