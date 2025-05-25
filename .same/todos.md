@@ -35,3 +35,19 @@
 - [x] Enhanced card styling with better spacing and visual hierarchy
 - [x] Optimized font sizes for better readability in compact layout
 - [x] Form view also uses 2-column grid for large screens (lg:grid-cols-2)
+
+### 6. PDF Download Sync with Preview Changes
+- [x] Updated PDF languages section to show comma-separated format
+- [x] Modified PDF certificates to display date ranges (Aug 2021 - Aug 2025)
+- [x] Implemented side-by-side certificate layout in PDF using flexWrap
+- [x] Added certificate card styling with borders and background in PDF
+- [x] Synced font sizes and spacing between preview and PDF
+- [x] Ensured consistent formatting across preview and downloaded resume
+
+### 7. Fixed PDF Certificate Text Overlapping Issue
+- [x] Replaced flexWrap layout with proper row-by-row grouping
+- [x] Used Array.from to create rows of 2 certificates each
+- [x] Fixed width calculation and spacing issues
+- [x] Added proper marginBottom between rows
+- [x] Improved lineHeight and marginBottom for better text spacing
+- [x] Ensured single certificate takes full width when odd number

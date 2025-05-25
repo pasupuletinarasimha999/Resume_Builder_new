@@ -336,16 +336,12 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
       {sections.languages.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>LANGUAGES</Text>
-          {sections.languages.map((language) => (
-            <View key={language.id} style={[styles.sectionItem, { marginBottom: 4 }]}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.skillCategory}>{language.language}</Text>
-                <Text style={[styles.itemDate, { fontSize: 8 }]}>
-                  {language.proficiency}
-                </Text>
-              </View>
-            </View>
-          ))}
+          <Text style={[styles.itemDescription, { fontSize: 9, lineHeight: 1.3 }]}>
+            {sections.languages
+              .map((language) => `${language.language} [${language.proficiency}]`)
+              .join(', ')
+            }
+          </Text>
         </View>
       )}
 
@@ -391,25 +387,62 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
       {sections.certifications.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CERTIFICATIONS</Text>
-          {sections.certifications.map((cert) => (
-            <View key={cert.id} style={styles.sectionItem}>
-              <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{cert.name}</Text>
-                <Text style={styles.itemDate}>
-                  {cert.date ? formatDate(cert.date as string) : ''}
-                </Text>
-              </View>
-              <Text style={styles.itemSubtitle}>{cert.issuer}</Text>
-              {cert.credentialId && (
-                <Text style={[styles.itemDescription, { fontSize: 8 }]}>
-                  Credential ID: {cert.credentialId}
-                </Text>
-              )}
-              {cert.expiryDate && (
-                <Text style={[styles.itemDescription, { fontSize: 8 }]}>
-                  Expires: {formatDate(cert.expiryDate as string)}
-                </Text>
-              )}
+          {/* Group certificates in pairs for side-by-side layout */}
+          {Array.from({ length: Math.ceil(sections.certifications.length / 2) }, (_, rowIndex) => (
+            <View key={rowIndex} style={{
+              flexDirection: 'row',
+              marginBottom: 10
+            }}>
+              {sections.certifications.slice(rowIndex * 2, rowIndex * 2 + 2).map((cert, colIndex) => (
+                <View key={cert.id} style={{
+                  width: sections.certifications.slice(rowIndex * 2, rowIndex * 2 + 2).length === 1
+                    ? '100%' : colIndex === 0 ? '48%' : '48%',
+                  marginRight: colIndex === 0 && sections.certifications.slice(rowIndex * 2, rowIndex * 2 + 2).length > 1 ? '4%' : '0%',
+                  padding: 8,
+                  border: '1pt solid #d0d0d0',
+                  borderRadius: 2,
+                  backgroundColor: '#f8f8f8'
+                }}>
+                  <Text style={{
+                    fontSize: 8,
+                    fontWeight: 'bold',
+                    marginBottom: 4,
+                    lineHeight: 1.3
+                  }}>
+                    {cert.name}
+                  </Text>
+                  <Text style={{
+                    fontSize: 7,
+                    marginBottom: 3,
+                    fontStyle: 'italic',
+                    color: '#555555',
+                    lineHeight: 1.2
+                  }}>
+                    {cert.issuer}
+                  </Text>
+                  <Text style={{
+                    fontSize: 7,
+                    fontWeight: 'bold',
+                    color: '#666666',
+                    marginBottom: 3,
+                    lineHeight: 1.2
+                  }}>
+                    {cert.date && cert.expiryDate ?
+                      `${formatDate(cert.date as string)} - ${formatDate(cert.expiryDate as string)}` :
+                      cert.date ? formatDate(cert.date as string) : ''
+                    }
+                  </Text>
+                  {cert.credentialId && (
+                    <Text style={{
+                      fontSize: 6,
+                      color: '#777777',
+                      lineHeight: 1.2
+                    }}>
+                      ID: {cert.credentialId}
+                    </Text>
+                  )}
+                </View>
+              ))}
             </View>
           ))}
         </View>
