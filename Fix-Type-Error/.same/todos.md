@@ -21,10 +21,10 @@
 
 ## Phase 2: Advanced AI Analysis (Medium Priority)
 - [x] completed: Build job description matcher and resume tailor
-- [x] completed: Add industry-specific content optimization
+- [ ] Add industry-specific content optimization
 - [ ] Enhance ATS scoring with AI/ML models
-- [x] completed: Implement real-time writing assistant for grammar/tone
-- [x] completed: Create keyword optimization engine
+- [ ] Implement real-time writing assistant for grammar/tone
+- [ ] Create keyword optimization engine
 - [ ] Add competitive analysis features
 
 ## Phase 3: Intelligent Automation (Medium Priority)
