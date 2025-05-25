@@ -616,7 +616,7 @@ export default function ResumePage() {
                 {resumeData.summary && (
                   <div className="mb-3">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '8pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
@@ -639,7 +639,7 @@ export default function ResumePage() {
                 {sections.education.length > 0 && (
                   <div className="mb-3">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '8pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
@@ -698,7 +698,7 @@ export default function ResumePage() {
                 {sections.experience.length > 0 && (
                   <div className="mb-3">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '8pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
@@ -766,7 +766,7 @@ export default function ResumePage() {
                 {sections.projects.length > 0 && (
                   <div className="mb-3">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '8pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
@@ -838,7 +838,7 @@ export default function ResumePage() {
                 {sections.skills.length > 0 && (
                   <div className="mb-3">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '8pt',
                       fontWeight: 'bold',
                       marginBottom: '10px',
                       textTransform: 'uppercase',
