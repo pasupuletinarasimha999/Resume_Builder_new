@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   skillList: {
-    fontSize: 10,
+    fontSize: 11,
     lineHeight: 1.4,
     marginLeft: 8,
     marginBottom: 3,
