@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
   },
   skillList: {
     fontSize: 10,
-    lineHeight: 1.3,
+    lineHeight: 1.4,
     marginLeft: 8,
-    marginBottom: 1,
+    marginBottom: 3,
   },
   summary: {
     fontSize: 10,
@@ -338,7 +338,7 @@ const renderLanguagesPDF = (languagesData: SectionItem[]) => {
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>LANGUAGES</Text>
-      <Text style={[styles.itemDescription, { fontSize: 9, lineHeight: 1.3 }]}>
+      <Text style={[styles.itemDescription, { fontSize: 11, lineHeight: 1.3 }]}>
         {languagesData
           .map((language) => `${language.language} [${language.proficiency}]`)
           .join(', ')

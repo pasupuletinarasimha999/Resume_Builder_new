@@ -745,7 +745,7 @@ export default function ResumePage() {
                 </div>
                 <div style={{
                   fontSize: '10pt',
-                  lineHeight: '1.2',
+                  lineHeight: '1.4',
                   marginLeft: '10px',
                   marginBottom: '1px'
                 }}>
@@ -769,7 +769,7 @@ export default function ResumePage() {
               LANGUAGES
             </h2>
             <div style={{
-              fontSize: '9pt',
+              fontSize: '11pt',
               lineHeight: '1.3'
             }}>
               {sections.languages
@@ -1615,9 +1615,9 @@ export default function ResumePage() {
                         </div>
                         <div style={{
                           fontSize: '9pt',
-                          lineHeight: '1.2',
+                          lineHeight: '1.4',
                           marginLeft: '10px',
-                          marginBottom: '1px'
+                          marginBottom: '3px'
                         }}>
                           {skill.skills}
                         </div>
@@ -1640,7 +1640,7 @@ export default function ResumePage() {
                       LANGUAGES
                     </h2>
                     <div style={{
-                      fontSize: '9pt',
+                      fontSize: '10pt',
                       lineHeight: '1.3'
                     }}>
                       {sections.languages
