@@ -57,13 +57,29 @@ interface ResumeSections {
 }
 
 // Helper function to render rich text content in preview
-function renderRichTextContent(htmlContent: string) {
+function renderRichTextContent(htmlContent: string, customStyle?: React.CSSProperties) {
   if (!htmlContent) return null
 
+  const defaultStyle = { fontSize: '8pt', lineHeight: '1.2' }
+  const style = customStyle ? { ...defaultStyle, ...customStyle } : defaultStyle
+
+  // Check if content contains HTML tags
+  const hasHtml = /<\/?[a-z][\s\S]*>/i.test(htmlContent)
+
+  if (!hasHtml) {
+    // If it's plain text, render it directly
+    return (
+      <div style={style}>
+        {htmlContent}
+      </div>
+    )
+  }
+
+  // If it has HTML, use the ClientOnlyRichText component
   return (
     <ClientOnlyRichText
       content={htmlContent}
-      style={{ fontSize: '8pt', lineHeight: '1.2' }}
+      style={style}
     />
   )
 }
@@ -1370,7 +1386,17 @@ export default function ResumePage() {
                       lineHeight: '1.3',
                       textAlign: 'justify'
                     }}>
-                      {renderRichTextContent(resumeData.summary)}
+                      {resumeData.summary ? (
+                        // Check if content contains HTML tags
+                        /<\/?[a-z][\s\S]*>/i.test(resumeData.summary) ? (
+                          <ClientOnlyRichText
+                            content={resumeData.summary}
+                            style={{ fontSize: '9pt', lineHeight: '1.3' }}
+                          />
+                        ) : (
+                          resumeData.summary
+                        )
+                      ) : null}
                     </div>
                   </div>
                 )}

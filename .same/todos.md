@@ -4,6 +4,7 @@
 - [x] **completed** Modify skills section layout to display "Category: Skills" on the same line instead of separate lines
 - [x] **completed** Add rich text editor to professional summary section
 - [x] **completed** Fix SSR build error with rich text editor
+- [x] **completed** Fix professional summary not visible in resume preview
 
 ## Changes Required
 - [x] Update the skills section rendering in the preview to display category and skills inline
@@ -14,6 +15,8 @@
 - [x] Ensure rich text content is properly saved and loaded
 - [x] Fix "document is not defined" error during Next.js build/SSR
 - [x] Ensure rich text editor only renders on client side
+- [x] Debug why professional summary is not showing in resume preview
+- [x] Ensure rich text content is properly rendered in preview
 
 ## Status
 - ✅ Identified the issue in the `renderPreviewSection` function for the 'skills' case
@@ -29,3 +32,6 @@
 - ✅ Fixed SSR error by using dynamic import with ssr: false for RichTextEditor
 - ✅ Build process now completes successfully
 - ✅ Rich text editor loads only on client side with loading placeholder
+- ✅ Fixed professional summary visibility issue in preview
+- ✅ Professional summary now displays correctly for both plain text and HTML content
+- ✅ Simplified rendering logic to handle edge cases properly
