@@ -1,21 +1,46 @@
-# Resume App Cleanup Tasks
+# Certificate Font and Color Updates
 
-## Current Task: Remove Templates and Sample Buttons
-- [x] Remove "Templates" button from header
-- [x] Remove "Sample" button from header
-- [x] Remove sample data from initial state
-- [x] Clean up any template-related functionality
-- [x] Test the app to ensure it works without sample data
+## Current Task: Increase Certificate Font Sizes and Make Text Black
 
-## Status
-- **Completed**: All template and sample buttons removed, app is clean and functional
+### Tasks to Complete:
+- [x] Increase certificate name font size (8pt → 11pt)
+- [x] Increase certificate issuer font size (7pt → 10pt)
+- [x] Increase certificate date font size (7pt → 10pt)
+- [x] Increase certificate ID font size (6pt → 9pt)
+- [x] Change all certificate text colors to black (#000000)
+- [x] Test changes by running development server
+- [x] Create version after changes are complete
 
-## New Task: Standardize Font Sizes
-- [x] Examine current font sizes in skills section vs bullet points
-- [x] Update skills section font size to match bullet points (8pt)
-- [x] Update PDF skills section font size to match
-- [x] Test the changes
-- [x] Create version after changes
+## New Task: Implement Save/Load Data Functionality
 
-## Status
-- **Completed**: Font sizes standardized across skills and bullet points
+### Tasks to Complete:
+- [x] Examine current data structure and state management
+- [x] Create Save Data button that downloads JSON file with all resume data
+- [x] Create Load Data button that uploads and loads JSON file
+- [x] Add file input for JSON upload
+- [x] Implement data validation for loaded JSON
+- [x] Test save/load functionality
+- [x] Create version after implementation
+
+## New Task: Implement Section Reordering Functionality
+
+### Tasks to Complete:
+- [x] Analyze current section structure and ordering
+- [x] Create reorder modal/interface
+- [x] Implement drag-and-drop functionality
+- [x] Add state management for section order
+- [ ] Update PDF generation to respect new order
+- [x] Update preview to respect new order
+- [x] Connect Reorder button to new functionality
+- [x] Test reordering functionality
+- [ ] Create version after implementation
+
+### Current Certificate Font Sizes:
+- Certificate name: 8pt, bold
+- Certificate issuer: 7pt, italic, color #555555
+- Certificate date: 7pt, bold, color #666666
+- Certificate ID: 6pt, color #777777
+
+### Target Changes:
+- Increase all font sizes by 2-3pt
+- Change all colors to black (#000000)
