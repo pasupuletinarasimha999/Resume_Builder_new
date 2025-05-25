@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   section: {
-    marginBottom: 6,
+    marginBottom: 8,
   },
   sectionTitle: {
     fontSize: 10,

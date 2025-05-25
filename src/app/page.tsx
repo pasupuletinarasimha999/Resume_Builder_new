@@ -614,7 +614,7 @@ export default function ResumePage() {
 
                 {/* Professional Summary */}
                 {resumeData.summary && (
-                  <div className="mb-3">
+                  <div className="mb-4">
                     <h2 style={{
                       fontSize: '8pt',
                       fontWeight: 'bold',
@@ -637,7 +637,7 @@ export default function ResumePage() {
 
                 {/* Education */}
                 {sections.education.length > 0 && (
-                  <div className="mb-3">
+                  <div className="mb-4">
                     <h2 style={{
                       fontSize: '8pt',
                       fontWeight: 'bold',
@@ -696,7 +696,7 @@ export default function ResumePage() {
 
                 {/* Experience */}
                 {sections.experience.length > 0 && (
-                  <div className="mb-3">
+                  <div className="mb-4">
                     <h2 style={{
                       fontSize: '8pt',
                       fontWeight: 'bold',
@@ -764,7 +764,7 @@ export default function ResumePage() {
 
                 {/* Projects */}
                 {sections.projects.length > 0 && (
-                  <div className="mb-3">
+                  <div className="mb-4">
                     <h2 style={{
                       fontSize: '8pt',
                       fontWeight: 'bold',
@@ -836,7 +836,7 @@ export default function ResumePage() {
 
                 {/* Skills */}
                 {sections.skills.length > 0 && (
-                  <div className="mb-3">
+                  <div className="mb-4">
                     <h2 style={{
                       fontSize: '8pt',
                       fontWeight: 'bold',
