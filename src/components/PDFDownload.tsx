@@ -15,6 +15,7 @@ interface PDFDownloadProps {
     email: string
     phone: string
     location: string
+    linkedin: string
     summary: string
   }
   sections: {
@@ -86,6 +87,13 @@ const styles = StyleSheet.create({
     color: '#666666',
     fontStyle: 'italic',
     textAlign: 'right',
+  },
+  itemDateLocation: {
+    fontSize: 8,
+    color: '#666666',
+    fontStyle: 'italic',
+    textAlign: 'right',
+    lineHeight: 1.2,
   },
   itemSubtitle: {
     fontSize: 10,
@@ -189,6 +197,12 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
           <Text>{resumeData.phone}</Text>
           <Text> | </Text>
           <Text>{resumeData.location}</Text>
+          {resumeData.linkedin && (
+            <>
+              <Text> | </Text>
+              <Text style={{ color: '#0066cc' }}>{resumeData.linkedin}</Text>
+            </>
+          )}
         </View>
       </View>
 
@@ -235,14 +249,21 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
             <View key={exp.id} style={styles.sectionItem}>
               <View style={styles.itemHeader}>
                 <Text style={styles.itemTitle}>{exp.position}</Text>
-                <Text style={styles.itemDate}>
-                  {(exp.startDate || exp.endDate) &&
-                    `${exp.startDate ? formatDate(exp.startDate as string) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate ? formatDate(exp.endDate as string) : ''}`
-                  }
-                </Text>
+                <View style={styles.itemDateLocation}>
+                  <Text>
+                    {(exp.startDate || exp.endDate) &&
+                      `${exp.startDate ? formatDate(exp.startDate as string) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate ? formatDate(exp.endDate as string) : ''}`
+                    }
+                  </Text>
+                  {exp.location && (
+                    <Text style={{ marginTop: 1 }}>
+                      {exp.location}
+                    </Text>
+                  )}
+                </View>
               </View>
               <Text style={styles.itemSubtitle}>
-                {exp.company} {exp.location && `• ${exp.location}`}
+                {exp.company}
               </Text>
               {exp.description && (
                 <View>

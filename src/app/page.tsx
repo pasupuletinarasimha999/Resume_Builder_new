@@ -32,6 +32,7 @@ interface ResumeData {
   email: string
   phone: string
   location: string
+  linkedin: string
   summary: string
 }
 
@@ -54,8 +55,9 @@ function renderRichTextContent(htmlContent: string) {
 
   // Only render on client side to avoid SSR issues
   if (typeof window === 'undefined') {
-    // Return server-safe fallback
-    return <div>{htmlContent.replace(/<[^>]*>/g, '')}</div>
+    // Return server-safe fallback - strip HTML tags for plain text
+    const plainText = htmlContent.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ')
+    return <div>{plainText}</div>
   }
 
   // Create a temporary div to parse HTML
@@ -183,6 +185,7 @@ export default function ResumePage() {
     email: 'alex.johnson@email.com',
     phone: '(555) 123-4567',
     location: 'San Francisco, CA',
+    linkedin: 'linkedin.com/in/alexjohnson',
     summary: "Experienced Full Stack Developer with 4+ years of expertise in modern web technologies. Passionate about building scalable applications and leading development teams. Proven track record of improving system performance, implementing best practices, and delivering high-quality software solutions that drive business growth."
   })
 
@@ -468,6 +471,18 @@ export default function ResumePage() {
                         className="mt-1"
                       />
                     </div>
+
+                    <div className="col-span-2">
+                      <Label htmlFor="linkedin">LinkedIn Profile URL</Label>
+                      <Input
+                        id="linkedin"
+                        type="url"
+                        value={resumeData.linkedin}
+                        onChange={(e) => handleInputChange('linkedin', e.target.value)}
+                        placeholder="e.g., linkedin.com/in/yourprofile"
+                        className="mt-1"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -588,6 +603,12 @@ export default function ResumePage() {
                     <span>{resumeData.phone}</span>
                     <span>|</span>
                     <span>{resumeData.location}</span>
+                    {resumeData.linkedin && (
+                      <>
+                        <span>|</span>
+                        <span style={{ color: '#0066cc' }}>{resumeData.linkedin}</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -692,7 +713,7 @@ export default function ResumePage() {
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'flex-start',
-                          marginBottom: '4px'
+                          marginBottom: '2px'
                         }}>
                           <h3 style={{
                             fontSize: '9pt',
@@ -701,22 +722,31 @@ export default function ResumePage() {
                           }}>
                             {exp.position}
                           </h3>
-                          <span style={{
+                          <div style={{
+                            textAlign: 'right',
                             fontSize: '8pt',
                             color: '#666666',
-                            fontStyle: 'italic'
+                            fontStyle: 'italic',
+                            lineHeight: '1.2'
                           }}>
-                            {(exp.startDate || exp.endDate) &&
-                              `${exp.startDate && typeof exp.startDate === 'string' ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate && typeof exp.endDate === 'string' ? formatDateToMMYYYY(exp.endDate) : ''}`
-                            }
-                          </span>
+                            <div>
+                              {(exp.startDate || exp.endDate) &&
+                                `${exp.startDate && typeof exp.startDate === 'string' ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate && typeof exp.endDate === 'string' ? formatDateToMMYYYY(exp.endDate) : ''}`
+                              }
+                            </div>
+                            {exp.location && (
+                              <div style={{ marginTop: '1px' }}>
+                                {exp.location}
+                              </div>
+                            )}
+                          </div>
                         </div>
                         <div style={{
                           fontSize: '9pt',
                           marginBottom: '4px',
                           fontStyle: 'italic'
                         }}>
-                          {exp.company} {exp.location && `• ${exp.location}`}
+                          {exp.company}
                         </div>
                         {exp.description && (
                           <div style={{
