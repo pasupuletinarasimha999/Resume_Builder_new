@@ -23,6 +23,10 @@ interface PDFDownloadProps {
     experience: SectionItem[]
     projects: SectionItem[]
     skills: SectionItem[]
+    languages: SectionItem[]
+    social: SectionItem[]
+    awards: SectionItem[]
+    certifications: SectionItem[]
   }
 }
 
@@ -323,6 +327,89 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
             <View key={skill.id} style={[styles.sectionItem, { marginBottom: 0 }]}>
               <Text style={styles.skillCategory}>{skill.category}:</Text>
               <Text style={styles.skillList}>{skill.skills}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Languages */}
+      {sections.languages.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>LANGUAGES</Text>
+          {sections.languages.map((language) => (
+            <View key={language.id} style={[styles.sectionItem, { marginBottom: 4 }]}>
+              <View style={styles.itemHeader}>
+                <Text style={styles.skillCategory}>{language.language}</Text>
+                <Text style={[styles.itemDate, { fontSize: 8 }]}>
+                  {language.proficiency}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Social Media */}
+      {sections.social.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>SOCIAL MEDIA</Text>
+          {sections.social.map((social) => (
+            <View key={social.id} style={[styles.sectionItem, { marginBottom: 4 }]}>
+              <View style={styles.itemHeader}>
+                <Text style={styles.skillCategory}>{social.platform}:</Text>
+                <Text style={[styles.itemDate, { fontSize: 8, color: '#0066cc' }]}>
+                  {social.url}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Awards */}
+      {sections.awards.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>AWARDS & ACHIEVEMENTS</Text>
+          {sections.awards.map((award) => (
+            <View key={award.id} style={styles.sectionItem}>
+              <View style={styles.itemHeader}>
+                <Text style={styles.itemTitle}>{award.title}</Text>
+                <Text style={styles.itemDate}>
+                  {award.date ? formatDate(award.date as string) : ''}
+                </Text>
+              </View>
+              <Text style={styles.itemSubtitle}>{award.organization}</Text>
+              {award.description && (
+                <Text style={styles.itemDescription}>{award.description}</Text>
+              )}
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* Certifications */}
+      {sections.certifications.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>CERTIFICATIONS</Text>
+          {sections.certifications.map((cert) => (
+            <View key={cert.id} style={styles.sectionItem}>
+              <View style={styles.itemHeader}>
+                <Text style={styles.itemTitle}>{cert.name}</Text>
+                <Text style={styles.itemDate}>
+                  {cert.date ? formatDate(cert.date as string) : ''}
+                </Text>
+              </View>
+              <Text style={styles.itemSubtitle}>{cert.issuer}</Text>
+              {cert.credentialId && (
+                <Text style={[styles.itemDescription, { fontSize: 8 }]}>
+                  Credential ID: {cert.credentialId}
+                </Text>
+              )}
+              {cert.expiryDate && (
+                <Text style={[styles.itemDescription, { fontSize: 8 }]}>
+                  Expires: {formatDate(cert.expiryDate as string)}
+                </Text>
+              )}
             </View>
           ))}
         </View>

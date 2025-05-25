@@ -20,7 +20,7 @@ const resumeSections = [
   { id: 'languages', name: 'Languages', icon: 'https://ext.same-assets.com/3442189925/3304711307.svg' },
   { id: 'social', name: 'Social Media', icon: 'https://ext.same-assets.com/3442189925/3272116947.svg' },
   { id: 'awards', name: 'Awards', icon: 'https://ext.same-assets.com/3442189925/1967388618.svg' },
-  { id: 'certification', name: 'Certification', icon: 'https://ext.same-assets.com/3442189925/3927218253.svg' }
+  { id: 'certifications', name: 'Certifications', icon: 'https://ext.same-assets.com/3442189925/3927218253.svg' }
 ]
 
 interface ResumeData {
@@ -43,6 +43,10 @@ interface ResumeSections {
   experience: SectionItem[]
   projects: SectionItem[]
   skills: SectionItem[]
+  languages: SectionItem[]
+  social: SectionItem[]
+  awards: SectionItem[]
+  certifications: SectionItem[]
 }
 
 // Helper function to render rich text content in preview
@@ -53,7 +57,7 @@ function renderRichTextContent(htmlContent: string) {
   if (typeof window === 'undefined') {
     // Return server-safe fallback - strip HTML tags for plain text
     const plainText = htmlContent.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ')
-    return <div>{plainText}</div>
+    return <div style={{ fontSize: '8pt', lineHeight: '1.2' }}>{plainText}</div>
   }
 
   // Create a temporary div to parse HTML
@@ -258,6 +262,51 @@ export default function ResumePage() {
         category: 'Tools & DevOps',
         skills: 'Git, Docker, Kubernetes, AWS, CI/CD, Jest, Webpack, Linux'
       }
+    ],
+    languages: [
+      {
+        id: 'lang1',
+        language: 'English',
+        proficiency: 'Native'
+      },
+      {
+        id: 'lang2',
+        language: 'Spanish',
+        proficiency: 'Fluent'
+      }
+    ],
+    social: [
+      {
+        id: 'social1',
+        platform: 'LinkedIn',
+        url: 'https://linkedin.com/in/alexjohnson',
+        username: 'alexjohnson'
+      },
+      {
+        id: 'social2',
+        platform: 'GitHub',
+        url: 'https://github.com/alexjohnson',
+        username: 'alexjohnson'
+      }
+    ],
+    awards: [
+      {
+        id: 'award1',
+        title: 'Employee of the Year',
+        organization: 'TechCorp Solutions',
+        date: '12-2023',
+        description: 'Recognized for outstanding performance in leading critical projects and mentoring team members'
+      }
+    ],
+    certifications: [
+      {
+        id: 'cert1',
+        name: 'AWS Certified Solutions Architect',
+        issuer: 'Amazon Web Services',
+        date: '08-2023',
+        credentialId: 'AWS-CSA-2023-001',
+        expiryDate: '08-2026'
+      }
     ]
   })
 
@@ -328,6 +377,40 @@ export default function ResumePage() {
       fields: [
         { key: 'category', label: 'Category', type: 'text' as const, placeholder: 'e.g., Programming Languages' },
         { key: 'skills', label: 'Skills', type: 'textarea' as const, placeholder: 'e.g., JavaScript, Python, Java...' }
+      ]
+    },
+    languages: {
+      title: 'Languages',
+      fields: [
+        { key: 'language', label: 'Language', type: 'text' as const, placeholder: 'e.g., English' },
+        { key: 'proficiency', label: 'Proficiency Level', type: 'text' as const, placeholder: 'e.g., Native, Fluent, Intermediate, Basic' }
+      ]
+    },
+    social: {
+      title: 'Social Media',
+      fields: [
+        { key: 'platform', label: 'Platform', type: 'text' as const, placeholder: 'e.g., LinkedIn, GitHub, Twitter' },
+        { key: 'username', label: 'Username', type: 'text' as const, placeholder: 'e.g., johndoe' },
+        { key: 'url', label: 'Profile URL', type: 'text' as const, placeholder: 'https://...' }
+      ]
+    },
+    awards: {
+      title: 'Awards',
+      fields: [
+        { key: 'title', label: 'Award Title', type: 'text' as const, placeholder: 'e.g., Employee of the Year' },
+        { key: 'organization', label: 'Organization', type: 'text' as const, placeholder: 'e.g., TechCorp Solutions' },
+        { key: 'date', label: 'Date Received', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 12-2023)' },
+        { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Brief description of the award...' }
+      ]
+    },
+    certifications: {
+      title: 'Certifications',
+      fields: [
+        { key: 'name', label: 'Certification Name', type: 'text' as const, placeholder: 'e.g., AWS Certified Solutions Architect' },
+        { key: 'issuer', label: 'Issuing Organization', type: 'text' as const, placeholder: 'e.g., Amazon Web Services' },
+        { key: 'date', label: 'Issue Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 08-2023)' },
+        { key: 'expiryDate', label: 'Expiry Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 08-2026) or leave blank if no expiry' },
+        { key: 'credentialId', label: 'Credential ID', type: 'text' as const, placeholder: 'e.g., AWS-CSA-2023-001' }
       ]
     }
   }
@@ -541,7 +624,51 @@ export default function ResumePage() {
               />
             )}
 
-            {!['basic', 'education', 'experience', 'projects', 'skills'].includes(activeSection) && (
+            {activeSection === 'languages' && (
+              <ResumeSection
+                title={sectionConfigs.languages.title}
+                items={sections.languages}
+                onAddItem={() => addSectionItem('languages')}
+                onUpdateItem={(id, field, value) => updateSectionItem('languages', id, field, value)}
+                onDeleteItem={(id) => deleteSectionItem('languages', id)}
+                fields={sectionConfigs.languages.fields}
+              />
+            )}
+
+            {activeSection === 'social' && (
+              <ResumeSection
+                title={sectionConfigs.social.title}
+                items={sections.social}
+                onAddItem={() => addSectionItem('social')}
+                onUpdateItem={(id, field, value) => updateSectionItem('social', id, field, value)}
+                onDeleteItem={(id) => deleteSectionItem('social', id)}
+                fields={sectionConfigs.social.fields}
+              />
+            )}
+
+            {activeSection === 'awards' && (
+              <ResumeSection
+                title={sectionConfigs.awards.title}
+                items={sections.awards}
+                onAddItem={() => addSectionItem('awards')}
+                onUpdateItem={(id, field, value) => updateSectionItem('awards', id, field, value)}
+                onDeleteItem={(id) => deleteSectionItem('awards', id)}
+                fields={sectionConfigs.awards.fields}
+              />
+            )}
+
+            {activeSection === 'certifications' && (
+              <ResumeSection
+                title={sectionConfigs.certifications.title}
+                items={sections.certifications}
+                onAddItem={() => addSectionItem('certifications')}
+                onUpdateItem={(id, field, value) => updateSectionItem('certifications', id, field, value)}
+                onDeleteItem={(id) => deleteSectionItem('certifications', id)}
+                fields={sectionConfigs.certifications.fields}
+              />
+            )}
+
+            {!['basic', 'education', 'experience', 'projects', 'skills', 'languages', 'social', 'awards', 'certifications'].includes(activeSection) && (
               <Card className="rounded-xl p-6">
                 <CardContent>
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -867,6 +994,198 @@ export default function ResumePage() {
                         }}>
                           {skill.skills}
                         </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Languages */}
+                {sections.languages.length > 0 && (
+                  <div className="mb-4">
+                    <h2 style={{
+                      fontSize: '8pt',
+                      fontWeight: 'bold',
+                      marginBottom: '10px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '0px'
+                    }}>
+                      LANGUAGES
+                    </h2>
+                    {sections.languages.map((language) => (
+                      <div key={language.id} style={{ marginBottom: '4px' }}>
+                        <div style={{
+                          fontSize: '9pt',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <span style={{ fontWeight: 'bold' }}>{language.language}</span>
+                          <span style={{
+                            fontSize: '8pt',
+                            fontStyle: 'italic',
+                            color: '#333333'
+                          }}>
+                            {language.proficiency}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Social Media */}
+                {sections.social.length > 0 && (
+                  <div className="mb-4">
+                    <h2 style={{
+                      fontSize: '8pt',
+                      fontWeight: 'bold',
+                      marginBottom: '10px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '0px'
+                    }}>
+                      SOCIAL MEDIA
+                    </h2>
+                    {sections.social.map((social) => (
+                      <div key={social.id} style={{ marginBottom: '4px' }}>
+                        <div style={{
+                          fontSize: '9pt',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <span style={{ fontWeight: 'bold' }}>{social.platform}:</span>
+                          <span style={{
+                            fontSize: '8pt',
+                            color: '#0066cc',
+                            wordBreak: 'break-all'
+                          }}>
+                            {social.url}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Awards */}
+                {sections.awards.length > 0 && (
+                  <div className="mb-4">
+                    <h2 style={{
+                      fontSize: '8pt',
+                      fontWeight: 'bold',
+                      marginBottom: '10px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '0px'
+                    }}>
+                      AWARDS & ACHIEVEMENTS
+                    </h2>
+                    {sections.awards.map((award) => (
+                      <div key={award.id} style={{ marginBottom: '6px' }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          marginBottom: '2px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '9pt',
+                            fontWeight: 'bold',
+                            margin: 0
+                          }}>
+                            {award.title}
+                          </h3>
+                          <span style={{
+                            fontSize: '8pt',
+                            color: '#000000',
+                            fontStyle: 'italic'
+                          }}>
+                            {award.date && typeof award.date === 'string' ? formatDateToMMYYYY(award.date) : ''}
+                          </span>
+                        </div>
+                        <div style={{
+                          fontSize: '9pt',
+                          marginBottom: '2px',
+                          fontStyle: 'italic'
+                        }}>
+                          {award.organization}
+                        </div>
+                        {award.description && (
+                          <div style={{
+                            margin: '2px 0 0 0',
+                            fontSize: '8pt',
+                            lineHeight: '1.2'
+                          }}>
+                            {award.description}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Certifications */}
+                {sections.certifications.length > 0 && (
+                  <div className="mb-4">
+                    <h2 style={{
+                      fontSize: '8pt',
+                      fontWeight: 'bold',
+                      marginBottom: '10px',
+                      textTransform: 'uppercase',
+                      borderBottom: '1px solid #ccc',
+                      paddingBottom: '0px'
+                    }}>
+                      CERTIFICATIONS
+                    </h2>
+                    {sections.certifications.map((cert) => (
+                      <div key={cert.id} style={{ marginBottom: '6px' }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          marginBottom: '2px'
+                        }}>
+                          <h3 style={{
+                            fontSize: '9pt',
+                            fontWeight: 'bold',
+                            margin: 0
+                          }}>
+                            {cert.name}
+                          </h3>
+                          <span style={{
+                            fontSize: '8pt',
+                            color: '#000000',
+                            fontStyle: 'italic'
+                          }}>
+                            {cert.date && typeof cert.date === 'string' ? formatDateToMMYYYY(cert.date) : ''}
+                          </span>
+                        </div>
+                        <div style={{
+                          fontSize: '9pt',
+                          marginBottom: '2px',
+                          fontStyle: 'italic'
+                        }}>
+                          {cert.issuer}
+                        </div>
+                        {cert.credentialId && (
+                          <div style={{
+                            fontSize: '8pt',
+                            marginBottom: '2px',
+                            color: '#333333'
+                          }}>
+                            <strong>Credential ID:</strong> {cert.credentialId}
+                          </div>
+                        )}
+                        {cert.expiryDate && (
+                          <div style={{
+                            fontSize: '8pt',
+                            color: '#333333'
+                          }}>
+                            <strong>Expires:</strong> {typeof cert.expiryDate === 'string' ? formatDateToMMYYYY(cert.expiryDate) : ''}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
