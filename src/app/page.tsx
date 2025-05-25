@@ -87,7 +87,7 @@ function renderRichTextContent(htmlContent: string) {
             <ul key={key++} style={{
               margin: '2px 0 0 16px',
               padding: 0,
-              fontSize: '8pt',
+              fontSize: '9pt',
               lineHeight: '1.2',
               listStyleType: 'disc',
               listStylePosition: 'outside'
@@ -100,7 +100,7 @@ function renderRichTextContent(htmlContent: string) {
             <ol key={key++} style={{
               margin: '2px 0 0 16px',
               padding: 0,
-              fontSize: '8pt',
+              fontSize: '9pt',
               lineHeight: '1.2',
               listStyleType: 'decimal',
               listStylePosition: 'outside'

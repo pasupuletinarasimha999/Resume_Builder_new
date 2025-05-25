@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   itemDescription: {
-    fontSize: 9,
+    fontSize: 10,
     lineHeight: 1.3,
     textAlign: 'justify',
     marginTop: 2,
