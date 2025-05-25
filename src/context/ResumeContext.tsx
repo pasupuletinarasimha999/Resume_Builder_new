@@ -1,187 +1,206 @@
 'use client';
 
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
-import type { ResumeData, PersonalInfo, Education, WorkExperience, Project, Skill } from '@/types/resume';
+import type React from 'react';
+import { createContext, useContext, useReducer, useEffect } from 'react';
+import type { ResumeData, SectionType } from '@/types/resume';
 
-interface ResumeContextType {
-  resumeData: ResumeData;
-  updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
-  addEducation: (education: Omit<Education, 'id'>) => void;
-  updateEducation: (id: string, education: Partial<Education>) => void;
-  removeEducation: (id: string) => void;
-  addWorkExperience: (experience: Omit<WorkExperience, 'id'>) => void;
-  updateWorkExperience: (id: string, experience: Partial<WorkExperience>) => void;
-  removeWorkExperience: (id: string) => void;
-  addProject: (project: Omit<Project, 'id'>) => void;
-  updateProject: (id: string, project: Partial<Project>) => void;
-  removeProject: (id: string) => void;
-  addSkill: (skill: Omit<Skill, 'id'>) => void;
-  updateSkill: (id: string, skill: Partial<Skill>) => void;
-  removeSkill: (id: string) => void;
-  loadData: (data: Partial<ResumeData>) => void;
-  exportData: () => ResumeData;
+interface ResumeState {
+  data: ResumeData;
+  currentSection: SectionType;
+  sidebarCollapsed: boolean;
 }
 
-const defaultResumeData: ResumeData = {
-  personalInfo: {
-    fullName: '',
-    email: '',
-    phone: '',
-    location: '',
-    linkedin: '',
-    summary: ''
+type ResumeAction =
+  | { type: 'UPDATE_PERSONAL_INFO'; payload: Partial<ResumeData['personalInfo']> }
+  | { type: 'ADD_EDUCATION'; payload: ResumeData['education'][0] }
+  | { type: 'UPDATE_EDUCATION'; payload: { id: string; data: Partial<ResumeData['education'][0]> } }
+  | { type: 'DELETE_EDUCATION'; payload: string }
+  | { type: 'ADD_WORK_EXPERIENCE'; payload: ResumeData['workExperience'][0] }
+  | { type: 'UPDATE_WORK_EXPERIENCE'; payload: { id: string; data: Partial<ResumeData['workExperience'][0]> } }
+  | { type: 'DELETE_WORK_EXPERIENCE'; payload: string }
+  | { type: 'ADD_PROJECT'; payload: ResumeData['projects'][0] }
+  | { type: 'UPDATE_PROJECT'; payload: { id: string; data: Partial<ResumeData['projects'][0]> } }
+  | { type: 'DELETE_PROJECT'; payload: string }
+  | { type: 'ADD_SKILL'; payload: ResumeData['skills'][0] }
+  | { type: 'UPDATE_SKILL'; payload: { id: string; data: Partial<ResumeData['skills'][0]> } }
+  | { type: 'DELETE_SKILL'; payload: string }
+  | { type: 'SET_CURRENT_SECTION'; payload: SectionType }
+  | { type: 'TOGGLE_SIDEBAR' }
+  | { type: 'LOAD_DATA'; payload: ResumeData };
+
+const initialState: ResumeState = {
+  data: {
+    personalInfo: {
+      fullName: '',
+      email: '',
+      phone: '',
+      location: '',
+      summary: ''
+    },
+    education: [],
+    workExperience: [],
+    projects: [],
+    skills: []
   },
-  education: [],
-  workExperience: [],
-  projects: [],
-  skills: [],
-  languages: [],
-  awards: [],
-  certifications: [],
-  publications: [],
-  socialMedia: [],
-  volunteering: [],
-  competitions: [],
-  conferences: [],
-  testScores: [],
-  patents: [],
-  scholarships: [],
-  extraCurricular: []
+  currentSection: 'basic',
+  sidebarCollapsed: false
 };
+
+function resumeReducer(state: ResumeState, action: ResumeAction): ResumeState {
+  switch (action.type) {
+    case 'UPDATE_PERSONAL_INFO':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          personalInfo: { ...state.data.personalInfo, ...action.payload }
+        }
+      };
+    case 'ADD_EDUCATION':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          education: [...state.data.education, action.payload]
+        }
+      };
+    case 'UPDATE_EDUCATION':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          education: state.data.education.map(edu =>
+            edu.id === action.payload.id ? { ...edu, ...action.payload.data } : edu
+          )
+        }
+      };
+    case 'DELETE_EDUCATION':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          education: state.data.education.filter(edu => edu.id !== action.payload)
+        }
+      };
+    case 'ADD_WORK_EXPERIENCE':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          workExperience: [...state.data.workExperience, action.payload]
+        }
+      };
+    case 'UPDATE_WORK_EXPERIENCE':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          workExperience: state.data.workExperience.map(exp =>
+            exp.id === action.payload.id ? { ...exp, ...action.payload.data } : exp
+          )
+        }
+      };
+    case 'DELETE_WORK_EXPERIENCE':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          workExperience: state.data.workExperience.filter(exp => exp.id !== action.payload)
+        }
+      };
+    case 'ADD_PROJECT':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          projects: [...state.data.projects, action.payload]
+        }
+      };
+    case 'UPDATE_PROJECT':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          projects: state.data.projects.map(proj =>
+            proj.id === action.payload.id ? { ...proj, ...action.payload.data } : proj
+          )
+        }
+      };
+    case 'DELETE_PROJECT':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          projects: state.data.projects.filter(proj => proj.id !== action.payload)
+        }
+      };
+    case 'ADD_SKILL':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: [...state.data.skills, action.payload]
+        }
+      };
+    case 'UPDATE_SKILL':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: state.data.skills.map(skill =>
+            skill.id === action.payload.id ? { ...skill, ...action.payload.data } : skill
+          )
+        }
+      };
+    case 'DELETE_SKILL':
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          skills: state.data.skills.filter(skill => skill.id !== action.payload)
+        }
+      };
+    case 'SET_CURRENT_SECTION':
+      return { ...state, currentSection: action.payload };
+    case 'TOGGLE_SIDEBAR':
+      return { ...state, sidebarCollapsed: !state.sidebarCollapsed };
+    case 'LOAD_DATA':
+      return { ...state, data: action.payload };
+    default:
+      return state;
+  }
+}
+
+interface ResumeContextType {
+  state: ResumeState;
+  dispatch: React.Dispatch<ResumeAction>;
+}
 
 const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
 
-export function ResumeProvider({ children }: { children: ReactNode }) {
-  const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
+export function ResumeProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(resumeReducer, initialState);
 
-  const updatePersonalInfo = (info: Partial<PersonalInfo>) => {
-    setResumeData(prev => ({
-      ...prev,
-      personalInfo: { ...prev.personalInfo, ...info }
-    }));
-  };
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('resumeData');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        dispatch({ type: 'LOAD_DATA', payload: parsedData });
+      } catch (error) {
+        console.error('Error loading saved data:', error);
+      }
+    }
+  }, []);
 
-  const addEducation = (education: Omit<Education, 'id'>) => {
-    const newEducation = { ...education, id: Date.now().toString() };
-    setResumeData(prev => ({
-      ...prev,
-      education: [...prev.education, newEducation]
-    }));
-  };
-
-  const updateEducation = (id: string, education: Partial<Education>) => {
-    setResumeData(prev => ({
-      ...prev,
-      education: prev.education.map(edu =>
-        edu.id === id ? { ...edu, ...education } : edu
-      )
-    }));
-  };
-
-  const removeEducation = (id: string) => {
-    setResumeData(prev => ({
-      ...prev,
-      education: prev.education.filter(edu => edu.id !== id)
-    }));
-  };
-
-  const addWorkExperience = (experience: Omit<WorkExperience, 'id'>) => {
-    const newExperience = { ...experience, id: Date.now().toString() };
-    setResumeData(prev => ({
-      ...prev,
-      workExperience: [...prev.workExperience, newExperience]
-    }));
-  };
-
-  const updateWorkExperience = (id: string, experience: Partial<WorkExperience>) => {
-    setResumeData(prev => ({
-      ...prev,
-      workExperience: prev.workExperience.map(exp =>
-        exp.id === id ? { ...exp, ...experience } : exp
-      )
-    }));
-  };
-
-  const removeWorkExperience = (id: string) => {
-    setResumeData(prev => ({
-      ...prev,
-      workExperience: prev.workExperience.filter(exp => exp.id !== id)
-    }));
-  };
-
-  const addProject = (project: Omit<Project, 'id'>) => {
-    const newProject = { ...project, id: Date.now().toString() };
-    setResumeData(prev => ({
-      ...prev,
-      projects: [...prev.projects, newProject]
-    }));
-  };
-
-  const updateProject = (id: string, project: Partial<Project>) => {
-    setResumeData(prev => ({
-      ...prev,
-      projects: prev.projects.map(proj =>
-        proj.id === id ? { ...proj, ...project } : proj
-      )
-    }));
-  };
-
-  const removeProject = (id: string) => {
-    setResumeData(prev => ({
-      ...prev,
-      projects: prev.projects.filter(proj => proj.id !== id)
-    }));
-  };
-
-  const addSkill = (skill: Omit<Skill, 'id'>) => {
-    const newSkill = { ...skill, id: Date.now().toString() };
-    setResumeData(prev => ({
-      ...prev,
-      skills: [...prev.skills, newSkill]
-    }));
-  };
-
-  const updateSkill = (id: string, skill: Partial<Skill>) => {
-    setResumeData(prev => ({
-      ...prev,
-      skills: prev.skills.map(s =>
-        s.id === id ? { ...s, ...skill } : s
-      )
-    }));
-  };
-
-  const removeSkill = (id: string) => {
-    setResumeData(prev => ({
-      ...prev,
-      skills: prev.skills.filter(s => s.id !== id)
-    }));
-  };
-
-  const loadData = (data: Partial<ResumeData>) => {
-    setResumeData(prev => ({ ...prev, ...data }));
-  };
-
-  const exportData = () => resumeData;
+  // Save data to localStorage whenever state changes
+  useEffect(() => {
+    localStorage.setItem('resumeData', JSON.stringify(state.data));
+  }, [state.data]);
 
   return (
-    <ResumeContext.Provider value={{
-      resumeData,
-      updatePersonalInfo,
-      addEducation,
-      updateEducation,
-      removeEducation,
-      addWorkExperience,
-      updateWorkExperience,
-      removeWorkExperience,
-      addProject,
-      updateProject,
-      removeProject,
-      addSkill,
-      updateSkill,
-      removeSkill,
-      loadData,
-      exportData
-    }}>
+    <ResumeContext.Provider value={{ state, dispatch }}>
       {children}
     </ResumeContext.Provider>
   );
@@ -189,7 +208,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
 
 export function useResume() {
   const context = useContext(ResumeContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useResume must be used within a ResumeProvider');
   }
   return context;

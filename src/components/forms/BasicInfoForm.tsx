@@ -1,25 +1,27 @@
 'use client';
 
 import { useResume } from '@/context/ResumeContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-export function PersonalInfoForm() {
-  const { resumeData, updatePersonalInfo } = useResume();
-  const { personalInfo } = resumeData;
+export default function BasicInfoForm() {
+  const { state, dispatch } = useResume();
+  const { personalInfo } = state.data;
 
-  const handleChange = (field: string, value: string) => {
-    updatePersonalInfo({ [field]: value });
+  const handleChange = (field: keyof typeof personalInfo, value: string) => {
+    dispatch({
+      type: 'UPDATE_PERSONAL_INFO',
+      payload: { [field]: value }
+    });
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-gray-900">Personal Information</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <Card className="p-6">
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Personal Information</h2>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="fullName">Full Name</Label>
@@ -28,8 +30,10 @@ export function PersonalInfoForm() {
               value={personalInfo.fullName}
               onChange={(e) => handleChange('fullName', e.target.value)}
               placeholder="Enter your full name"
+              required
             />
           </div>
+
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
@@ -37,40 +41,30 @@ export function PersonalInfoForm() {
               type="email"
               value={personalInfo.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="your.email@example.com"
+              placeholder="Enter your email"
+              required
             />
           </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="phone">Phone</Label>
             <Input
               id="phone"
               value={personalInfo.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
-              placeholder="(123) 456-7890"
+              placeholder="Enter your phone number"
             />
           </div>
+
           <div>
             <Label htmlFor="location">Location</Label>
             <Input
               id="location"
               value={personalInfo.location}
               onChange={(e) => handleChange('location', e.target.value)}
-              placeholder="City, State/Country"
+              placeholder="Enter your location"
             />
           </div>
-        </div>
-
-        <div>
-          <Label htmlFor="linkedin">LinkedIn URL</Label>
-          <Input
-            id="linkedin"
-            value={personalInfo.linkedin}
-            onChange={(e) => handleChange('linkedin', e.target.value)}
-            placeholder="https://linkedin.com/in/yourprofile"
-          />
         </div>
 
         <div>
@@ -79,12 +73,12 @@ export function PersonalInfoForm() {
             id="summary"
             value={personalInfo.summary}
             onChange={(e) => handleChange('summary', e.target.value)}
-            placeholder="Write a brief professional summary highlighting your key skills and experience..."
+            placeholder="Write a brief professional summary..."
             rows={4}
-            className="resize-none"
+            className="min-h-[100px]"
           />
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }
