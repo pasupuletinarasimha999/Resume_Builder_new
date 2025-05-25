@@ -704,7 +704,7 @@ export default function ResumePage() {
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
                       paddingBottom: '0px'
-                    }}
+                    }}>
                       PROFESSIONAL EXPERIENCE
                     </h2>
                     {sections.experience.map((exp) => (
@@ -771,7 +771,7 @@ export default function ResumePage() {
                       marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '0px'
                     }}>
                       PROJECTS
                     </h2>
