@@ -563,10 +563,10 @@ export default function ResumePage() {
       // Update experience with optimized descriptions
       setSections(prev => ({
         ...prev,
-        experience: optimizations.experience?.map((opt) => {
-          const existing = prev.experience.find(exp => exp.id === opt.id)
-          return existing ? { ...existing, description: opt.optimizedDescription } : opt
-        }) || prev.experience
+        experience: prev.experience.map((exp) => {
+          const optimization = optimizations.experience?.find(opt => opt.id === exp.id)
+          return optimization ? { ...exp, description: optimization.optimizedDescription } : exp
+        })
       }))
     }
   }

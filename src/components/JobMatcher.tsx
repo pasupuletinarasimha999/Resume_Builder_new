@@ -27,7 +27,19 @@ interface ResumeData {
   summary: string
 }
 
-interface ExperienceSection {
+interface EducationItem {
+  id: string
+  school?: string
+  degree?: string
+  field?: string
+  startDate?: string
+  endDate?: string
+  description?: string
+  isPresent?: boolean
+  [key: string]: string | boolean | undefined
+}
+
+interface ExperienceItem {
   id: string
   company?: string
   position?: string
@@ -35,21 +47,82 @@ interface ExperienceSection {
   startDate?: string
   endDate?: string
   description?: string
+  isPresent?: boolean
+  [key: string]: string | boolean | undefined
 }
 
-interface SkillSection {
+interface ProjectItem {
+  id: string
+  name?: string
+  technologies?: string
+  url?: string
+  startDate?: string
+  endDate?: string
+  description?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface SkillItem {
   id: string
   category?: string
   skills?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface LanguageItem {
+  id: string
+  language?: string
+  proficiency?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface SocialItem {
+  id: string
+  platform?: string
+  url?: string
+  username?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface AwardItem {
+  id: string
+  title?: string
+  organization?: string
+  date?: string
+  description?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface CertificationItem {
+  id: string
+  name?: string
+  issuer?: string
+  date?: string
+  credentialId?: string
+  expiryDate?: string
+  [key: string]: string | boolean | undefined
 }
 
 interface ResumeSections {
-  experience: ExperienceSection[]
-  skills: SkillSection[]
-  [key: string]: unknown[]
+  education: EducationItem[]
+  experience: ExperienceItem[]
+  projects: ProjectItem[]
+  skills: SkillItem[]
+  languages: LanguageItem[]
+  social: SocialItem[]
+  awards: AwardItem[]
+  certifications: CertificationItem[]
 }
 
-interface OptimizedExperience extends ExperienceSection {
+interface OptimizedExperience {
+  id: string
+  company?: string
+  position?: string
+  location?: string
+  startDate?: string
+  endDate?: string
+  description?: string
+  isPresent?: boolean
   optimizedDescription: string
   changes: number
 }
