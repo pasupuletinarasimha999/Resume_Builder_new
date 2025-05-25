@@ -350,9 +350,12 @@ export default function ResumePage() {
     const blob = new Blob([jsonString], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
 
+    // Sanitize fullName for filename (replace spaces and special characters with underscores)
+    const sanitizedName = resumeData.fullName.replace(/[^a-zA-Z0-9]/g, '_')
+
     const link = document.createElement('a')
     link.href = url
-    link.download = `resume-data-${new Date().toISOString().split('T')[0]}.json`
+    link.download = `${sanitizedName}.json`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
