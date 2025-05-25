@@ -621,7 +621,7 @@ export default function ResumePage() {
                       marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '0px'
                     }}>
                       PROFESSIONAL SUMMARY
                     </h2>
@@ -644,7 +644,7 @@ export default function ResumePage() {
                       marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '0px'
                     }}>
                       EDUCATION
                     </h2>
@@ -703,8 +703,8 @@ export default function ResumePage() {
                       marginBottom: '6px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '2px'
-                    }}>
+                      paddingBottom: '0px'
+                    }}
                       PROFESSIONAL EXPERIENCE
                     </h2>
                     {sections.experience.map((exp) => (
@@ -843,7 +843,7 @@ export default function ResumePage() {
                       marginBottom: '10px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '0px'
                     }}>
                       TECHNICAL SKILLS
                     </h2>
