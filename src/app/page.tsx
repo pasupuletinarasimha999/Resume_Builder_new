@@ -682,7 +682,7 @@ export default function ResumePage() {
                         </div>
                         {edu.description && (
                           <div style={{
-                            margin: '4px 0 0 0',
+                            margin: '1px 0 0 0',
                             fontSize: '8pt',
                             lineHeight: '1.2'
                           }}>
@@ -757,7 +757,7 @@ export default function ResumePage() {
                         </div>
                         {exp.description && (
                           <div style={{
-                            margin: '4px 0 0 0',
+                            margin: '1px 0 0 0',
                             fontSize: '8pt',
                             lineHeight: '1.2'
                           }}>
@@ -829,7 +829,7 @@ export default function ResumePage() {
                         )}
                         {project.description && (
                           <div style={{
-                            margin: '4px 0 0 0',
+                            margin: '1px 0 0 0',
                             fontSize: '8pt',
                             lineHeight: '1.2'
                           }}>
@@ -855,18 +855,19 @@ export default function ResumePage() {
                       TECHNICAL SKILLS
                     </h2>
                     {sections.skills.map((skill) => (
-                      <div key={skill.id} style={{ marginBottom: '4px' }}>
+                      <div key={skill.id} style={{ marginBottom: '0px' }}>
                         <div style={{
                           fontSize: '10pt',
                           fontWeight: 'bold',
-                          marginBottom: '2px'
+                          marginBottom: '1px'
                         }}>
                           {skill.category}:
                         </div>
                         <div style={{
                           fontSize: '9pt',
                           lineHeight: '1.2',
-                          marginLeft: '10px'
+                          marginLeft: '10px',
+                          marginBottom: '1px'
                         }}>
                           {skill.skills}
                         </div>

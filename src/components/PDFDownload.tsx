@@ -111,18 +111,18 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 1.3,
     textAlign: 'justify',
-    marginTop: 2,
+    marginTop: 1,
   },
   skillCategory: {
     fontSize: 10,
     fontWeight: 'bold',
-    marginBottom: 3,
+    marginBottom: 1,
   },
   skillList: {
     fontSize: 9,
     lineHeight: 1.3,
     marginLeft: 8,
-    marginBottom: 6,
+    marginBottom: 1,
   },
   summary: {
     fontSize: 10,
@@ -183,7 +183,7 @@ const renderFormattedText = (htmlContent: string) => {
   return lines.map((line, index) => (
     <Text key={`line-${index}-${line.slice(0, 10)}`} style={[
       styles.itemDescription,
-      line.trim().startsWith('•') ? { marginLeft: 8, marginBottom: 1 } : {}
+      line.trim().startsWith('•') ? { marginLeft: 8, marginBottom: 0 } : {}
     ]}>
       {line.trim()}
     </Text>
@@ -320,7 +320,7 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>TECHNICAL SKILLS</Text>
           {sections.skills.map((skill) => (
-            <View key={skill.id} style={[styles.sectionItem, { marginBottom: 8 }]}>
+            <View key={skill.id} style={[styles.sectionItem, { marginBottom: 0 }]}>
               <Text style={styles.skillCategory}>{skill.category}:</Text>
               <Text style={styles.skillList}>{skill.skills}</Text>
             </View>
