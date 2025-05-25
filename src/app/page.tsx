@@ -491,9 +491,9 @@ export default function ResumePage() {
                     flexWrap: 'wrap'
                   }}>
                     <span>{resumeData.email}</span>
-                    <span>•</span>
+                    <span>|</span>
                     <span>{resumeData.phone}</span>
-                    <span>•</span>
+                    <span>|</span>
                     <span>{resumeData.location}</span>
                   </div>
                 </div>

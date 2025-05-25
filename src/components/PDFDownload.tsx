@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    padding: '25mm', // 25mm margins on all sides (about 1 inch)
+    padding: '15mm', // Reduced margins for more content space
     fontFamily: 'Helvetica',
     fontSize: 11,
     lineHeight: 1.4,
@@ -164,9 +164,9 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
         <Text style={styles.name}>{resumeData.fullName}</Text>
         <View style={styles.contactInfo}>
           <Text>{resumeData.email}</Text>
-          <Text> • </Text>
+          <Text> | </Text>
           <Text>{resumeData.phone}</Text>
-          <Text> • </Text>
+          <Text> | </Text>
           <Text>{resumeData.location}</Text>
         </View>
       </View>
