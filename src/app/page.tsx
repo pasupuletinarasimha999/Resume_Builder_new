@@ -665,7 +665,7 @@ export default function ResumePage() {
                           </h3>
                           <span style={{
                             fontSize: '8pt',
-                            color: '#666666',
+                            color: '#000000',
                             fontStyle: 'italic'
                           }}>
                             {(edu.startDate || edu.endDate) &&
@@ -725,7 +725,7 @@ export default function ResumePage() {
                           <div style={{
                             textAlign: 'right',
                             fontSize: '8pt',
-                            color: '#666666',
+                            color: '#000000',
                             fontStyle: 'italic',
                             lineHeight: '1.2'
                           }}>
@@ -748,7 +748,7 @@ export default function ResumePage() {
                           {exp.location && (
                             <span style={{
                               fontSize: '8pt',
-                              color: '#666666'
+                              color: '#000000'
                             }}>
                               {exp.location}
                             </span>
@@ -798,7 +798,7 @@ export default function ResumePage() {
                           </h3>
                           <span style={{
                             fontSize: '8pt',
-                            color: '#666666',
+                            color: '#000000',
                             fontStyle: 'italic'
                           }}>
                             {(project.startDate || project.endDate) &&
@@ -856,14 +856,14 @@ export default function ResumePage() {
                     {sections.skills.map((skill) => (
                       <div key={skill.id} style={{ marginBottom: '4px' }}>
                         <div style={{
-                          fontSize: '9pt',
+                          fontSize: '10pt',
                           fontWeight: 'bold',
                           marginBottom: '2px'
                         }}>
                           {skill.category}:
                         </div>
                         <div style={{
-                          fontSize: '8pt',
+                          fontSize: '9pt',
                           lineHeight: '1.2',
                           marginLeft: '10px'
                         }}>
