@@ -1,41 +1,30 @@
-# Resume Builder - Todo List
+# Resume Builder Development Todos
 
-## Core Features
-- [x] Create main layout with collapsible sidebar
-- [x] Implement basic information form
-- [x] Implement education section with add/edit/delete
-- [x] Implement work experience section
-- [x] Implement projects section
-- [x] Implement skills section
-- [x] Create resume preview component
-- [x] Add PDF download functionality
-- [x] Add data persistence with localStorage
-- [x] Style components to match original design
-- [x] Remove under-development sections
-- [x] Add responsive design
-- [x] Add form validation
-- [x] Test PDF generation and download
+## Main Tasks
+- [completed] Create the main layout with sidebar navigation (like reference site)
+- [completed] Fix PDF download functionality to prevent extra white pages
+- [completed] Apply the purple/gray theme from reference site
+- [completed] Implement personal information form
+- [completed] Add resume sections (Education, Experience, Projects, etc.)
+- [completed] Create reusable section components for dynamic content
+- [completed] Implement collapsible sidebar with icons and hover tooltips
+- [completed] Move action buttons (Load Data, Save Data, Download PDF) to top header
+- [completed] Add dark gray sidebar with proper hover effects and icon tooltips
+- [ ] Create resume preview component
+- [ ] Fix PDF download functionality to prevent extra white pages
+- [ ] Apply the purple/gray theme from reference site
+- [ ] Add data persistence/save/load functionality
+- [ ] Style components to match reference design
 
-## UI Components
-- [x] Sidebar navigation component
-- [x] Resume preview component
-- [x] Form components for each section
-- [x] Download button component
-- [x] Collapsible sections
+## Design Requirements
+- Light gray background (#f8fafa)
+- White sidebar with navigation
+- Purple accent buttons (#9137e5)
+- Split-screen layout (editor + preview)
+- Professional typography
+- Clean, modern interface
 
-## Data Management
-- [x] Define TypeScript interfaces for resume data
-- [x] Create context for state management
-- [x] Implement data persistence
-- [x] Add import/export functionality
-
-## Status: ✅ Complete - All core features implemented and tested
-
-## Additional Features Added:
-- [x] Sample data loading via "Sample" button
-- [x] Responsive design for mobile/tablet
-- [x] Form validation for required fields
-- [x] PDF download functionality with proper styling
-- [x] Data persistence via localStorage
-- [x] Collapsible sidebar with toggle button
-- [x] Clean, modern UI matching original design
+## PDF Export Fix
+- [ ] Implement proper page sizing to avoid extra white pages
+- [ ] Use html2canvas + jsPDF for clean PDF generation
+- [ ] Ensure proper margins and content fitting
