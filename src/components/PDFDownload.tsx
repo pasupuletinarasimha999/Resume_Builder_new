@@ -4,6 +4,11 @@ import { Button } from '@/components/ui/button'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
+interface SectionItem {
+  id: string
+  [key: string]: string | boolean | undefined
+}
+
 interface PDFDownloadProps {
   resumeData: {
     fullName: string
@@ -12,9 +17,15 @@ interface PDFDownloadProps {
     location: string
     summary: string
   }
+  sections: {
+    education: SectionItem[]
+    experience: SectionItem[]
+    projects: SectionItem[]
+    skills: SectionItem[]
+  }
 }
 
-export function PDFDownload({ resumeData }: PDFDownloadProps) {
+export function PDFDownload({ resumeData, sections }: PDFDownloadProps) {
   const downloadPDF = async () => {
     const element = document.getElementById('resume-preview')
     if (!element) {
@@ -23,63 +34,20 @@ export function PDFDownload({ resumeData }: PDFDownloadProps) {
     }
 
     try {
-      // Create a temporary container with proper A4 dimensions
-      const tempContainer = document.createElement('div')
-      tempContainer.style.position = 'absolute'
-      tempContainer.style.left = '-9999px'
-      tempContainer.style.top = '0'
-      tempContainer.style.width = '794px' // A4 width in pixels at 96 DPI
-      tempContainer.style.backgroundColor = '#ffffff'
-      tempContainer.style.fontFamily = 'Calibri, Arial, sans-serif'
-
-      // Clone the resume content
-      const clonedElement = element.cloneNode(true) as HTMLElement
-      clonedElement.style.width = '794px' // A4 width in pixels
-      clonedElement.style.minHeight = '1123px' // A4 height in pixels
-      clonedElement.style.padding = '60px' // Proper padding
-      clonedElement.style.fontSize = '11pt'
-      clonedElement.style.lineHeight = '1.4'
-      clonedElement.style.transform = 'none'
-      clonedElement.style.margin = '0'
-      clonedElement.style.boxSizing = 'border-box'
-
-      // Ensure all text elements maintain proper sizing
-      const allTextElements = clonedElement.querySelectorAll('*')
-      for (const el of allTextElements) {
-        const element = el as HTMLElement
-        if (element.style.fontSize?.includes('pt')) {
-          // Keep existing pt sizes
-        } else {
-          // Set relative font sizes for proper PDF scaling
-          const computedStyle = window.getComputedStyle(element)
-          const fontSize = computedStyle.fontSize
-          if (fontSize) {
-            const sizeInPx = Number.parseFloat(fontSize)
-            const sizeInPt = (sizeInPx * 0.75).toFixed(1) // Convert px to pt
-            element.style.fontSize = `${sizeInPt}pt`
-          }
-        }
-        element.style.fontFamily = 'Calibri, Arial, sans-serif'
-      }
-
-      tempContainer.appendChild(clonedElement)
-      document.body.appendChild(tempContainer)
-
-      // Create canvas from the temporary container
-      const canvas = await html2canvas(tempContainer, {
+      // Create canvas from the resume preview
+      const canvas = await html2canvas(element, {
         scale: 2, // Higher quality
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
-        width: 794, // A4 width in pixels
-        height: Math.max(1123, tempContainer.scrollHeight) // A4 height or content height
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        scrollX: 0,
+        scrollY: 0
       })
 
-      // Remove temporary container
-      document.body.removeChild(tempContainer)
-
-      // Calculate dimensions for A4
-      const imgData = canvas.toDataURL('image/png', 1.0)
+      // Calculate dimensions
+      const imgData = canvas.toDataURL('image/png')
       const pdf = new jsPDF('p', 'mm', 'a4')
 
       // A4 dimensions in mm
@@ -88,22 +56,27 @@ export function PDFDownload({ resumeData }: PDFDownloadProps) {
 
       // Calculate the height of the image in mm based on A4 width
       const imgWidth = pdfWidth
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-      // Add pages as needed
-      let heightLeft = imgHeight
-      let position = 0
+      // If content fits in one page
+      if (imgHeight <= pdfHeight) {
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+      } else {
+        // If content is longer, we need to split it into pages
+        let heightLeft = imgHeight
+        let position = 0
 
-      // Add first page
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, Math.min(imgHeight, pdfHeight))
-      heightLeft -= pdfHeight
-
-      // Add additional pages if needed
-      while (heightLeft > 0) {
-        position -= pdfHeight
-        pdf.addPage()
+        // Add first page
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
         heightLeft -= pdfHeight
+
+        // Add additional pages if needed
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight
+          pdf.addPage()
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+          heightLeft -= pdfHeight
+        }
       }
 
       // Download the PDF

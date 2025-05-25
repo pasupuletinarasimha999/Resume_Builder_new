@@ -1,39 +1,37 @@
-# Resume Display Issues - Todo List
+# Resume Builder Improvements - Todo List
 
-## Issues to Fix
+## Main Tasks
+- [ ] Fix preview/download mismatch issue - ensure downloaded resume matches preview exactly
+- [x] Add "Present" checkbox option to work experience section for current positions
+- [x] Implement rich text formatting for all description fields (bullets, numbering, bold, italic, etc.)
 
-### 1. Right Panel Preview Display - COMPLETED ✅
-- **Problem**: Preview panel shows resume very small due to `transform: scale(0.45)`
-- **Solution**: Changed scale to 1 and adjusted container width to 500px
-- **Location**: `src/app/page.tsx` lines 405-407
+## Current Status
+- Rich text editor successfully implemented with SSR fixes
+- Present checkbox working correctly for work experience
+- Need to test and fix PDF generation to match preview exactly
 
-### 2. Heading Underlines Overlapping - COMPLETED ✅
-- **Problem**: Underlines under headings are overlapping with the text
-- **Solution**: Increased `paddingBottom` from 2px to 4px and `marginBottom` from 8px to 10px
-- **Location**: `src/app/page.tsx` multiple heading style sections
+## Detailed Subtasks
 
-### 3. Preview Panel Width - COMPLETED ✅
-- **Problem**: Preview is only showing on one side and not utilizing full available space
-- **Solution**: Increased preview panel width from w-96 (384px) to w-[500px]
+### 1. Fix Preview/Download Mismatch
+- [ ] Review current PDF generation logic
+- [ ] Ensure consistent styling between preview and PDF
+- [ ] Test download to verify match with preview
 
-### 4. Font Size Optimization - COMPLETED ✅
-- **Problem**: Font sizes need adjustment for better preview readability
-- **Solution**: Optimized all font sizes across education, experience, projects, and skills sections
-- **Location**: Various styling sections in `src/app/page.tsx`
+### 2. Add "Present" Option to Work Experience
+- [ ] Add checkbox field for "Currently working here"
+- [ ] Update form validation and handling
+- [ ] Modify date display logic to show "Present" when checked
+- [ ] Update preview rendering for current positions
 
-## Completed Tasks
-- ✅ Fixed preview panel scale from 0.45 to 1.0
-- ✅ Fixed heading underline overlapping issues (increased padding)
-- ✅ Improved preview panel width from 384px to 500px
-- ✅ Adjusted main heading and contact info font sizes
-- ✅ Fixed professional summary font size
-- ✅ Optimized all content font sizes for better readability
-- ✅ Updated line heights for improved text spacing
-- ✅ Ensured consistent font sizing across all sections
+### 3. Rich Text Formatting for Descriptions
+- [ ] Install rich text editor dependencies
+- [ ] Create RichTextEditor component
+- [ ] Add formatting toolbar (bold, italic, bullets, numbering)
+- [ ] Replace textarea components with rich text editor
+- [ ] Update preview rendering to handle formatted text
+- [ ] Ensure PDF generation preserves formatting
 
-## All Issues Resolved! 🎉
-The resume preview now displays properly with:
-- Larger, readable preview panel
-- Proper heading underline spacing
-- Optimized font sizes throughout
-- Better overall layout matching PDF output quality
+## Status
+- Created: $(date)
+- Priority: High
+- Estimated completion: Today

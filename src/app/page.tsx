@@ -6,8 +6,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { PDFDownload } from '@/components/PDFDownload'
 import { ResumeSection } from '@/components/ResumeSection'
+import { richTextToPlainText } from '@/components/ui/rich-text-editor'
 
 // Resume sections with icons
 const resumeSections = [
@@ -36,7 +38,7 @@ interface ResumeData {
 
 interface SectionItem {
   id: string
-  [key: string]: string | undefined
+  [key: string]: string | boolean | undefined
 }
 
 interface ResumeSections {
@@ -46,40 +48,27 @@ interface ResumeSections {
   skills: SectionItem[]
 }
 
-// Helper function to format date to MM-YYYY or month name format
+// Helper function to format date to MM-YYYY
 function formatDateToMMYYYY(dateString: string): string {
   if (!dateString) return ''
+
+  // If already in MM-YYYY format, return as is
+  if (/^\d{2}-\d{4}$/.test(dateString)) {
+    return dateString
+  }
 
   // Handle "Present" or similar text
   if (dateString.toLowerCase() === 'present' || dateString.toLowerCase() === 'current') {
     return 'Present'
   }
 
-  // If already in MM-YYYY format, convert to "Month YYYY" format for better readability
-  if (/^\d{2}-\d{4}$/.test(dateString)) {
-    const [month, year] = dateString.split('-')
-    const monthNames = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ]
-    const monthIndex = Number.parseInt(month) - 1
-    if (monthIndex >= 0 && monthIndex < 12) {
-      return `${monthNames[monthIndex]} ${year}`
-    }
-    return dateString
-  }
-
-  // Try to parse as date and convert to "Month YYYY"
+  // Try to parse as date and convert to MM-YYYY
   try {
     const date = new Date(dateString)
     if (!Number.isNaN(date.getTime())) {
-      const monthNames = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-      ]
-      const month = monthNames[date.getMonth()]
+      const month = String(date.getMonth() + 1).padStart(2, '0')
       const year = date.getFullYear()
-      return `${month} ${year}`
+      return `${month}-${year}`
     }
   } catch (error) {
     // If parsing fails, return the original string
@@ -119,12 +108,22 @@ export default function ResumePage() {
     }))
   }
 
-  const updateSectionItem = (sectionName: keyof ResumeSections, id: string, field: string, value: string) => {
+  const updateSectionItem = (sectionName: keyof ResumeSections, id: string, field: string, value: string | boolean) => {
     setSections(prev => ({
       ...prev,
-      [sectionName]: prev[sectionName].map(item =>
-        item.id === id ? { ...item, [field]: value } : item
-      )
+      [sectionName]: prev[sectionName].map(item => {
+        if (item.id === id) {
+          const updatedItem = { ...item, [field]: value }
+
+          // If "Present" is checked for work experience, clear the end date
+          if (field === 'isPresent' && value === true && sectionName === 'experience') {
+            updatedItem.endDate = 'Present'
+          }
+
+          return updatedItem
+        }
+        return item
+      })
     }))
   }
 
@@ -144,7 +143,7 @@ export default function ResumePage() {
         { key: 'field', label: 'Field of Study', type: 'text' as const, placeholder: 'e.g., Computer Science' },
         { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 09-2020)' },
         { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 06-2024)' },
-        { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Relevant coursework, achievements, etc.' }
+        { key: 'description', label: 'Description', type: 'richtext' as const, placeholder: 'Relevant coursework, achievements, etc.' }
       ]
     },
     experience: {
@@ -154,8 +153,9 @@ export default function ResumePage() {
         { key: 'position', label: 'Position', type: 'text' as const, placeholder: 'e.g., Software Engineer' },
         { key: 'location', label: 'Location', type: 'text' as const, placeholder: 'e.g., San Francisco, CA' },
         { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 01-2022)' },
-        { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., Present)' },
-        { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Key responsibilities and achievements...' }
+        { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 06-2024)' },
+        { key: 'isPresent', label: 'I currently work here', type: 'checkbox' as const, placeholder: 'Check if this is your current position' },
+        { key: 'description', label: 'Description', type: 'richtext' as const, placeholder: 'Key responsibilities and achievements...' }
       ]
     },
     projects: {
@@ -166,7 +166,7 @@ export default function ResumePage() {
         { key: 'url', label: 'Project URL', type: 'text' as const, placeholder: 'https://github.com/...' },
         { key: 'startDate', label: 'Start Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 03-2023)' },
         { key: 'endDate', label: 'End Date', type: 'text' as const, placeholder: 'MM-YYYY (e.g., 08-2023)' },
-        { key: 'description', label: 'Description', type: 'textarea' as const, placeholder: 'Brief description of the project...' }
+        { key: 'description', label: 'Description', type: 'richtext' as const, placeholder: 'Brief description of the project...' }
       ]
     },
     skills: {
@@ -217,7 +217,7 @@ export default function ResumePage() {
             >
               💾 Save Data
             </Button>
-            <PDFDownload resumeData={resumeData} />
+            <PDFDownload resumeData={resumeData} sections={sections} />
           </div>
         </div>
       </div>
@@ -317,12 +317,11 @@ export default function ResumePage() {
 
                   <div>
                     <Label htmlFor="summary">Professional Summary</Label>
-                    <Textarea
+                    <RichTextEditor
                       id="summary"
                       placeholder="Write a brief professional summary..."
-                      rows={4}
                       value={resumeData.summary}
-                      onChange={(e) => handleInputChange('summary', e.target.value)}
+                      onChange={(value) => handleInputChange('summary', value)}
                       className="mt-1"
                     />
                   </div>
@@ -338,6 +337,7 @@ export default function ResumePage() {
                 onUpdateItem={(id, field, value) => updateSectionItem('education', id, field, value)}
                 onDeleteItem={(id) => deleteSectionItem('education', id)}
                 fields={sectionConfigs.education.fields}
+                sectionType="education"
               />
             )}
 
@@ -349,6 +349,7 @@ export default function ResumePage() {
                 onUpdateItem={(id, field, value) => updateSectionItem('experience', id, field, value)}
                 onDeleteItem={(id) => deleteSectionItem('experience', id)}
                 fields={sectionConfigs.experience.fields}
+                sectionType="experience"
               />
             )}
 
@@ -360,6 +361,7 @@ export default function ResumePage() {
                 onUpdateItem={(id, field, value) => updateSectionItem('projects', id, field, value)}
                 onDeleteItem={(id) => deleteSectionItem('projects', id)}
                 fields={sectionConfigs.projects.fields}
+                sectionType="projects"
               />
             )}
 
@@ -387,30 +389,27 @@ export default function ResumePage() {
           </div>
 
           {/* Preview */}
-          <div className="w-[500px] bg-gray-100 p-4 overflow-y-auto">
-            <div className="bg-white rounded-lg shadow-lg p-2">
+          <div className="w-96 bg-gray-100 p-4 overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-lg">
               <div
                 className="bg-white text-black"
                 id="resume-preview"
                 style={{
                   fontFamily: 'Calibri, Arial, sans-serif',
-                  width: '100%',
-                  maxWidth: '460px',
-                  minHeight: '650px',
+                  width: '210mm',
+                  minHeight: '297mm',
+                  maxWidth: '100%',
                   margin: '0 auto',
-                  padding: '20px',
-                  fontSize: '9pt',
-                  lineHeight: '1.3',
-                  color: '#000000',
-                  transform: 'scale(1)',
-                  transformOrigin: 'top left',
-                  position: 'relative'
+                  padding: '20mm',
+                  fontSize: '11pt',
+                  lineHeight: '1.4',
+                  color: '#000000'
                 }}
               >
                 {/* Header */}
                 <div className="text-center mb-6 border-b-2 border-gray-900 pb-4">
                   <h1 style={{
-                    fontSize: '14pt',
+                    fontSize: '18pt',
                     fontWeight: 'bold',
                     marginBottom: '8px',
                     textTransform: 'uppercase',
@@ -419,7 +418,7 @@ export default function ResumePage() {
                     {resumeData.fullName}
                   </h1>
                   <div style={{
-                    fontSize: '8pt',
+                    fontSize: '10pt',
                     color: '#333333',
                     display: 'flex',
                     alignItems: 'center',
@@ -439,21 +438,21 @@ export default function ResumePage() {
                 {resumeData.summary && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '12pt',
                       fontWeight: 'bold',
-                      marginBottom: '10px',
+                      marginBottom: '8px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '2px'
                     }}>
                       PROFESSIONAL SUMMARY
                     </h2>
                     <div style={{
-                      fontSize: '9pt',
-                      lineHeight: '1.3',
+                      fontSize: '11pt',
+                      lineHeight: '1.4',
                       textAlign: 'justify'
                     }}>
-                      {resumeData.summary}
+                      {richTextToPlainText(resumeData.summary)}
                     </div>
                   </div>
                 )}
@@ -462,12 +461,12 @@ export default function ResumePage() {
                 {sections.education.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '12pt',
                       fontWeight: 'bold',
-                      marginBottom: '10px',
+                      marginBottom: '8px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '2px'
                     }}>
                       EDUCATION
                     </h2>
@@ -480,24 +479,24 @@ export default function ResumePage() {
                           marginBottom: '4px'
                         }}>
                           <h3 style={{
-                            fontSize: '9pt',
+                            fontSize: '11pt',
                             fontWeight: 'bold',
                             margin: 0
                           }}>
                             {edu.school}
                           </h3>
                           <span style={{
-                            fontSize: '8pt',
+                            fontSize: '10pt',
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
-                            {(edu.startDate || edu.endDate) &&
-                              `${edu.startDate ? formatDateToMMYYYY(edu.startDate) : ''}${edu.startDate && edu.endDate ? ' - ' : ''}${edu.endDate ? formatDateToMMYYYY(edu.endDate) : ''}`
+                            {edu.startDate && edu.endDate &&
+                              `${formatDateToMMYYYY(typeof edu.startDate === 'string' ? edu.startDate : '')} - ${formatDateToMMYYYY(typeof edu.endDate === 'string' ? edu.endDate : '')}`
                             }
                           </span>
                         </div>
                         <div style={{
-                          fontSize: '9pt',
+                          fontSize: '11pt',
                           marginBottom: '4px',
                           fontStyle: 'italic'
                         }}>
@@ -507,10 +506,10 @@ export default function ResumePage() {
                           <ul style={{
                             margin: '4px 0 0 20px',
                             padding: 0,
-                            fontSize: '8pt',
-                            lineHeight: '1.2'
+                            fontSize: '10pt',
+                            lineHeight: '1.3'
                           }}>
-                            {edu.description.split('\n').filter(line => line.trim()).map((line) => (
+                            {richTextToPlainText(typeof edu.description === 'string' ? edu.description : '').split('\n').filter(line => line.trim()).map((line) => (
                               <li key={`${edu.id}-edu-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
                                 {line.trim()}
                               </li>
@@ -526,12 +525,12 @@ export default function ResumePage() {
                 {sections.experience.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '12pt',
                       fontWeight: 'bold',
-                      marginBottom: '10px',
+                      marginBottom: '8px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '2px'
                     }}>
                       PROFESSIONAL EXPERIENCE
                     </h2>
@@ -544,24 +543,28 @@ export default function ResumePage() {
                           marginBottom: '4px'
                         }}>
                           <h3 style={{
-                            fontSize: '9pt',
+                            fontSize: '11pt',
                             fontWeight: 'bold',
                             margin: 0
                           }}>
                             {exp.position}
                           </h3>
                           <span style={{
-                            fontSize: '8pt',
+                            fontSize: '10pt',
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
-                            {(exp.startDate || exp.endDate) &&
-                              `${exp.startDate ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate ? formatDateToMMYYYY(exp.endDate) : ''}`
+                            {exp.startDate && (exp.endDate || exp.isPresent) &&
+                              `${formatDateToMMYYYY(typeof exp.startDate === 'string' ? exp.startDate : '')} - ${
+                                exp.isPresent === 'true' || exp.isPresent === true
+                                  ? 'Present'
+                                  : formatDateToMMYYYY(typeof exp.endDate === 'string' ? exp.endDate : '')
+                              }`
                             }
                           </span>
                         </div>
                         <div style={{
-                          fontSize: '9pt',
+                          fontSize: '11pt',
                           marginBottom: '4px',
                           fontStyle: 'italic'
                         }}>
@@ -571,10 +574,10 @@ export default function ResumePage() {
                           <ul style={{
                             margin: '4px 0 0 20px',
                             padding: 0,
-                            fontSize: '8pt',
-                            lineHeight: '1.2'
+                            fontSize: '10pt',
+                            lineHeight: '1.3'
                           }}>
-                            {exp.description.split('\n').filter(line => line.trim()).map((line) => (
+                            {richTextToPlainText(typeof exp.description === 'string' ? exp.description : '').split('\n').filter(line => line.trim()).map((line) => (
                               <li key={`${exp.id}-exp-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
                                 {line.trim()}
                               </li>
@@ -590,12 +593,12 @@ export default function ResumePage() {
                 {sections.projects.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '12pt',
                       fontWeight: 'bold',
-                      marginBottom: '10px',
+                      marginBottom: '8px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '2px'
                     }}>
                       PROJECTS
                     </h2>
@@ -608,25 +611,25 @@ export default function ResumePage() {
                           marginBottom: '4px'
                         }}>
                           <h3 style={{
-                            fontSize: '9pt',
+                            fontSize: '11pt',
                             fontWeight: 'bold',
                             margin: 0
                           }}>
                             {project.name}
                           </h3>
                           <span style={{
-                            fontSize: '8pt',
+                            fontSize: '10pt',
                             color: '#666666',
                             fontStyle: 'italic'
                           }}>
-                            {(project.startDate || project.endDate) &&
-                              `${project.startDate ? formatDateToMMYYYY(project.startDate) : ''}${project.startDate && project.endDate ? ' - ' : ''}${project.endDate ? formatDateToMMYYYY(project.endDate) : ''}`
+                            {project.startDate && project.endDate &&
+                              `${formatDateToMMYYYY(typeof project.startDate === 'string' ? project.startDate : '')} - ${formatDateToMMYYYY(typeof project.endDate === 'string' ? project.endDate : '')}`
                             }
                           </span>
                         </div>
                         {project.technologies && (
                           <div style={{
-                            fontSize: '8pt',
+                            fontSize: '10pt',
                             marginBottom: '4px',
                             fontStyle: 'italic',
                             color: '#333333'
@@ -636,7 +639,7 @@ export default function ResumePage() {
                         )}
                         {project.url && (
                           <div style={{
-                            fontSize: '8pt',
+                            fontSize: '10pt',
                             marginBottom: '4px',
                             color: '#0066cc',
                             wordBreak: 'break-all'
@@ -648,10 +651,10 @@ export default function ResumePage() {
                           <ul style={{
                             margin: '4px 0 0 20px',
                             padding: 0,
-                            fontSize: '8pt',
-                            lineHeight: '1.2'
+                            fontSize: '10pt',
+                            lineHeight: '1.3'
                           }}>
-                            {project.description.split('\n').filter(line => line.trim()).map((line) => (
+                            {richTextToPlainText(typeof project.description === 'string' ? project.description : '').split('\n').filter(line => line.trim()).map((line) => (
                               <li key={`${project.id}-proj-${line.slice(0, 20)}`} style={{ marginBottom: '2px' }}>
                                 {line.trim()}
                               </li>
@@ -667,27 +670,27 @@ export default function ResumePage() {
                 {sections.skills.length > 0 && (
                   <div className="mb-6">
                     <h2 style={{
-                      fontSize: '10pt',
+                      fontSize: '12pt',
                       fontWeight: 'bold',
-                      marginBottom: '10px',
+                      marginBottom: '8px',
                       textTransform: 'uppercase',
                       borderBottom: '1px solid #ccc',
-                      paddingBottom: '4px'
+                      paddingBottom: '2px'
                     }}>
                       TECHNICAL SKILLS
                     </h2>
                     {sections.skills.map((skill) => (
                       <div key={skill.id} style={{ marginBottom: '8px' }}>
                         <div style={{
-                          fontSize: '9pt',
+                          fontSize: '11pt',
                           fontWeight: 'bold',
                           marginBottom: '2px'
                         }}>
                           {skill.category}:
                         </div>
                         <div style={{
-                          fontSize: '8pt',
-                          lineHeight: '1.2',
+                          fontSize: '10pt',
+                          lineHeight: '1.3',
                           marginLeft: '10px'
                         }}>
                           {skill.skills}

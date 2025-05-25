@@ -6,26 +6,27 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { MonthYearInput } from '@/components/ui/month-year-input'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { Plus, Trash2 } from 'lucide-react'
 
 interface SectionItem {
   id: string
-  [key: string]: string | undefined
+  [key: string]: string | boolean | undefined
 }
 
 interface ResumeSectionProps {
   title: string
   items: SectionItem[]
   onAddItem: () => void
-  onUpdateItem: (id: string, field: string, value: string) => void
+  onUpdateItem: (id: string, field: string, value: string | boolean) => void
   onDeleteItem: (id: string) => void
   fields: Array<{
     key: string
     label: string
-    type: 'text' | 'textarea' | 'date'
+    type: 'text' | 'textarea' | 'date' | 'checkbox' | 'richtext'
     placeholder?: string
   }>
+  sectionType?: string
 }
 
 export function ResumeSection({
@@ -34,7 +35,8 @@ export function ResumeSection({
   onAddItem,
   onUpdateItem,
   onDeleteItem,
-  fields
+  fields,
+  sectionType
 }: ResumeSectionProps) {
   return (
     <Card className="rounded-xl p-6">
@@ -72,38 +74,79 @@ export function ResumeSection({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {fields.map((field) => (
-                    <div key={field.key} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-                      <Label htmlFor={`${item.id}-${field.key}`}>{field.label}</Label>
-                      {field.type === 'textarea' ? (
-                        <Textarea
-                          id={`${item.id}-${field.key}`}
-                          value={item[field.key] || ''}
-                          onChange={(e) => onUpdateItem(item.id, field.key, e.target.value)}
-                          placeholder={field.placeholder}
-                          rows={3}
-                          className="mt-1"
-                        />
-                      ) : field.key.toLowerCase().includes('date') ? (
-                        <MonthYearInput
-                          id={`${item.id}-${field.key}`}
-                          value={item[field.key] || ''}
-                          onChange={(value) => onUpdateItem(item.id, field.key, value)}
-                          placeholder={field.placeholder}
-                          className="mt-1"
-                        />
-                      ) : (
-                        <Input
-                          id={`${item.id}-${field.key}`}
-                          type={field.type}
-                          value={item[field.key] || ''}
-                          onChange={(e) => onUpdateItem(item.id, field.key, e.target.value)}
-                          placeholder={field.placeholder}
-                          className="mt-1"
-                        />
-                      )}
-                    </div>
-                  ))}
+                  {fields.map((field) => {
+                    // Special handling for work experience "Present" checkbox
+                    if (field.key === 'isPresent' && sectionType === 'experience') {
+                      return (
+                        <div key={field.key} className="flex items-center gap-2">
+                          <input
+                            id={`${item.id}-${field.key}`}
+                            type="checkbox"
+                            checked={item[field.key] === 'true' || item[field.key] === true}
+                            onChange={(e) => onUpdateItem(item.id, field.key, e.target.checked)}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <Label htmlFor={`${item.id}-${field.key}`} className="text-sm">
+                            {field.label}
+                          </Label>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <div key={field.key} className={
+                        field.type === 'textarea' || field.type === 'richtext' ? 'md:col-span-2' : ''
+                      }>
+                        <Label htmlFor={`${item.id}-${field.key}`}>{field.label}</Label>
+                        {field.type === 'richtext' ? (
+                          <RichTextEditor
+                            id={`${item.id}-${field.key}`}
+                            value={item[field.key] || ''}
+                            onChange={(value) => onUpdateItem(item.id, field.key, value)}
+                            placeholder={field.placeholder}
+                            className="mt-1"
+                          />
+                        ) : field.type === 'textarea' ? (
+                          <Textarea
+                            id={`${item.id}-${field.key}`}
+                            value={item[field.key] || ''}
+                            onChange={(e) => onUpdateItem(item.id, field.key, e.target.value)}
+                            placeholder={field.placeholder}
+                            rows={3}
+                            className="mt-1"
+                          />
+                        ) : field.type === 'checkbox' ? (
+                          <div className="flex items-center gap-2 mt-1">
+                            <input
+                              id={`${item.id}-${field.key}`}
+                              type="checkbox"
+                              checked={item[field.key] === 'true' || item[field.key] === true}
+                              onChange={(e) => onUpdateItem(item.id, field.key, e.target.checked)}
+                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            />
+                            <Label htmlFor={`${item.id}-${field.key}`} className="text-sm">
+                              {field.placeholder}
+                            </Label>
+                          </div>
+                        ) : (
+                          <Input
+                            id={`${item.id}-${field.key}`}
+                            type={field.type}
+                            value={item[field.key] || ''}
+                            onChange={(e) => onUpdateItem(item.id, field.key, e.target.value)}
+                            placeholder={field.placeholder}
+                            className="mt-1"
+                            // Disable end date field if "Present" is checked for work experience
+                            disabled={
+                              field.key === 'endDate' &&
+                              sectionType === 'experience' &&
+                              (item.isPresent === 'true' || item.isPresent === true)
+                            }
+                          />
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             ))}
