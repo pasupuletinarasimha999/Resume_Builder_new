@@ -1,3 +1,6 @@
+/* Import Calibri font for professional resume appearance */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -65,5 +68,61 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Calibri', 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Resume-specific styles */
+@layer components {
+  .resume-font {
+    font-family: 'Calibri', 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .resume-section-divider {
+    @apply border-b border-gray-300 my-4;
+  }
+
+  .a4-preview {
+    width: 8.27in;
+    min-height: 11.69in;
+    background: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    margin: 0 auto;
+    padding: 0.75in;
+    color: black;
+  }
+
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .a4-preview {
+      width: 8.27in;
+      height: 11.69in;
+      box-shadow: none;
+      margin: 0;
+      padding: 0.75in;
+      page-break-after: always;
+      font-size: 11pt;
+    }
+
+    .a4-preview h1 {
+      font-size: 18pt;
+    }
+
+    .a4-preview h2 {
+      font-size: 14pt;
+    }
+
+    .a4-preview h3 {
+      font-size: 12pt;
+    }
+
+    /* Hide non-resume elements when printing */
+    .no-print {
+      display: none !important;
+    }
   }
 }

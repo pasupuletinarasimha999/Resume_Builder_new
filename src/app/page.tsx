@@ -1,168 +1,79 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { ResumeData, SectionKey } from '@/types/resume';
-import { resumeSections, defaultResumeData, sampleResumeData } from '@/lib/resume-sections';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { PersonalInfoForm } from '@/components/forms/PersonalInfoForm';
-import { EducationForm } from '@/components/forms/EducationForm';
-import { WorkExperienceForm } from '@/components/forms/WorkExperienceForm';
+import { useState } from 'react';
+import { ResumeProvider } from '@/context/ResumeContext';
+import { Sidebar, type Section } from '@/components/Sidebar';
 import { ResumePreview } from '@/components/ResumePreview';
-import { Moon } from 'lucide-react';
+import { PersonalInfoForm } from '@/components/PersonalInfoForm';
+import { WorkExperienceForm } from '@/components/WorkExperienceForm';
+import { EducationForm } from '@/components/EducationForm';
+import { SkillsForm } from '@/components/SkillsForm';
+import { ProjectsForm } from '@/components/ProjectsForm';
 
-export default function ResumeBuilder() {
-  const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
-  const [activeSection, setActiveSection] = useState<SectionKey>('personalInfo');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+function ResumeBuilder() {
+  const [activeSection, setActiveSection] = useState<Section>('basic');
 
-  const updateResumeData = useCallback((section: SectionKey, data: ResumeData[SectionKey]) => {
-    setResumeData(prev => ({
-      ...prev,
-      [section]: data
-    }));
-  }, []);
-
-  const loadSampleData = () => {
-    setResumeData(sampleResumeData);
-    console.log('Sample data loaded');
-  };
-
-  const saveData = () => {
-    localStorage.setItem('resumeData', JSON.stringify(resumeData));
-    console.log('Data saved to localStorage');
-  };
-
-  const loadData = () => {
-    const saved = localStorage.getItem('resumeData');
-    if (saved) {
-      setResumeData(JSON.parse(saved));
-      console.log('Data loaded from localStorage');
-    }
-  };
-
-  const renderActiveForm = () => {
+  const renderActiveSection = () => {
     switch (activeSection) {
-      case 'personalInfo':
-        return (
-          <PersonalInfoForm
-            data={resumeData.personalInfo}
-            onUpdate={(data) => updateResumeData('personalInfo', data)}
-          />
-        );
+      case 'basic':
+        return <PersonalInfoForm />;
+      case 'work-experience':
+        return <WorkExperienceForm />;
       case 'education':
-        return (
-          <EducationForm
-            data={resumeData.education}
-            onUpdate={(data) => updateResumeData('education', data)}
-          />
-        );
-      case 'workExperience':
-        return (
-          <WorkExperienceForm
-            data={resumeData.workExperience}
-            onUpdate={(data) => updateResumeData('workExperience', data)}
-          />
-        );
-      // Other forms will be implemented later
+        return <EducationForm />;
+      case 'skills':
+        return <SkillsForm />;
+      case 'projects':
+        return <ProjectsForm />;
       default:
         return (
-          <Card className="p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              {resumeSections.find(s => s.key === activeSection)?.label}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              This section is coming soon...
-            </p>
-          </Card>
+          <div className="flex items-center justify-center h-64 text-gray-500">
+            <p>This section is under development. Please select another section.</p>
+          </div>
         );
     }
   };
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${isDarkMode ? 'dark' : ''}`}>
+    <div className="min-h-screen bg-gray-50">
       <div className="flex h-screen">
-        {/* Sidebar */}
-        <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
-          {/* Header */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Hey,</span>
-              <span className="text-sm font-medium underline cursor-pointer">Good to see you</span>
-            </div>
+        {/* Sidebar - 320px wide */}
+        <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
-            {/* Action Buttons */}
-            <div className="flex gap-2 mb-4">
-              <Button variant="outline" size="sm" className="text-xs">
-                Templates
-              </Button>
-              <Button variant="outline" size="sm" className="text-xs">
-                Reorder
-              </Button>
-              <Button variant="outline" size="sm" className="text-xs" onClick={loadSampleData}>
-                Sample
-              </Button>
-            </div>
-
-            {/* Save/Load Buttons */}
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
-                onClick={loadData}
-              >
-                📁 Load Data
-              </Button>
-              <Button
-                size="sm"
-                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
-                onClick={saveData}
-              >
-                💾 Save Data
-              </Button>
-            </div>
+        {/* Main content area - 40% for forms, 60% for preview */}
+        <div className="flex flex-1">
+          {/* Form section - 40% */}
+          <div className="w-2/5 p-6 overflow-y-auto bg-white">
+            {renderActiveSection()}
           </div>
 
-          {/* Navigation */}
-          <div className="flex-1 overflow-y-auto p-2">
-            {resumeSections.map((section) => (
-              <button
-                key={section.key}
-                onClick={() => setActiveSection(section.key)}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors mb-1 ${
-                  activeSection === section.key
-                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
-                }`}
-              >
-                <span className="text-sm font-medium">{section.label}</span>
-              </button>
-            ))}
-
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg text-left hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-            >
-              <Moon size={16} className="flex-shrink-0" />
-              <span className="text-sm font-medium">Dark Mode</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 flex">
-          {/* Form Editor */}
-          <div className="flex-1 p-6 overflow-y-auto">
-            {renderActiveForm()}
-          </div>
-
-          {/* Resume Preview */}
-          <div className="w-96 bg-gray-100 dark:bg-gray-800 p-4 overflow-y-auto">
-            <ResumePreview data={resumeData} />
+          {/* Preview section - 60% with larger A4 preview */}
+          <div className="w-3/5 bg-gray-100 p-6 overflow-y-auto">
+            <div className="max-w-none">
+              <div className="mb-4 flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-gray-800">Resume Preview</h2>
+                <button
+                  onClick={() => window.print()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Print Resume
+                </button>
+              </div>
+              <div className="bg-white rounded-lg shadow-lg">
+                <ResumePreview />
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <ResumeProvider>
+      <ResumeBuilder />
+    </ResumeProvider>
   );
 }
