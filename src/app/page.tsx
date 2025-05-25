@@ -110,7 +110,7 @@ function renderRichTextContent(htmlContent: string) {
           )
         case 'li':
           return <li key={key++} style={{
-            marginBottom: '1px',
+            marginBottom: '2px',
             paddingLeft: '4px',
             display: 'list-item'
           }}>{children}</li>

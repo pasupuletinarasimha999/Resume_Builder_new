@@ -183,7 +183,7 @@ const renderFormattedText = (htmlContent: string) => {
   return lines.map((line, index) => (
     <Text key={`line-${index}-${line.slice(0, 10)}`} style={[
       styles.itemDescription,
-      line.trim().startsWith('•') ? { marginLeft: 8, marginBottom: 0 } : {}
+      line.trim().startsWith('•') ? { marginLeft: 8, marginBottom: 2 } : {}
     ]}>
       {line.trim()}
     </Text>

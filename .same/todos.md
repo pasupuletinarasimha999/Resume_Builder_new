@@ -38,6 +38,10 @@
   - PDF itemSubtitle marginBottom: 4 → 0
   - PDF itemDescription marginTop: 1 → 0
   - PDF companyLocationRow marginBottom: 4 → 0
+- [x] Added small gap between individual bullet points for better readability
+  - Preview: bullet points marginBottom increased from 1px to 2px
+  - PDF: bullet points marginBottom increased from 0 to 2
+  - Maintains readability while keeping compact layout
 
 ## Current Status
 ✅ All requested changes completed for BOTH preview AND PDF download! The resume now has:
