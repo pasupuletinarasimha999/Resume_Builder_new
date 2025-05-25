@@ -744,7 +744,7 @@ export default function ResumePage() {
                   {skill.category}:
                 </div>
                 <div style={{
-                  fontSize: '10pt',
+                  fontSize: '9pt',
                   lineHeight: '1.4',
                   marginLeft: '10px',
                   marginBottom: '1px'
@@ -1607,14 +1607,14 @@ export default function ResumePage() {
                     {sections.skills.map((skill) => (
                       <div key={skill.id} style={{ marginBottom: '0px' }}>
                         <div style={{
-                          fontSize: '10pt',
+                          fontSize: '9pt',
                           fontWeight: 'bold',
                           marginBottom: '1px'
                         }}>
                           {skill.category}:
                         </div>
                         <div style={{
-                          fontSize: '9pt',
+                          fontSize: '8pt',
                           lineHeight: '1.4',
                           marginLeft: '10px',
                           marginBottom: '3px'
