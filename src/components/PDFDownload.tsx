@@ -404,26 +404,27 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
                   backgroundColor: '#f8f8f8'
                 }}>
                   <Text style={{
-                    fontSize: 8,
+                    fontSize: 11,
                     fontWeight: 'bold',
                     marginBottom: 4,
-                    lineHeight: 1.3
+                    lineHeight: 1.3,
+                    color: '#000000'
                   }}>
                     {cert.name}
                   </Text>
                   <Text style={{
-                    fontSize: 7,
+                    fontSize: 10,
                     marginBottom: 3,
                     fontStyle: 'italic',
-                    color: '#555555',
+                    color: '#000000',
                     lineHeight: 1.2
                   }}>
                     {cert.issuer}
                   </Text>
                   <Text style={{
-                    fontSize: 7,
+                    fontSize: 10,
                     fontWeight: 'bold',
-                    color: '#666666',
+                    color: '#000000',
                     marginBottom: 3,
                     lineHeight: 1.2
                   }}>
@@ -434,8 +435,8 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
                   </Text>
                   {cert.credentialId && (
                     <Text style={{
-                      fontSize: 6,
-                      color: '#777777',
+                      fontSize: 9,
+                      color: '#000000',
                       lineHeight: 1.2
                     }}>
                       ID: {cert.credentialId}
