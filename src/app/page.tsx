@@ -744,7 +744,7 @@ export default function ResumePage() {
                   {skill.category}:
                 </div>
                 <div style={{
-                  fontSize: '9pt',
+                  fontSize: '10pt',
                   lineHeight: '1.2',
                   marginLeft: '10px',
                   marginBottom: '1px'

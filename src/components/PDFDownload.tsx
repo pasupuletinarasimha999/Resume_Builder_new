@@ -117,18 +117,18 @@ const styles = StyleSheet.create({
     color: '#333333',
   },
   itemDescription: {
-    fontSize: 10,
+    fontSize: 11,
     lineHeight: 1.3,
     textAlign: 'justify',
     marginTop: 0,
   },
   skillCategory: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 'bold',
     marginBottom: 1,
   },
   skillList: {
-    fontSize: 9,
+    fontSize: 10,
     lineHeight: 1.3,
     marginLeft: 8,
     marginBottom: 1,
