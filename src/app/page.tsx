@@ -51,6 +51,9 @@ interface ResumeSections {
 // Helper function to render rich text content in preview
 function renderRichTextContent(htmlContent: string) {
   if (!htmlContent) return null
+  
+  // Only render on client side to avoid SSR issues
+  if (typeof window === 'undefined') return null
 
   // Create a temporary div to parse HTML
   const tempDiv = document.createElement('div')
@@ -76,18 +79,36 @@ function renderRichTextContent(htmlContent: string) {
           return <strong key={key++}>{children}</strong>
         case 'ul':
           return (
-            <ul key={key++} style={{ margin: '4px 0 0 20px', padding: 0, fontSize: '8pt', lineHeight: '1.2' }}>
+            <ul key={key++} style={{
+              margin: '2px 0 0 16px',
+              padding: 0,
+              fontSize: '8pt',
+              lineHeight: '1.2',
+              listStyleType: 'disc',
+              listStylePosition: 'outside'
+            }}>
               {children}
             </ul>
           )
         case 'ol':
           return (
-            <ol key={key++} style={{ margin: '4px 0 0 20px', padding: 0, fontSize: '8pt', lineHeight: '1.2' }}>
+            <ol key={key++} style={{
+              margin: '2px 0 0 16px',
+              padding: 0,
+              fontSize: '8pt',
+              lineHeight: '1.2',
+              listStyleType: 'decimal',
+              listStylePosition: 'outside'
+            }}>
               {children}
             </ol>
           )
         case 'li':
-          return <li key={key++} style={{ marginBottom: '2px' }}>{children}</li>
+          return <li key={key++} style={{
+            marginBottom: '1px',
+            paddingLeft: '4px',
+            display: 'list-item'
+          }}>{children}</li>
         case 'br':
           return <br key={key++} />
         case 'div':
@@ -155,18 +176,87 @@ export default function ResumePage() {
   const [activeSection, setActiveSection] = useState('basic')
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
   const [resumeData, setResumeData] = useState<ResumeData>({
-    fullName: 'Jack',
-    email: 'jack@haveloc.com',
-    phone: '987654321',
-    location: 'Hyderabad, India',
-    summary: "I am Jack a tech enthusiast with a passion for innovation. As the developer behind wall I've created a groundbreaking software solution that revolutionizes. With a focus on streamlining and optimizing workflows, It brings efficiency and effectiveness to the world of animals."
+    fullName: 'Alex Johnson',
+    email: 'alex.johnson@email.com',
+    phone: '(555) 123-4567',
+    location: 'San Francisco, CA',
+    summary: "Experienced Full Stack Developer with 4+ years of expertise in modern web technologies. Passionate about building scalable applications and leading development teams. Proven track record of improving system performance, implementing best practices, and delivering high-quality software solutions that drive business growth."
   })
 
   const [sections, setSections] = useState<ResumeSections>({
-    education: [],
-    experience: [],
-    projects: [],
-    skills: []
+    education: [
+      {
+        id: 'edu1',
+        school: 'Massachusetts Institute of Technology',
+        degree: 'Bachelor of Science',
+        field: 'Computer Science',
+        startDate: '09-2020',
+        endDate: '06-2024',
+        description: '<ul><li>Relevant Coursework: Data Structures and Algorithms, Machine Learning, Database Systems</li><li>Dean\'s List for 6 semesters with GPA 3.8/4.0</li><li>President of Computer Science Club, organized tech meetups and hackathons</li><li>Teaching Assistant for Introduction to Programming course</li></ul>'
+      }
+    ],
+    experience: [
+      {
+        id: 'exp1',
+        company: 'TechCorp Solutions',
+        position: 'Senior Software Engineer',
+        location: 'San Francisco, CA',
+        startDate: '07-2023',
+        endDate: 'Present',
+        description: '<ul><li>Led development of microservices architecture serving 2M+ daily active users</li><li>Implemented CI/CD pipelines reducing deployment time by 60%</li><li>Mentored 5 junior developers and conducted technical interviews</li><li>Optimized database queries resulting in 40% performance improvement</li><li>Collaborated with cross-functional teams to deliver features on time</li></ul>'
+      },
+      {
+        id: 'exp2',
+        company: 'StartupX',
+        position: 'Full Stack Developer',
+        location: 'Austin, TX',
+        startDate: '06-2022',
+        endDate: '06-2023',
+        description: '<ul><li>Built responsive web applications using React, Node.js, and MongoDB</li><li>Developed RESTful APIs handling 10K+ requests per minute</li><li>Implemented real-time features using WebSocket technology</li><li>Increased user engagement by 35% through UI/UX improvements</li></ul>'
+      }
+    ],
+    projects: [
+      {
+        id: 'proj1',
+        name: 'AI-Powered Resume Builder',
+        technologies: 'React, Next.js, TypeScript, OpenAI API, PostgreSQL',
+        url: 'https://github.com/username/resume-builder',
+        startDate: '01-2024',
+        endDate: '04-2024',
+        description: '<ul><li>Developed intelligent resume builder with AI-powered content suggestions</li><li>Integrated OpenAI API for dynamic content generation and optimization</li><li>Implemented PDF generation with custom styling and formatting</li><li>Built rich text editor with bullet point support and real-time preview</li><li>Deployed on Vercel with automated testing and CI/CD pipeline</li></ul>'
+      },
+      {
+        id: 'proj2',
+        name: 'E-commerce Analytics Dashboard',
+        technologies: 'Python, Django, React, D3.js, Redis, Docker',
+        url: 'https://github.com/username/analytics-dashboard',
+        startDate: '09-2023',
+        endDate: '12-2023',
+        description: '<ul><li>Created comprehensive analytics dashboard for e-commerce businesses</li><li>Implemented real-time data visualization with interactive charts and graphs</li><li>Built data processing pipeline handling 1M+ transactions daily</li><li>Designed responsive frontend with advanced filtering and export capabilities</li><li>Optimized performance using Redis caching and database indexing</li></ul>'
+      }
+    ],
+    skills: [
+      {
+        id: 'skill1',
+        category: 'Programming Languages',
+        skills: 'JavaScript, TypeScript, Python, Java, Go, SQL'
+      },
+      {
+        id: 'skill2',
+        category: 'Frontend Technologies',
+        skills: 'React, Next.js, Vue.js, HTML5, CSS3, Tailwind CSS, SASS'
+      },
+      {
+        id: 'skill3',
+        category: 'Backend Technologies',
+        skills: 'Node.js, Express, Django, FastAPI, PostgreSQL, MongoDB, Redis'
+      },
+      {
+        id: 'skill4',
+        category: 'Tools & DevOps',
+        skills: 'Git, Docker, Kubernetes, AWS, CI/CD, Jest, Webpack, Linux'
+      }
+    ]
   })
 
   const handleInputChange = (field: keyof ResumeData, value: string) => {
@@ -500,7 +590,7 @@ export default function ResumePage() {
 
                 {/* Professional Summary */}
                 {resumeData.summary && (
-                  <div className="mb-6">
+                  <div className="mb-3">
                     <h2 style={{
                       fontSize: '10pt',
                       fontWeight: 'bold',
@@ -523,7 +613,7 @@ export default function ResumePage() {
 
                 {/* Education */}
                 {sections.education.length > 0 && (
-                  <div className="mb-6">
+                  <div className="mb-3">
                     <h2 style={{
                       fontSize: '10pt',
                       fontWeight: 'bold',
@@ -535,7 +625,7 @@ export default function ResumePage() {
                       EDUCATION
                     </h2>
                     {sections.education.map((edu) => (
-                      <div key={edu.id} style={{ marginBottom: '12px' }}>
+                      <div key={edu.id} style={{ marginBottom: '6px' }}>
                         <div style={{
                           display: 'flex',
                           justifyContent: 'space-between',
@@ -582,7 +672,7 @@ export default function ResumePage() {
 
                 {/* Experience */}
                 {sections.experience.length > 0 && (
-                  <div className="mb-6">
+                  <div className="mb-3">
                     <h2 style={{
                       fontSize: '10pt',
                       fontWeight: 'bold',
@@ -594,7 +684,7 @@ export default function ResumePage() {
                       PROFESSIONAL EXPERIENCE
                     </h2>
                     {sections.experience.map((exp) => (
-                      <div key={exp.id} style={{ marginBottom: '12px' }}>
+                      <div key={exp.id} style={{ marginBottom: '6px' }}>
                         <div style={{
                           display: 'flex',
                           justifyContent: 'space-between',
@@ -641,7 +731,7 @@ export default function ResumePage() {
 
                 {/* Projects */}
                 {sections.projects.length > 0 && (
-                  <div className="mb-6">
+                  <div className="mb-3">
                     <h2 style={{
                       fontSize: '10pt',
                       fontWeight: 'bold',
@@ -653,7 +743,7 @@ export default function ResumePage() {
                       PROJECTS
                     </h2>
                     {sections.projects.map((project) => (
-                      <div key={project.id} style={{ marginBottom: '12px' }}>
+                      <div key={project.id} style={{ marginBottom: '6px' }}>
                         <div style={{
                           display: 'flex',
                           justifyContent: 'space-between',
@@ -713,7 +803,7 @@ export default function ResumePage() {
 
                 {/* Skills */}
                 {sections.skills.length > 0 && (
-                  <div className="mb-6">
+                  <div className="mb-3">
                     <h2 style={{
                       fontSize: '10pt',
                       fontWeight: 'bold',
@@ -725,7 +815,7 @@ export default function ResumePage() {
                       TECHNICAL SKILLS
                     </h2>
                     {sections.skills.map((skill) => (
-                      <div key={skill.id} style={{ marginBottom: '8px' }}>
+                      <div key={skill.id} style={{ marginBottom: '4px' }}>
                         <div style={{
                           fontSize: '9pt',
                           fontWeight: 'bold',

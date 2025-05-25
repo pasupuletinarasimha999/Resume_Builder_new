@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   section: {
-    marginBottom: 18,
+    marginBottom: 8,
   },
   sectionTitle: {
     fontSize: 12,
@@ -65,10 +65,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     borderBottom: '1pt solid #cccccc',
     paddingBottom: 4,
-    marginBottom: 10,
+    marginBottom: 6,
   },
   sectionItem: {
-    marginBottom: 12,
+    marginBottom: 6,
   },
   itemHeader: {
     flexDirection: 'row',
@@ -131,11 +131,12 @@ const formatDate = (dateString: string): string => {
   return dateString
 }
 
-// Helper function to convert rich text to plain text for PDF while preserving structure
-const convertRichTextToPlain = (htmlContent: string): string => {
-  if (!htmlContent) return ''
+// Helper function to render formatted text content for PDF
+const renderFormattedText = (htmlContent: string) => {
+  if (!htmlContent) return null
 
-  return htmlContent
+  // Split content into paragraphs and list items
+  const lines = htmlContent
     .replace(/<strong>(.*?)<\/strong>/g, '$1')
     .replace(/<b>(.*?)<\/b>/g, '$1')
     .replace(/<ul>/g, '')
@@ -150,9 +151,17 @@ const convertRichTextToPlain = (htmlContent: string): string => {
     .replace(/<p>/g, '')
     .replace(/<\/p>/g, '\n')
     .replace(/<[^>]*>/g, '')
-    .replace(/\n\n+/g, '\n')
-    .replace(/^\n+|\n+$/g, '')
-    .trim()
+    .split('\n')
+    .filter(line => line.trim())
+
+  return lines.map((line, index) => (
+    <Text key={`line-${index}-${line.slice(0, 10)}`} style={[
+      styles.itemDescription,
+      line.trim().startsWith('•') ? { marginLeft: 8, marginBottom: 1 } : {}
+    ]}>
+      {line.trim()}
+    </Text>
+  ))
 }
 
 // PDF Document Component
@@ -197,9 +206,9 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
                 {edu.degree} {edu.field && `in ${edu.field}`}
               </Text>
               {edu.description && (
-                <Text style={styles.itemDescription}>
-                  {convertRichTextToPlain(edu.description as string)}
-                </Text>
+                <View>
+                  {renderFormattedText(edu.description as string)}
+                </View>
               )}
             </View>
           ))}
@@ -224,9 +233,9 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
                 {exp.company} {exp.location && `• ${exp.location}`}
               </Text>
               {exp.description && (
-                <Text style={styles.itemDescription}>
-                  {convertRichTextToPlain(exp.description as string)}
-                </Text>
+                <View>
+                  {renderFormattedText(exp.description as string)}
+                </View>
               )}
             </View>
           ))}
@@ -258,9 +267,9 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
                 </Text>
               )}
               {project.description && (
-                <Text style={styles.itemDescription}>
-                  {convertRichTextToPlain(project.description as string)}
-                </Text>
+                <View>
+                  {renderFormattedText(project.description as string)}
+                </View>
               )}
             </View>
           ))}

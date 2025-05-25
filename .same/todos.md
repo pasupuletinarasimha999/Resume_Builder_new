@@ -1,11 +1,20 @@
-# Resume Modification Tasks
+# Resume Formatting Fixes
 
-## User Requirements:
-1. Change bullet point separators (•) to pipe separators (|) between email and phone numbers in personal information section
-2. Reduce PDF border space to default resume margins for more content per page
+## Issues to Fix:
+- [x] Reduce excessive spacing between sections in PDF download
+- [x] Reduce excessive spacing between sections in resume preview
+- [x] Fix bullet points not visible in PDF download
+- [x] Fix bullet points not visible in resume preview
+- [x] Ensure consistent formatting between preview and PDF
 
-## Tasks:
-- [x] Replace bullet points with pipe separators in preview section (page.tsx)
-- [x] Replace bullet points with pipe separators in PDF generation (PDFDownload.tsx)
-- [x] Reduce PDF margins from 25mm to 15mm for more content space
-- [x] Test the changes by running the application
+## Root Causes Identified:
+1. **PDF Download**: Large margins (marginBottom: 18px, 12px) in sections and items
+2. **Preview**: Large margins (mb-6, marginBottom: '12px') in sections and items
+3. **Bullet Points**: Rich text conversion function strips bullet formatting for PDF
+4. **Bullet Points**: Preview function may not properly render HTML list styling
+
+## Action Plan:
+1. Reduce spacing in PDF styles (section, sectionItem margins)
+2. Reduce spacing in preview styles (margin styles)
+3. Fix bullet point conversion in PDF (convertRichTextToPlain function)
+4. Fix bullet point rendering in preview (renderRichTextContent function)
