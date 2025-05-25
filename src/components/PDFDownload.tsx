@@ -84,13 +84,13 @@ const styles = StyleSheet.create({
   },
   itemDate: {
     fontSize: 9,
-    color: '#666666',
+    color: '#000000',
     fontStyle: 'italic',
     textAlign: 'right',
   },
   itemDateLocation: {
     fontSize: 8,
-    color: '#666666',
+    color: '#000000',
     fontStyle: 'italic',
     textAlign: 'right',
     lineHeight: 1.2,
@@ -108,12 +108,12 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   skillCategory: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: 'bold',
     marginBottom: 3,
   },
   skillList: {
-    fontSize: 8,
+    fontSize: 9,
     lineHeight: 1.3,
     marginLeft: 8,
     marginBottom: 6,
@@ -249,22 +249,22 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
             <View key={exp.id} style={styles.sectionItem}>
               <View style={styles.itemHeader}>
                 <Text style={styles.itemTitle}>{exp.position}</Text>
-                <View style={styles.itemDateLocation}>
-                  <Text>
-                    {(exp.startDate || exp.endDate) &&
-                      `${exp.startDate ? formatDate(exp.startDate as string) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate ? formatDate(exp.endDate as string) : ''}`
-                    }
-                  </Text>
-                  {exp.location && (
-                    <Text style={{ marginTop: 1 }}>
-                      {exp.location}
-                    </Text>
-                  )}
-                </View>
+                <Text style={styles.itemDate}>
+                  {(exp.startDate || exp.endDate) &&
+                    `${exp.startDate ? formatDate(exp.startDate as string) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate ? formatDate(exp.endDate as string) : ''}`
+                  }
+                </Text>
               </View>
-              <Text style={styles.itemSubtitle}>
-                {exp.company}
-              </Text>
+              <View style={styles.itemHeader}>
+                <Text style={styles.itemSubtitle}>
+                  {exp.company}
+                </Text>
+                {exp.location && (
+                  <Text style={[styles.itemDate, { fontSize: 8 }]}>
+                    {exp.location}
+                  </Text>
+                )}
+              </View>
               {exp.description && (
                 <View>
                   {renderFormattedText(exp.description as string)}
