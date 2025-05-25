@@ -75,7 +75,13 @@ const styles = StyleSheet.create({
   itemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 0,
+  },
+  companyLocationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 4,
+    marginTop: 0,
   },
   itemTitle: {
     fontSize: 11,
@@ -255,7 +261,7 @@ const ResumeDocument = ({ resumeData, sections }: PDFDownloadProps) => (
                   }
                 </Text>
               </View>
-              <View style={styles.itemHeader}>
+              <View style={styles.companyLocationRow}>
                 <Text style={styles.itemSubtitle}>
                   {exp.company}
                 </Text>

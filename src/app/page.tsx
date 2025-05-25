@@ -713,7 +713,7 @@ export default function ResumePage() {
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'flex-start',
-                          marginBottom: '2px'
+                          marginBottom: '0px'
                         }}>
                           <h3 style={{
                             fontSize: '9pt',
@@ -742,6 +742,7 @@ export default function ResumePage() {
                           alignItems: 'center',
                           fontSize: '9pt',
                           marginBottom: '4px',
+                          marginTop: '0px',
                           fontStyle: 'italic'
                         }}>
                           <span>{exp.company}</span>

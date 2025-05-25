@@ -18,6 +18,10 @@
   - Technical skills font sizes increased in PDF: category (9pt→10pt), skills (8pt→9pt)
   - All dates and locations changed to black color in PDF
   - Company name and location aligned on same line in PDF experience section
+- [x] Reduced gap between designation and company name (BOTH PREVIEW & PDF)
+  - Set marginBottom to 0px between position title row and company/location row
+  - Added marginTop: 0px to ensure no extra spacing
+  - Created specific companyLocationRow style in PDF for better control
 
 ## Current Status
 ✅ All requested changes completed for BOTH preview AND PDF download! The resume now has:
