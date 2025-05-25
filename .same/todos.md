@@ -22,6 +22,19 @@
 - [x] Test save/load functionality
 - [x] Create version after implementation
 
+## New Task: Implement Section Reordering Functionality
+
+### Tasks to Complete:
+- [x] Analyze current section structure and ordering
+- [x] Create reorder modal/interface
+- [x] Implement drag-and-drop functionality
+- [x] Add state management for section order
+- [ ] Update PDF generation to respect new order
+- [x] Update preview to respect new order
+- [x] Connect Reorder button to new functionality
+- [x] Test reordering functionality
+- [ ] Create version after implementation
+
 ### Current Certificate Font Sizes:
 - Certificate name: 8pt, bold
 - Certificate issuer: 7pt, italic, color #555555

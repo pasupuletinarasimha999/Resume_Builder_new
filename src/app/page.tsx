@@ -108,7 +108,21 @@ function formatDateToMMYYYY(dateString: string): string {
 export default function ResumePage() {
   const [activeSection, setActiveSection] = useState('basic')
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
+  const [showReorderModal, setShowReorderModal] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Convert resumeSections to state for reordering
+  const [sectionOrder, setSectionOrder] = useState([
+    { id: 'basic', name: 'Basic', icon: 'https://ext.same-assets.com/3442189925/3783633550.svg' },
+    { id: 'education', name: 'Education', icon: 'https://ext.same-assets.com/3442189925/3160495444.svg' },
+    { id: 'experience', name: 'Work Experience', icon: 'https://ext.same-assets.com/3442189925/3810376176.svg' },
+    { id: 'projects', name: 'Projects', icon: 'https://ext.same-assets.com/3442189925/1109834275.svg' },
+    { id: 'skills', name: 'Skills', icon: 'https://ext.same-assets.com/3442189925/3410870790.svg' },
+    { id: 'languages', name: 'Languages', icon: 'https://ext.same-assets.com/3442189925/3304711307.svg' },
+    { id: 'social', name: 'Social Media', icon: 'https://ext.same-assets.com/3442189925/3272116947.svg' },
+    { id: 'awards', name: 'Awards', icon: 'https://ext.same-assets.com/3442189925/1967388618.svg' },
+    { id: 'certifications', name: 'Certifications', icon: 'https://ext.same-assets.com/3442189925/3927218253.svg' }
+  ])
   const [resumeData, setResumeData] = useState<ResumeData>({
     fullName: 'Alex Johnson',
     email: 'alex.johnson@email.com',
@@ -360,6 +374,57 @@ export default function ResumePage() {
     event.target.value = ''
   }
 
+  // Reorder functionality
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('text/plain', index.toString())
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault()
+    const dragIndex = Number.parseInt(e.dataTransfer.getData('text/plain'))
+
+    if (dragIndex === dropIndex) return
+
+    const newOrder = [...sectionOrder]
+    const draggedItem = newOrder[dragIndex]
+
+    // Remove dragged item
+    newOrder.splice(dragIndex, 1)
+    // Insert at new position
+    newOrder.splice(dropIndex, 0, draggedItem)
+
+    setSectionOrder(newOrder)
+  }
+
+  const moveSection = (fromIndex: number, direction: 'up' | 'down') => {
+    const newOrder = [...sectionOrder]
+    const toIndex = direction === 'up' ? fromIndex - 1 : fromIndex + 1
+
+    if (toIndex < 0 || toIndex >= newOrder.length) return
+
+    // Swap sections
+    [newOrder[fromIndex], newOrder[toIndex]] = [newOrder[toIndex], newOrder[fromIndex]]
+    setSectionOrder(newOrder)
+  }
+
+  const resetSectionOrder = () => {
+    setSectionOrder([
+      { id: 'basic', name: 'Basic', icon: 'https://ext.same-assets.com/3442189925/3783633550.svg' },
+      { id: 'education', name: 'Education', icon: 'https://ext.same-assets.com/3442189925/3160495444.svg' },
+      { id: 'experience', name: 'Work Experience', icon: 'https://ext.same-assets.com/3442189925/3810376176.svg' },
+      { id: 'projects', name: 'Projects', icon: 'https://ext.same-assets.com/3442189925/1109834275.svg' },
+      { id: 'skills', name: 'Skills', icon: 'https://ext.same-assets.com/3442189925/3410870790.svg' },
+      { id: 'languages', name: 'Languages', icon: 'https://ext.same-assets.com/3442189925/3304711307.svg' },
+      { id: 'social', name: 'Social Media', icon: 'https://ext.same-assets.com/3442189925/3272116947.svg' },
+      { id: 'awards', name: 'Awards', icon: 'https://ext.same-assets.com/3442189925/1967388618.svg' },
+      { id: 'certifications', name: 'Certifications', icon: 'https://ext.same-assets.com/3442189925/3927218253.svg' }
+    ])
+  }
+
   const sectionConfigs = {
     education: {
       title: 'Education',
@@ -449,6 +514,513 @@ export default function ResumePage() {
     }
   }
 
+  const renderPreviewSection = (sectionId: string) => {
+    switch (sectionId) {
+      case 'basic':
+        return null // Basic info is always at the top, not part of reorderable sections
+      case 'education':
+        return sections.education.length > 0 && (
+          <div className="mb-4" key="education">
+            <h2 style={{
+              fontSize: '8pt',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+              textTransform: 'uppercase',
+              borderBottom: '1px solid #ccc',
+              paddingBottom: '0px'
+            }}>
+              EDUCATION
+            </h2>
+            {sections.education.map((edu) => (
+              <div key={edu.id} style={{ marginBottom: '6px' }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '4px'
+                }}>
+                  <h3 style={{
+                    fontSize: '9pt',
+                    fontWeight: 'bold',
+                    margin: 0
+                  }}>
+                    {edu.school}
+                  </h3>
+                  <span style={{
+                    fontSize: '8pt',
+                    color: '#000000',
+                    fontStyle: 'italic'
+                  }}>
+                    {(edu.startDate || edu.endDate) &&
+                      `${edu.startDate && typeof edu.startDate === 'string' ? formatDateToMMYYYY(edu.startDate) : ''}${edu.startDate && edu.endDate ? ' - ' : ''}${edu.endDate && typeof edu.endDate === 'string' ? formatDateToMMYYYY(edu.endDate) : ''}`
+                    }
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: '9pt',
+                  marginBottom: '0px',
+                  fontStyle: 'italic'
+                }}>
+                  {edu.degree} {edu.field && `in ${edu.field}`}
+                </div>
+                {edu.description && (
+                  <div style={{
+                    margin: '0px 0 0 0',
+                    fontSize: '8pt',
+                    lineHeight: '1.2'
+                  }}>
+                    {renderRichTextContent(edu.description as string)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      case 'experience':
+        return sections.experience.length > 0 && (
+          <div className="mb-4" key="experience">
+            <h2 style={{
+              fontSize: '8pt',
+              fontWeight: 'bold',
+              marginBottom: '6px',
+              textTransform: 'uppercase',
+              borderBottom: '1px solid #ccc',
+              paddingBottom: '0px'
+            }}>
+              PROFESSIONAL EXPERIENCE
+            </h2>
+            {sections.experience.map((exp) => (
+              <div key={exp.id} style={{ marginBottom: '6px' }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '0px'
+                }}>
+                  <h3 style={{
+                    fontSize: '9pt',
+                    fontWeight: 'bold',
+                    margin: 0
+                  }}>
+                    {exp.position}
+                  </h3>
+                  <div style={{
+                    textAlign: 'right',
+                    fontSize: '8pt',
+                    color: '#000000',
+                    fontStyle: 'italic',
+                    lineHeight: '1.2'
+                  }}>
+                    <div>
+                      {(exp.startDate || exp.endDate) &&
+                        `${exp.startDate && typeof exp.startDate === 'string' ? formatDateToMMYYYY(exp.startDate) : ''}${exp.startDate && exp.endDate ? ' - ' : ''}${exp.endDate && typeof exp.endDate === 'string' ? formatDateToMMYYYY(exp.endDate) : ''}`
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '9pt',
+                  marginBottom: '0px',
+                  marginTop: '0px',
+                  fontStyle: 'italic'
+                }}>
+                  <span>{exp.company}</span>
+                  {exp.location && (
+                    <span style={{
+                      fontSize: '8pt',
+                      color: '#000000'
+                    }}>
+                      {exp.location}
+                    </span>
+                  )}
+                </div>
+                {exp.description && (
+                  <div style={{
+                    margin: '0px 0 0 0',
+                    fontSize: '8pt',
+                    lineHeight: '1.2'
+                  }}>
+                    {renderRichTextContent(exp.description as string)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      case 'projects':
+        return sections.projects.length > 0 && (
+          <div className="mb-4" key="projects">
+            <h2 style={{
+              fontSize: '8pt',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+              textTransform: 'uppercase',
+              borderBottom: '1px solid #ccc',
+              paddingBottom: '0px'
+            }}>
+              PROJECTS
+            </h2>
+            {sections.projects.map((project) => (
+              <div key={project.id} style={{ marginBottom: '6px' }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '4px'
+                }}>
+                  <h3 style={{
+                    fontSize: '9pt',
+                    fontWeight: 'bold',
+                    margin: 0
+                  }}>
+                    {project.name}
+                  </h3>
+                  <span style={{
+                    fontSize: '8pt',
+                    color: '#000000',
+                    fontStyle: 'italic'
+                  }}>
+                    {(project.startDate || project.endDate) &&
+                      `${project.startDate && typeof project.startDate === 'string' ? formatDateToMMYYYY(project.startDate) : ''}${project.startDate && project.endDate ? ' - ' : ''}${project.endDate && typeof project.endDate === 'string' ? formatDateToMMYYYY(project.endDate) : ''}`
+                    }
+                  </span>
+                </div>
+                {project.technologies && (
+                  <div style={{
+                    fontSize: '8pt',
+                    marginBottom: '4px',
+                    fontStyle: 'italic',
+                    color: '#333333'
+                  }}>
+                    <strong>Technologies:</strong> {project.technologies}
+                  </div>
+                )}
+                {project.url && (
+                  <div style={{
+                    fontSize: '8pt',
+                    marginBottom: '4px',
+                    color: '#0066cc',
+                    wordBreak: 'break-all'
+                  }}>
+                    {project.url}
+                  </div>
+                )}
+                {project.description && (
+                  <div style={{
+                    margin: '1px 0 0 0',
+                    fontSize: '8pt',
+                    lineHeight: '1.2'
+                  }}>
+                    {renderRichTextContent(project.description as string)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      case 'skills':
+        return sections.skills.length > 0 && (
+          <div className="mb-4" key="skills">
+            <h2 style={{
+              fontSize: '8pt',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+              textTransform: 'uppercase',
+              borderBottom: '1px solid #ccc',
+              paddingBottom: '0px'
+            }}>
+              TECHNICAL SKILLS
+            </h2>
+            {sections.skills.map((skill) => (
+              <div key={skill.id} style={{ marginBottom: '0px' }}>
+                <div style={{
+                  fontSize: '10pt',
+                  fontWeight: 'bold',
+                  marginBottom: '1px'
+                }}>
+                  {skill.category}:
+                </div>
+                <div style={{
+                  fontSize: '9pt',
+                  lineHeight: '1.2',
+                  marginLeft: '10px',
+                  marginBottom: '1px'
+                }}>
+                  {skill.skills}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      case 'languages':
+        return sections.languages.length > 0 && (
+          <div className="mb-4" key="languages">
+            <h2 style={{
+              fontSize: '8pt',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+              textTransform: 'uppercase',
+              borderBottom: '1px solid #ccc',
+              paddingBottom: '0px'
+            }}>
+              LANGUAGES
+            </h2>
+            <div style={{
+              fontSize: '9pt',
+              lineHeight: '1.3'
+            }}>
+              {sections.languages
+                .map((language) => `${language.language} [${language.proficiency}]`)
+                .join(', ')
+              }
+            </div>
+          </div>
+        )
+      case 'social':
+        return sections.social.length > 0 && (
+          <div className="mb-4" key="social">
+            <h2 style={{
+              fontSize: '8pt',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+              textTransform: 'uppercase',
+              borderBottom: '1px solid #ccc',
+              paddingBottom: '0px'
+            }}>
+              SOCIAL MEDIA
+            </h2>
+            {sections.social.map((social) => (
+              <div key={social.id} style={{ marginBottom: '4px' }}>
+                <div style={{
+                  fontSize: '9pt',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ fontWeight: 'bold' }}>{social.platform}:</span>
+                  <span style={{
+                    fontSize: '8pt',
+                    color: '#0066cc',
+                    wordBreak: 'break-all'
+                  }}>
+                    {social.url}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      case 'awards':
+        return sections.awards.length > 0 && (
+          <div className="mb-4" key="awards">
+            <h2 style={{
+              fontSize: '8pt',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+              textTransform: 'uppercase',
+              borderBottom: '1px solid #ccc',
+              paddingBottom: '0px'
+            }}>
+              AWARDS & ACHIEVEMENTS
+            </h2>
+            {sections.awards.map((award) => (
+              <div key={award.id} style={{ marginBottom: '6px' }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '2px'
+                }}>
+                  <h3 style={{
+                    fontSize: '9pt',
+                    fontWeight: 'bold',
+                    margin: 0
+                  }}>
+                    {award.title}
+                  </h3>
+                  <span style={{
+                    fontSize: '8pt',
+                    color: '#000000',
+                    fontStyle: 'italic'
+                  }}>
+                    {award.date && typeof award.date === 'string' ? formatDateToMMYYYY(award.date) : ''}
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: '9pt',
+                  marginBottom: '2px',
+                  fontStyle: 'italic'
+                }}>
+                  {award.organization}
+                </div>
+                {award.description && (
+                  <div style={{
+                    margin: '2px 0 0 0',
+                    fontSize: '8pt',
+                    lineHeight: '1.2'
+                  }}>
+                    {award.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      case 'certifications':
+        return sections.certifications.length > 0 && (
+          <div className="mb-4" key="certifications">
+            <h2 style={{
+              fontSize: '8pt',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+              textTransform: 'uppercase',
+              borderBottom: '1px solid #ccc',
+              paddingBottom: '0px'
+            }}>
+              CERTIFICATIONS
+            </h2>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '10px',
+              width: '100%'
+            }}>
+              {sections.certifications.map((cert) => (
+                <div key={cert.id} style={{
+                  padding: '6px',
+                  border: '1px solid #d0d0d0',
+                  borderRadius: '4px',
+                  backgroundColor: '#f8f8f8',
+                  minHeight: '70px',
+                  marginBottom: '4px'
+                }}>
+                  <h3 style={{
+                    fontSize: '8pt',
+                    fontWeight: 'bold',
+                    margin: '0 0 3px 0',
+                    lineHeight: '1.1'
+                  }}>
+                    {cert.name}
+                  </h3>
+                  <div style={{
+                    fontSize: '7pt',
+                    marginBottom: '2px',
+                    fontStyle: 'italic',
+                    color: '#555555'
+                  }}>
+                    {cert.issuer}
+                  </div>
+                  <div style={{
+                    fontSize: '7pt',
+                    color: '#666666',
+                    fontWeight: 'bold',
+                    marginBottom: '2px'
+                  }}>
+                    {cert.date && cert.expiryDate ?
+                      `${formatDateToMMYYYY(cert.date as string)} - ${formatDateToMMYYYY(cert.expiryDate as string)}` :
+                      cert.date ? formatDateToMMYYYY(cert.date as string) : ''
+                    }
+                  </div>
+                  {cert.credentialId && (
+                    <div style={{
+                      fontSize: '6pt',
+                      color: '#777777'
+                    }}>
+                      ID: {cert.credentialId}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      default:
+        return null
+    }
+  }
+
+  const ReorderModal = () => {
+    if (!showReorderModal) return null
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-h-[80vh] overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold">Reorder Resume Sections</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowReorderModal(false)}
+            >
+              ×
+            </Button>
+          </div>
+
+          <div className="space-y-2 mb-4">
+            {sectionOrder.map((section, index) => (
+              <div
+                key={section.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, index)}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 hover:border-blue-300 cursor-move transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <img src={section.icon} alt={section.name} className="w-5 h-5" />
+                  <span className="font-medium">{section.name}</span>
+                </div>
+                <div className="flex gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => moveSection(index, 'up')}
+                    disabled={index === 0}
+                    className="p-1 h-6 w-6"
+                  >
+                    ↑
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => moveSection(index, 'down')}
+                    disabled={index === sectionOrder.length - 1}
+                    className="p-1 h-6 w-6"
+                  >
+                    ↓
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={resetSectionOrder}
+              className="flex-1"
+            >
+              Reset to Default
+            </Button>
+            <Button
+              onClick={() => setShowReorderModal(false)}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Done
+            </Button>
+          </div>
+
+          <p className="text-xs text-gray-500 mt-2">
+            💡 Drag sections to reorder, or use arrow buttons. Changes apply to both preview and PDF.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Header */}
@@ -465,7 +1037,12 @@ export default function ResumePage() {
               <Button variant="outline" size="sm" className="text-xs">
                 Templates
               </Button>
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() => setShowReorderModal(true)}
+              >
                 Reorder
               </Button>
               <Button variant="outline" size="sm" className="text-xs">
@@ -497,7 +1074,7 @@ export default function ResumePage() {
             >
               💾 Save Data
             </Button>
-            <PDFDownload resumeData={resumeData} sections={sections} />
+            <PDFDownload resumeData={resumeData} sections={sections} sectionOrder={sectionOrder} />
           </div>
         </div>
       </div>
@@ -512,7 +1089,7 @@ export default function ResumePage() {
           onMouseLeave={() => setSidebarExpanded(false)}
         >
           <div className="flex-1 overflow-y-auto py-4">
-            {resumeSections.map((section) => (
+            {sectionOrder.map((section) => (
               <div key={section.id} className="relative group">
                 <button
                   onClick={() => setActiveSection(section.id)}
@@ -717,7 +1294,7 @@ export default function ResumePage() {
               <Card className="rounded-xl p-6">
                 <CardContent>
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                    {resumeSections.find(s => s.id === activeSection)?.name}
+                    {sectionOrder.find(s => s.id === activeSection)?.name}
                   </h2>
                   <p className="text-gray-600">Section coming soon...</p>
                 </CardContent>
@@ -803,8 +1380,13 @@ export default function ResumePage() {
                   </div>
                 )}
 
-                {/* Education */}
-                {sections.education.length > 0 && (
+                {/* Dynamic sections based on order */}
+                {sectionOrder.filter(section => section.id !== 'basic').map(section =>
+                  renderPreviewSection(section.id)
+                ).filter(Boolean)}
+
+                {/* OLD HARDCODED SECTIONS - TO BE REMOVED */}
+                {false && sections.education.length > 0 && (
                   <div className="mb-4">
                     <h2 style={{
                       fontSize: '8pt',
@@ -1229,11 +1811,14 @@ export default function ResumePage() {
                     </div>
                   </div>
                 )}
+                {/* END OLD HARDCODED SECTIONS */}
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <ReorderModal />
     </div>
   )
 }
