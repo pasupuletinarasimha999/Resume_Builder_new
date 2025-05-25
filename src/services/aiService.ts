@@ -295,6 +295,154 @@ Return as JSON array with format:
     }
   }
 
+  async quantifyAchievements(
+    descriptions: string[],
+    context: { role?: string; industry?: string; company?: string }
+  ): Promise<ContentSuggestion[]> {
+    const prompt = `Quantify and enhance these achievements for a ${context.role || 'professional'} in ${context.industry || 'technology'}:
+
+Original Descriptions:
+${descriptions.map((desc, i) => `${i + 1}. ${desc}`).join('\n')}
+
+For each description, add specific metrics, percentages, timeframes, or numbers. Use realistic estimates based on typical ${context.role || 'professional'} achievements. Focus on:
+- Performance improvements (e.g., "increased efficiency by 25%")
+- Scale/volume (e.g., "managed team of 8 people")
+- Time savings (e.g., "reduced processing time from 2 hours to 15 minutes")
+- Revenue/cost impact (e.g., "generated $50K in cost savings")
+- User/customer impact (e.g., "improved user satisfaction by 30%")
+
+Return as JSON array with format:
+[{
+  "content": "quantified achievement description",
+  "confidence": 0.85,
+  "reasoning": "metrics and quantification added"
+}]`
+
+    try {
+      const suggestions = await this.callOpenAI(prompt) as SuggestionItem[]
+
+      return suggestions.map((item: SuggestionItem, index: number) => ({
+        id: `quantified_${index}`,
+        type: 'achievement' as const,
+        content: item.content,
+        confidence: item.confidence || 0.8,
+        reasoning: item.reasoning
+      }))
+
+    } catch (error) {
+      console.error('AI service error:', error)
+      return this.getFallbackQuantifiedAchievements(descriptions)
+    }
+  }
+
+  async generateSmartExperienceDescriptions(
+    experienceData: {
+      position: string
+      company: string
+      industry?: string
+      duration?: string
+      keyTasks?: string[]
+    }
+  ): Promise<ContentSuggestion[]> {
+    const prompt = `Generate 4-6 professional bullet point descriptions for this work experience:
+
+Position: ${experienceData.position}
+Company: ${experienceData.company}
+Industry: ${experienceData.industry || 'Technology'}
+Duration: ${experienceData.duration || 'Not specified'}
+Key Tasks: ${experienceData.keyTasks?.join(', ') || 'Not specified'}
+
+Create descriptions that:
+- Use strong action verbs and quantifiable results
+- Highlight technical skills and business impact
+- Show progression and increasing responsibility
+- Include industry-relevant keywords
+- Demonstrate leadership and collaboration
+- Focus on achievements rather than just duties
+
+Return as JSON array with format:
+[{
+  "content": "professional bullet point description",
+  "confidence": 0.9,
+  "reasoning": "why this description is effective"
+}]`
+
+    try {
+      const suggestions = await this.callOpenAI(prompt) as SuggestionItem[]
+
+      return suggestions.map((item: SuggestionItem, index: number) => ({
+        id: `exp_desc_${index}`,
+        type: 'description' as const,
+        content: item.content,
+        confidence: item.confidence || 0.8,
+        reasoning: item.reasoning
+      }))
+
+    } catch (error) {
+      console.error('AI service error:', error)
+      return this.getFallbackExperienceDescriptions(experienceData)
+    }
+  }
+
+  async optimizeProfessionalSummary(
+    currentSummary: string,
+    context: {
+      targetRole?: string
+      experience?: ExperienceItem[]
+      skills?: string[]
+      yearsOfExperience?: number
+      industryFocus?: string
+    }
+  ): Promise<ContentSuggestion[]> {
+    const skillsList = context.skills?.join(', ') || 'Not specified'
+    const experienceList = context.experience?.map(exp =>
+      `${exp.position} at ${exp.company}`
+    ).join(', ') || 'Not specified'
+
+    const prompt = `Optimize this professional summary for a ${context.targetRole || 'professional'} role:
+
+Current Summary: "${currentSummary}"
+
+Context:
+- Target Role: ${context.targetRole || 'Not specified'}
+- Years of Experience: ${context.yearsOfExperience || 'Not specified'}
+- Industry Focus: ${context.industryFocus || 'Technology'}
+- Recent Experience: ${experienceList}
+- Key Skills: ${skillsList}
+
+Create 3-4 improved versions that:
+- Start with a strong value proposition
+- Include relevant keywords for ATS optimization
+- Quantify achievements where possible
+- Match the target role requirements
+- Highlight unique selling points
+- Maintain professional tone and conciseness (2-4 sentences)
+- Show career progression and expertise level
+
+Return as JSON array with format:
+[{
+  "content": "optimized professional summary",
+  "confidence": 0.9,
+  "reasoning": "what makes this version better and why it's effective"
+}]`
+
+    try {
+      const suggestions = await this.callOpenAI(prompt) as SuggestionItem[]
+
+      return suggestions.map((item: SuggestionItem, index: number) => ({
+        id: `summary_opt_${index}`,
+        type: 'summary' as const,
+        content: item.content,
+        confidence: item.confidence || 0.8,
+        reasoning: item.reasoning
+      }))
+
+    } catch (error) {
+      console.error('AI service error:', error)
+      return this.getFallbackSummaryOptimizations(currentSummary, context)
+    }
+  }
+
   private async callOpenAI(prompt: string, expectArray = true): Promise<unknown> {
     if (!this.config.apiKey) {
       throw new Error('OpenAI API key not configured')
@@ -415,6 +563,84 @@ Return as JSON array with format:
         `Enhanced ${point.toLowerCase()}`,
       confidence: 0.5,
       reasoning: 'Basic enhancement applied (AI unavailable)'
+    }))
+  }
+
+  private getFallbackQuantifiedAchievements(descriptions: string[]): ContentSuggestion[] {
+    const quantifiers = [
+      'Improved efficiency by 20%',
+      'Reduced processing time by 30%',
+      'Managed team of 5+ members',
+      'Increased productivity by 25%',
+      'Saved approximately $10K annually',
+      'Improved customer satisfaction by 15%'
+    ]
+
+    return descriptions.map((desc, index) => ({
+      id: `fallback_quantified_${index}`,
+      type: 'achievement' as const,
+      content: `${desc} - ${quantifiers[index % quantifiers.length]}`,
+      confidence: 0.6,
+      reasoning: 'Template-based quantification applied (AI unavailable)'
+    }))
+  }
+
+  private getFallbackExperienceDescriptions(
+    experienceData: { position: string; company: string; industry?: string }
+  ): ContentSuggestion[] {
+    const templates = {
+      'Software Engineer': [
+        'Developed and maintained scalable web applications using modern technologies',
+        'Collaborated with cross-functional teams to deliver high-quality software solutions',
+        'Implemented best practices for code quality, testing, and documentation',
+        'Optimized application performance resulting in improved user experience'
+      ],
+      'Product Manager': [
+        'Led product development initiatives from conception to launch',
+        'Collaborated with engineering and design teams to define product requirements',
+        'Analyzed user feedback and market research to prioritize feature development',
+        'Managed product roadmap and communicated progress to stakeholders'
+      ],
+      'Data Scientist': [
+        'Built machine learning models to solve complex business problems',
+        'Analyzed large datasets to extract actionable insights and recommendations',
+        'Presented findings to stakeholders and influenced strategic decisions',
+        'Deployed models to production environment with monitoring and maintenance'
+      ]
+    }
+
+    const descriptions = templates[experienceData.position as keyof typeof templates] || templates['Software Engineer']
+
+    return descriptions.map((content, index) => ({
+      id: `fallback_exp_${index}`,
+      type: 'description' as const,
+      content,
+      confidence: 0.7,
+      reasoning: 'Template-based description (AI unavailable)'
+    }))
+  }
+
+  private getFallbackSummaryOptimizations(
+    currentSummary: string,
+    context: { targetRole?: string; yearsOfExperience?: number; industryFocus?: string }
+  ): ContentSuggestion[] {
+    const role = context.targetRole || 'Professional'
+    const years = context.yearsOfExperience || 3
+    const industry = context.industryFocus || 'technology'
+
+    const templates = [
+      `Results-driven ${role} with ${years}+ years of experience in ${industry}. ${currentSummary} Proven track record of delivering innovative solutions and driving business growth.`,
+      `Experienced ${role} specializing in ${industry} with a strong background in ${currentSummary.toLowerCase()}. Known for leadership, problem-solving, and driving measurable results.`,
+      `${role} with ${years} years of expertise in ${industry}. ${currentSummary} Passionate about leveraging technology to solve complex business challenges and improve operational efficiency.`,
+      `Dynamic ${role} with proven success in ${industry}. ${currentSummary} Skilled in leading cross-functional teams and delivering high-impact solutions that drive revenue growth.`
+    ]
+
+    return templates.map((content, index) => ({
+      id: `fallback_summary_${index}`,
+      type: 'summary' as const,
+      content: content.replace(/\s+/g, ' ').trim(),
+      confidence: 0.6,
+      reasoning: 'Template-based optimization (AI unavailable)'
     }))
   }
 }
