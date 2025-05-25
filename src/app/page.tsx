@@ -42,21 +42,112 @@ interface ResumeData {
   summary: string
 }
 
-interface SectionItem {
+interface EducationItem {
   id: string
+  school?: string
+  degree?: string
+  field?: string
+  startDate?: string
+  endDate?: string
+  description?: string
   isPresent?: boolean
   [key: string]: string | boolean | undefined
 }
 
+interface ExperienceItem {
+  id: string
+  company?: string
+  position?: string
+  location?: string
+  startDate?: string
+  endDate?: string
+  description?: string
+  isPresent?: boolean
+  [key: string]: string | boolean | undefined
+}
+
+interface ProjectItem {
+  id: string
+  name?: string
+  technologies?: string
+  url?: string
+  startDate?: string
+  endDate?: string
+  description?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface SkillItem {
+  id: string
+  category?: string
+  skills?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface LanguageItem {
+  id: string
+  language?: string
+  proficiency?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface SocialItem {
+  id: string
+  platform?: string
+  url?: string
+  username?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface AwardItem {
+  id: string
+  title?: string
+  organization?: string
+  date?: string
+  description?: string
+  [key: string]: string | boolean | undefined
+}
+
+interface CertificationItem {
+  id: string
+  name?: string
+  issuer?: string
+  date?: string
+  credentialId?: string
+  expiryDate?: string
+  [key: string]: string | boolean | undefined
+}
+
 interface ResumeSections {
-  education: SectionItem[]
-  experience: SectionItem[]
-  projects: SectionItem[]
-  skills: SectionItem[]
-  languages: SectionItem[]
-  social: SectionItem[]
-  awards: SectionItem[]
-  certifications: SectionItem[]
+  education: EducationItem[]
+  experience: ExperienceItem[]
+  projects: ProjectItem[]
+  skills: SkillItem[]
+  languages: LanguageItem[]
+  social: SocialItem[]
+  awards: AwardItem[]
+  certifications: CertificationItem[]
+}
+
+interface SectionOrderItem {
+  id: string
+  name: string
+  icon: string
+}
+
+interface JobOptimizations {
+  summary?: string
+  experience?: Array<{
+    id: string
+    optimizedDescription: string
+    changes: number
+  }>
+  skills?: {
+    missing: string[]
+    recommended: string[]
+    fromJob: string[]
+  }
+  keywords?: string[]
 }
 
 // Helper function to render rich text content in preview
@@ -131,15 +222,15 @@ function formatDateToMMYYYY(dateString: string): string {
 }
 
 export default function ResumePage() {
-  const [activeSection, setActiveSection] = useState('basic')
-  const [sidebarExpanded, setSidebarExpanded] = useState(false)
-  const [showReorderModal, setShowReorderModal] = useState(false)
-  const [showResumeChecker, setShowResumeChecker] = useState(false)
-  const [showJobMatcher, setShowJobMatcher] = useState(false)
+  const [activeSection, setActiveSection] = useState<string>('basic')
+  const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(false)
+  const [showReorderModal, setShowReorderModal] = useState<boolean>(false)
+  const [showResumeChecker, setShowResumeChecker] = useState<boolean>(false)
+  const [showJobMatcher, setShowJobMatcher] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Convert resumeSections to state for reordering
-  const [sectionOrder, setSectionOrder] = useState([
+  const [sectionOrder, setSectionOrder] = useState<SectionOrderItem[]>([
     { id: 'basic', name: 'Basic', icon: 'https://ext.same-assets.com/3442189925/3783633550.svg' },
     { id: 'education', name: 'Education', icon: 'https://ext.same-assets.com/3442189925/3160495444.svg' },
     { id: 'experience', name: 'Work Experience', icon: 'https://ext.same-assets.com/3442189925/3810376176.svg' },
@@ -463,19 +554,19 @@ export default function ResumePage() {
     // Add more cases as needed
   }
 
-  const handleApplyJobOptimizations = (optimizations: any) => {
+  const handleApplyJobOptimizations = (optimizations: JobOptimizations) => {
     // Apply job-specific optimizations
     if (optimizations.summary) {
-      setResumeData(prev => ({ ...prev, summary: optimizations.summary }))
+      setResumeData(prev => ({ ...prev, summary: optimizations.summary || '' }))
     }
     if (optimizations.experience) {
       // Update experience with optimized descriptions
       setSections(prev => ({
         ...prev,
-        experience: optimizations.experience.map((opt: any) => {
+        experience: optimizations.experience?.map((opt) => {
           const existing = prev.experience.find(exp => exp.id === opt.id)
           return existing ? { ...existing, description: opt.optimizedDescription } : opt
-        })
+        }) || prev.experience
       }))
     }
   }
@@ -1288,7 +1379,6 @@ export default function ResumePage() {
                     experienceLevel: "senior"
                   }}
                   onApplySuggestion={(content) => {
-                    // Add new education item with AI suggestion
                     const newId = Math.random().toString(36).substr(2, 9)
                     setSections(prev => ({
                       ...prev,
@@ -1327,7 +1417,6 @@ export default function ResumePage() {
                     experienceLevel: "senior"
                   }}
                   onApplySuggestion={(content) => {
-                    // Add new experience item with AI suggestion
                     const newId = Math.random().toString(36).substr(2, 9)
                     setSections(prev => ({
                       ...prev,

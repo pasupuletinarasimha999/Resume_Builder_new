@@ -28,9 +28,50 @@ interface SkillGapAnalysis {
   careerAdvice: string[]
 }
 
+interface SuggestionItem {
+  content: string
+  confidence?: number
+  reasoning: string
+}
+
+interface OpenAIResponse {
+  choices: Array<{
+    message: {
+      content: string
+    }
+  }>
+}
+
+interface ExperienceItem {
+  position?: string
+  company?: string
+  description?: string
+}
+
+interface ResumeDataInput {
+  summary: string
+  experience?: ExperienceItem[]
+  skills?: Array<{ skills: string }>
+}
+
+interface SkillGapAnalysisResponse {
+  missingSkills: string[]
+  recommendedSkills: string[]
+  skillLevel: Record<string, 'beginner' | 'intermediate' | 'expert'>
+  careerAdvice: string[]
+}
+
+interface JobMatchAnalysisResponse {
+  score: number
+  strengths: string[]
+  gaps: string[]
+  suggestions: string[]
+  keywords: string[]
+}
+
 export class AIService {
   private config: AIServiceConfig
-  private cache: Map<string, any> = new Map()
+  private cache: Map<string, ContentSuggestion[] | SkillGapAnalysis | JobMatchAnalysis> = new Map()
 
   constructor(config?: Partial<AIServiceConfig>) {
     this.config = {
@@ -50,7 +91,7 @@ export class AIService {
     const cacheKey = `job_desc_${position}_${company}_${industry}_${experienceLevel}`
 
     if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey)
+      return this.cache.get(cacheKey) as ContentSuggestion[]
     }
 
     const prompt = `Generate 4-5 professional bullet points for a ${position} role at ${company} in the ${industry} industry for someone with ${experienceLevel} experience level.
@@ -69,15 +110,17 @@ Return as JSON array with format:
 }]`
 
     try {
-      const suggestions = await this.callOpenAI(prompt)
+      const suggestions = await this.callOpenAI(prompt) as SuggestionItem[]
 
-      const results = suggestions.map((item: any, index: number) => ({
-        id: `job_desc_${index}`,
-        type: 'description' as const,
-        content: item.content,
-        confidence: item.confidence || 0.8,
-        reasoning: item.reasoning || 'AI-generated based on role requirements'
-      }))
+      const results: ContentSuggestion[] = suggestions.map(
+        (item: SuggestionItem, index: number) => ({
+          id: `job_desc_${index}`,
+          type: 'description' as const,
+          content: item.content,
+          confidence: item.confidence || 0.8,
+          reasoning: item.reasoning || 'AI-generated based on role requirements'
+        })
+      )
 
       this.cache.set(cacheKey, results)
       return results
@@ -91,7 +134,7 @@ Return as JSON array with format:
   async enhanceProfessionalSummary(
     currentSummary: string,
     targetRole: string,
-    experience: any[],
+    experience: ExperienceItem[],
     skills: string[]
   ): Promise<ContentSuggestion[]> {
     const prompt = `Improve this professional summary for someone targeting a ${targetRole} position:
@@ -116,9 +159,9 @@ Return as JSON array with format:
 }]`
 
     try {
-      const suggestions = await this.callOpenAI(prompt)
+      const suggestions = await this.callOpenAI(prompt) as SuggestionItem[]
 
-      return suggestions.map((item: any, index: number) => ({
+      return suggestions.map((item: SuggestionItem, index: number) => ({
         id: `summary_${index}`,
         type: 'summary' as const,
         content: item.content,
@@ -156,9 +199,13 @@ Return as JSON with format:
 }`
 
     try {
-      const analysis = await this.callOpenAI(prompt, false)
-      return analysis
-
+      const analysis = await this.callOpenAI(prompt, false) as SkillGapAnalysisResponse
+      return {
+        missingSkills: analysis.missingSkills,
+        recommendedSkills: analysis.recommendedSkills,
+        skillLevel: analysis.skillLevel,
+        careerAdvice: analysis.careerAdvice
+      }
     } catch (error) {
       console.error('AI service error:', error)
       return this.getFallbackSkillAnalysis(currentSkills, targetRole)
@@ -166,14 +213,14 @@ Return as JSON with format:
   }
 
   async analyzeJobMatch(
-    resumeData: any,
+    resumeData: ResumeDataInput,
     jobDescription: string
   ): Promise<JobMatchAnalysis> {
     const prompt = `Analyze how well this resume matches the job description:
 
 Resume Summary: ${resumeData.summary}
-Experience: ${resumeData.experience?.map((exp: any) => `${exp.position}: ${exp.description}`).join('\n')}
-Skills: ${resumeData.skills?.map((skill: any) => skill.skills).join(', ')}
+Experience: ${resumeData.experience?.map((exp) => `${exp.position}: ${exp.description}`).join('\n')}
+Skills: ${resumeData.skills?.map((skill) => skill.skills).join(', ')}
 
 Job Description:
 ${jobDescription}
@@ -188,9 +235,14 @@ Provide analysis with format:
 }`
 
     try {
-      const analysis = await this.callOpenAI(prompt, false)
-      return analysis
-
+      const analysis = await this.callOpenAI(prompt, false) as JobMatchAnalysisResponse
+      return {
+        score: analysis.score,
+        strengths: analysis.strengths,
+        gaps: analysis.gaps,
+        suggestions: analysis.suggestions,
+        keywords: analysis.keywords
+      }
     } catch (error) {
       console.error('AI service error:', error)
       return {
@@ -227,9 +279,9 @@ Return as JSON array with format:
 }]`
 
     try {
-      const suggestions = await this.callOpenAI(prompt)
+      const suggestions = await this.callOpenAI(prompt) as SuggestionItem[]
 
-      return suggestions.map((item: any, index: number) => ({
+      return suggestions.map((item: SuggestionItem, index: number) => ({
         id: `bullet_${index}`,
         type: 'bullet_point' as const,
         content: item.content,
@@ -243,7 +295,7 @@ Return as JSON array with format:
     }
   }
 
-  private async callOpenAI(prompt: string, expectArray: boolean = true): Promise<any> {
+  private async callOpenAI(prompt: string, expectArray = true): Promise<unknown> {
     if (!this.config.apiKey) {
       throw new Error('OpenAI API key not configured')
     }
@@ -275,7 +327,7 @@ Return as JSON array with format:
       throw new Error(`OpenAI API error: ${response.status}`)
     }
 
-    const data = await response.json()
+    const data = await response.json() as OpenAIResponse
     const content = data.choices[0]?.message?.content
 
     try {
@@ -286,7 +338,6 @@ Return as JSON array with format:
     }
   }
 
-  // Fallback methods for when AI is unavailable
   private getFallbackJobDescriptions(position: string, level: string): ContentSuggestion[] {
     const templates = {
       'Software Engineer': [

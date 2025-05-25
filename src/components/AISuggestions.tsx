@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Wand2, Check, X, Lightbulb, Sparkles } from 'lucide-react'
 import { aiService } from '@/services/aiService'
@@ -15,16 +15,23 @@ interface ContentSuggestion {
   reasoning: string
 }
 
+interface SuggestionContext {
+  position?: string
+  company?: string
+  industry?: string
+  targetRole?: string
+  experienceLevel?: string
+}
+
+interface ProjectSuggestionsContext {
+  industry?: string
+  experienceLevel?: string
+}
+
 interface AISuggestionsProps {
   sectionType: 'summary' | 'experience' | 'projects' | 'skills' | 'education'
   currentContent?: string
-  context?: {
-    position?: string
-    company?: string
-    industry?: string
-    targetRole?: string
-    experienceLevel?: string
-  }
+  context?: SuggestionContext
   onApplySuggestion: (content: string) => void
   onEnhanceContent?: (enhanced: string) => void
 }
@@ -72,11 +79,11 @@ export function AISuggestions({
 
         case 'projects':
           // Generate project description suggestions
-          newSuggestions = await generateProjectSuggestions(context)
+          newSuggestions = await generateProjectSuggestions(context as ProjectSuggestionsContext)
           break
 
         default:
-          newSuggestions = await generateGenericSuggestions(sectionType, context)
+          newSuggestions = await generateGenericSuggestions(sectionType, context as SuggestionContext)
       }
 
       setSuggestions(newSuggestions)
@@ -89,7 +96,7 @@ export function AISuggestions({
     }
   }
 
-  const generateProjectSuggestions = async (context: any): Promise<ContentSuggestion[]> => {
+  const generateProjectSuggestions = async (context: ProjectSuggestionsContext): Promise<ContentSuggestion[]> => {
     // Mock AI project suggestions - in real implementation, would call AI service
     return [
       {
@@ -116,9 +123,9 @@ export function AISuggestions({
     ]
   }
 
-  const generateGenericSuggestions = async (type: string, context: any): Promise<ContentSuggestion[]> => {
+  const generateGenericSuggestions = async (type: string, context: SuggestionContext): Promise<ContentSuggestion[]> => {
     // Fallback suggestions for other section types
-    const templates = {
+    const templates: Record<string, string[]> = {
       skills: [
         'JavaScript, TypeScript, React, Node.js, Python, SQL, AWS, Docker, Git',
         'Frontend: React, Vue.js, Angular, HTML5, CSS3, Sass, Tailwind CSS',
@@ -131,7 +138,7 @@ export function AISuggestions({
       ]
     }
 
-    const suggestions = templates[type as keyof typeof templates] || []
+    const suggestions = templates[type] || []
     return suggestions.map((content, index) => ({
       id: `${type}_${index}`,
       type: 'description' as const,
@@ -172,13 +179,16 @@ export function AISuggestions({
         }
       } else {
         // For other content types, just add to suggestions
-        setSuggestions(prev => [...prev, {
-          id: 'enhanced',
-          type: 'description',
-          content: `Enhanced: ${currentContent}`,
-          confidence: 0.8,
-          reasoning: 'AI-enhanced version of existing content'
-        }])
+        setSuggestions(prev => [
+          ...prev,
+          {
+            id: 'enhanced',
+            type: 'description',
+            content: `Enhanced: ${currentContent}`,
+            confidence: 0.8,
+            reasoning: 'AI-enhanced version of existing content'
+          }
+        ])
       }
     } catch (error) {
       console.error('Enhancement failed:', error)
@@ -192,11 +202,14 @@ export function AISuggestions({
     if (content.includes('<li>')) {
       return content.match(/<li>(.*?)<\/li>/g)?.map(li => li.replace(/<\/?li>/g, '')) || []
     }
-    return content.split('\n').filter(line => line.trim().startsWith('•')).map(line => line.replace('•', '').trim())
+    return content
+      .split('\n')
+      .filter(line => line.trim().startsWith('•'))
+      .map(line => line.replace('•', '').trim())
   }
 
   const formatAsBulletPoints = (points: string[]): string => {
-    return '<ul>' + points.map(point => `<li>${point}</li>`).join('') + '</ul>'
+    return `<ul>${points.map(point => `<li>${point}</li>`).join('')}</ul>`
   }
 
   const getConfidenceColor = (confidence: number) => {

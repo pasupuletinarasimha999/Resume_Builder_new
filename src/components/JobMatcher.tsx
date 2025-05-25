@@ -18,19 +18,68 @@ interface JobMatchAnalysis {
   keywords: string[]
 }
 
+interface ResumeData {
+  fullName: string
+  email: string
+  phone: string
+  location: string
+  linkedin: string
+  summary: string
+}
+
+interface ExperienceSection {
+  id: string
+  company?: string
+  position?: string
+  location?: string
+  startDate?: string
+  endDate?: string
+  description?: string
+}
+
+interface SkillSection {
+  id: string
+  category?: string
+  skills?: string
+}
+
+interface ResumeSections {
+  experience: ExperienceSection[]
+  skills: SkillSection[]
+  [key: string]: unknown[]
+}
+
+interface OptimizedExperience extends ExperienceSection {
+  optimizedDescription: string
+  changes: number
+}
+
+interface SuggestedSkills {
+  missing: string[]
+  recommended: string[]
+  fromJob: string[]
+}
+
+interface OptimizationResults {
+  summary?: string
+  experience?: OptimizedExperience[]
+  skills?: SuggestedSkills
+  keywords?: string[]
+}
+
 interface JobMatcherProps {
-  resumeData: any
-  sections: any
+  resumeData: ResumeData
+  sections: ResumeSections
   isOpen: boolean
   onClose: () => void
-  onApplyOptimizations?: (optimizations: any) => void
+  onApplyOptimizations?: (optimizations: OptimizationResults) => void
 }
 
 export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptimizations }: JobMatcherProps) {
-  const [jobDescription, setJobDescription] = useState('')
+  const [jobDescription, setJobDescription] = useState<string>('')
   const [analysis, setAnalysis] = useState<JobMatchAnalysis | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [optimizations, setOptimizations] = useState<any>(null)
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false)
+  const [optimizations, setOptimizations] = useState<OptimizationResults | null>(null)
 
   const analyzeJobMatch = async () => {
     if (!jobDescription.trim()) {
@@ -41,7 +90,7 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
     setIsAnalyzing(true)
 
     try {
-      const result = await aiService.analyzeJobMatch(resumeData, jobDescription)
+      const result: JobMatchAnalysis = await aiService.analyzeJobMatch(resumeData, jobDescription)
       setAnalysis(result)
 
       // Generate specific optimizations based on the analysis
@@ -50,7 +99,7 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
     } catch (error) {
       console.error('Job matching failed:', error)
       // Fallback analysis
-      setAnalysis({
+      const fallback: JobMatchAnalysis = {
         score: 75,
         strengths: ['Relevant technical experience', 'Strong educational background'],
         gaps: ['Missing specific industry keywords', 'Could highlight more achievements'],
@@ -60,7 +109,9 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
           'Optimize summary for target role'
         ],
         keywords: ['leadership', 'collaboration', 'problem-solving', 'innovation']
-      })
+      }
+      setAnalysis(fallback)
+      await generateOptimizations(fallback)
     } finally {
       setIsAnalyzing(false)
     }
@@ -84,7 +135,7 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
     }
   }
 
-  const generateOptimizedSummary = async (analysis: JobMatchAnalysis) => {
+  const generateOptimizedSummary = async (analysis: JobMatchAnalysis): Promise<string> => {
     // Extract key requirements from job description for summary optimization
     const targetRole = extractTargetRole(jobDescription)
 
@@ -93,7 +144,7 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
         resumeData.summary,
         targetRole,
         sections.experience,
-        sections.skills?.map((s: any) => s.skills).join(', ').split(', ') || []
+        sections.skills?.map((s) => s.skills || '').join(', ').split(', ') || []
       )
 
       return suggestions[0]?.content || resumeData.summary
@@ -102,8 +153,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
     }
   }
 
-  const optimizeExperienceSection = async (analysis: JobMatchAnalysis) => {
-    const optimized = []
+  const optimizeExperienceSection = async (analysis: JobMatchAnalysis): Promise<OptimizedExperience[]> => {
+    const optimized: OptimizedExperience[] = []
 
     for (const exp of sections.experience || []) {
       try {
@@ -117,13 +168,13 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
 
         optimized.push({
           ...exp,
-          optimizedDescription: formatAsBulletPoints(enhanced.map(e => e.content)),
+          optimizedDescription: formatAsBulletPoints(enhanced.map((e: { content: string }) => e.content)),
           changes: enhanced.length
         })
       } catch {
         optimized.push({
           ...exp,
-          optimizedDescription: exp.description,
+          optimizedDescription: exp.description || '',
           changes: 0
         })
       }
@@ -132,8 +183,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
     return optimized
   }
 
-  const suggestAdditionalSkills = async (analysis: JobMatchAnalysis) => {
-    const currentSkills = sections.skills?.flatMap((s: any) => s.skills.split(', ')) || []
+  const suggestAdditionalSkills = async (analysis: JobMatchAnalysis): Promise<SuggestedSkills> => {
+    const currentSkills: string[] = sections.skills?.flatMap((s) => s.skills?.split(', ') || []) || []
 
     try {
       const skillAnalysis = await aiService.generateSkillSuggestions(
@@ -185,7 +236,7 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
   }
 
   const formatAsBulletPoints = (points: string[]): string => {
-    return '<ul>' + points.map(point => `<li>${point}</li>`).join('') + '</ul>'
+    return `<ul>${points.map(point => `<li>${point}</li>`).join('')}</ul>`
   }
 
   const getScoreColor = (score: number) => {
@@ -287,8 +338,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
                             Strengths
                           </h4>
                           <ul className="space-y-2">
-                            {analysis.strengths.map((strength, index) => (
-                              <li key={index} className="text-sm text-gray-700 flex items-start gap-2">
+                            {analysis.strengths.map((strength) => (
+                              <li key={strength} className="text-sm text-gray-700 flex items-start gap-2">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0" />
                                 {strength}
                               </li>
@@ -302,8 +353,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
                             Areas for Improvement
                           </h4>
                           <ul className="space-y-2">
-                            {analysis.gaps.map((gap, index) => (
-                              <li key={index} className="text-sm text-gray-700 flex items-start gap-2">
+                            {analysis.gaps.map((gap) => (
+                              <li key={gap} className="text-sm text-gray-700 flex items-start gap-2">
                                 <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0" />
                                 {gap}
                               </li>
@@ -322,8 +373,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
                         <CardTitle className="text-sm text-green-600">Your Strengths</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-2">
-                        {analysis.strengths.map((strength, index) => (
-                          <Badge key={index} variant="secondary" className="mr-2 mb-2">
+                        {analysis.strengths.map((strength) => (
+                          <Badge key={strength} variant="secondary" className="mr-2 mb-2">
                             {strength}
                           </Badge>
                         ))}
@@ -335,8 +386,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
                         <CardTitle className="text-sm text-orange-600">Improvement Areas</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-2">
-                        {analysis.gaps.map((gap, index) => (
-                          <Badge key={index} variant="destructive" className="mr-2 mb-2">
+                        {analysis.gaps.map((gap) => (
+                          <Badge key={gap} variant="destructive" className="mr-2 mb-2">
                             {gap}
                           </Badge>
                         ))}
@@ -350,8 +401,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        {analysis.suggestions.map((suggestion, index) => (
-                          <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+                        {analysis.suggestions.map((suggestion) => (
+                          <div key={suggestion} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
                             <TrendingUp className="w-5 h-5 text-blue-600 mt-0.5" />
                             <span className="text-sm text-gray-800">{suggestion}</span>
                           </div>
@@ -391,8 +442,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
                           </CardHeader>
                           <CardContent>
                             <div className="flex flex-wrap gap-2">
-                              {optimizations.skills.missing?.map((skill: string, index: number) => (
-                                <Badge key={index} variant="outline" className="text-blue-600">
+                              {optimizations.skills.missing?.map((skill: string) => (
+                                <Badge key={skill} variant="outline" className="text-blue-600">
                                   + {skill}
                                 </Badge>
                               ))}
@@ -419,8 +470,8 @@ export function JobMatcher({ resumeData, sections, isOpen, onClose, onApplyOptim
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-2">
-                        {analysis.keywords.map((keyword, index) => (
-                          <Badge key={index} variant="secondary" className="mb-2">
+                        {analysis.keywords.map((keyword) => (
+                          <Badge key={keyword} variant="secondary" className="mb-2">
                             {keyword}
                           </Badge>
                         ))}
