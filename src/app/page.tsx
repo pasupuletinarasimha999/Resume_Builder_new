@@ -14,11 +14,6 @@ import dynamic from 'next/dynamic'
 import { AISuggestions } from '@/components/AISuggestions'
 import { EnhancedAISuggestions } from '@/components/EnhancedAISuggestions'
 import { JobMatcher } from '@/components/JobMatcher'
-import { AIChatAssistant } from '@/components/AIChatAssistant'
-import { WritingAssistant } from '@/components/WritingAssistant'
-import { AchievementQuantifier } from '@/components/AchievementQuantifier'
-import { IndustryOptimizer } from '@/components/IndustryOptimizer'
-import { ResumeVariantsGenerator } from '@/components/ResumeVariantsGenerator'
 
 const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor').then(mod => ({ default: mod.RichTextEditor })), {
   ssr: false,
@@ -234,7 +229,6 @@ export default function ResumePage() {
   const [showResumeChecker, setShowResumeChecker] = useState<boolean>(false)
   const [showJobMatcher, setShowJobMatcher] = useState<boolean>(false)
   const [showEnhancedAI, setShowEnhancedAI] = useState<boolean>(false)
-  const [showVariantsGenerator, setShowVariantsGenerator] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Convert resumeSections to state for reordering
@@ -1246,13 +1240,6 @@ export default function ResumePage() {
             </Button>
             <Button
               size="sm"
-              className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
-              onClick={() => setShowVariantsGenerator(true)}
-            >
-              ✨ Variants
-            </Button>
-            <Button
-              size="sm"
               className="bg-orange-600 hover:bg-orange-700 text-white text-xs px-3 py-1"
               onClick={() => setShowJobMatcher(true)}
             >
@@ -1394,25 +1381,6 @@ export default function ResumePage() {
                       }}
                       onApplySuggestion={(content) => handleInputChange('summary', content)}
                       onEnhanceContent={(enhanced) => handleInputChange('summary', enhanced)}
-                    />
-
-                    {/* Real-time Writing Assistant */}
-                    <WritingAssistant
-                      text={resumeData.summary}
-                      context={{
-                        section: 'summary',
-                        role: 'Software Engineer',
-                        industry: 'technology'
-                      }}
-                      onSuggestionApply={(original, improved) => handleInputChange('summary', improved)}
-                    />
-
-                    {/* Industry-Specific Optimization */}
-                    <IndustryOptimizer
-                      currentText={resumeData.summary}
-                      targetIndustry="technology"
-                      targetRole="Software Engineer"
-                      onApplyOptimization={(optimized) => handleInputChange('summary', optimized)}
                     />
                   </div>
                 </CardContent>
@@ -1755,56 +1723,6 @@ export default function ResumePage() {
           </div>
         </div>
       )}
-
-      {/* Resume Variants Generator Modal */}
-      {showVariantsGenerator && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-[90vw] max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Resume Variants Generator</h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowVariantsGenerator(false)}
-                >
-                  ×
-                </Button>
-              </div>
-              <ResumeVariantsGenerator
-                currentResume={{
-                  summary: resumeData.summary,
-                  experience: sections.experience,
-                  skills: sections.skills
-                }}
-                onApplyVariant={(variant) => {
-                  // Apply the variant to the resume
-                  handleInputChange('summary', variant.summary)
-                  // Apply experience adjustments
-                  Object.entries(variant.experienceAdjustments).forEach(([id, description]) => {
-                    updateSectionItem('experience', id, 'description', description)
-                  })
-                  setShowVariantsGenerator(false)
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* AI Chat Assistant */}
-      <AIChatAssistant
-        resumeData={{
-          summary: resumeData.summary,
-          experience: sections.experience,
-          skills: sections.skills,
-          education: sections.education
-        }}
-        onApplySuggestion={(suggestion, section) => {
-          // Handle applying suggestions from chat to resume sections
-          console.log('Applying suggestion:', suggestion, 'to section:', section)
-        }}
-      />
     </div>
   )
 }

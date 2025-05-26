@@ -10,9 +10,6 @@ import { MonthYearInput } from '@/components/ui/month-year-input'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { WritingAssistant } from '@/components/WritingAssistant'
-import { AchievementQuantifier } from '@/components/AchievementQuantifier'
-import { IndustryOptimizer } from '@/components/IndustryOptimizer'
 import { Plus, Trash2 } from 'lucide-react'
 
 interface SectionItem {
@@ -118,56 +115,12 @@ export function ResumeSection({
                           </div>
                         </div>
                       ) : field.type === 'richtext' ? (
-                        <>
-                          <RichTextEditor
-                            value={item[field.key] as string || ''}
-                            onChange={(value) => onUpdateItem(item.id, field.key, value)}
-                            placeholder={field.placeholder}
-                            className="mt-1"
-                          />
-
-                          {/* AI Enhancements for Experience Descriptions */}
-                          {isExperience && field.key === 'description' && (
-                            <>
-                              <WritingAssistant
-                                text={item[field.key] as string || ''}
-                                context={{
-                                  section: 'experience',
-                                  role: item.position as string,
-                                  industry: 'technology'
-                                }}
-                                onSuggestionApply={(original, improved) =>
-                                  onUpdateItem(item.id, field.key, improved)
-                                }
-                                className="mt-2"
-                              />
-
-                              <AchievementQuantifier
-                                text={item[field.key] as string || ''}
-                                context={{
-                                  role: item.position as string,
-                                  industry: 'technology',
-                                  company: item.company as string,
-                                  experienceLevel: 'mid'
-                                }}
-                                onApplyQuantification={(original, quantified) =>
-                                  onUpdateItem(item.id, field.key, quantified)
-                                }
-                                className="mt-2"
-                              />
-
-                              <IndustryOptimizer
-                                currentText={item[field.key] as string || ''}
-                                targetIndustry="technology"
-                                targetRole={item.position as string}
-                                onApplyOptimization={(optimized) =>
-                                  onUpdateItem(item.id, field.key, optimized)
-                                }
-                                className="mt-2"
-                              />
-                            </>
-                          )}
-                        </>
+                        <RichTextEditor
+                          value={item[field.key] as string || ''}
+                          onChange={(value) => onUpdateItem(item.id, field.key, value)}
+                          placeholder={field.placeholder}
+                          className="mt-1"
+                        />
                       ) : field.type === 'textarea' ? (
                         <Textarea
                           id={`${item.id}-${field.key}`}
