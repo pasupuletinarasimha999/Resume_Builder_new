@@ -40,7 +40,8 @@ interface ATSScore {
   suggestions: OptimizationSuggestion[]
 }
 
-interface ResumeData {
+// Use the same types as defined in the main page to avoid conflicts
+interface ResumeDataType {
   fullName: string
   email: string
   phone: string
@@ -49,7 +50,7 @@ interface ResumeData {
   summary: string
 }
 
-interface ExperienceItem {
+interface ExperienceItemType {
   id: string
   company?: string
   position?: string
@@ -58,39 +59,41 @@ interface ExperienceItem {
   endDate?: string
   description?: string
   isPresent?: boolean
+  [key: string]: string | boolean | undefined
 }
 
-interface SkillItem {
+interface SkillItemType {
   id: string
   category?: string
   skills?: string
+  [key: string]: string | boolean | undefined
 }
 
-interface BaseItem {
+interface BaseItemType {
   id: string
   [key: string]: string | boolean | undefined
 }
 
-interface ResumeSections {
-  experience: ExperienceItem[]
-  skills: SkillItem[]
-  education?: BaseItem[]
-  projects?: BaseItem[]
-  languages?: BaseItem[]
-  social?: BaseItem[]
-  awards?: BaseItem[]
-  certifications?: BaseItem[]
+interface ResumeSectionsType {
+  experience: ExperienceItemType[]
+  skills: SkillItemType[]
+  education?: BaseItemType[]
+  projects?: BaseItemType[]
+  languages?: BaseItemType[]
+  social?: BaseItemType[]
+  awards?: BaseItemType[]
+  certifications?: BaseItemType[]
 }
 
 interface OptimizationResult {
   summary?: string
-  experience?: ExperienceItem[]
-  skills?: SkillItem[]
+  experience?: ExperienceItemType[]
+  skills?: SkillItemType[]
 }
 
 interface ATSOptimizerProps {
-  resumeData: ResumeData
-  sections: ResumeSections
+  resumeData: ResumeDataType
+  sections: ResumeSectionsType
   onApplyOptimizations: (optimizations: OptimizationResult) => void
   isOpen: boolean
   onClose: () => void
@@ -235,7 +238,7 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
     const keywordScore = Math.min((keywordMatches / analysis.requiredSkills.length) * 100, 100)
 
     // Check skills section
-    const currentSkills = sections.skills?.flatMap((s: SkillItem) =>
+    const currentSkills = sections.skills?.flatMap((s: SkillItemType) =>
       s.skills?.split(',').map((skill: string) => skill.trim().toLowerCase()) || []
     ) || []
 
@@ -256,7 +259,7 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
     }
 
     // Check experience descriptions
-    const experienceText = sections.experience?.map((exp: ExperienceItem) => exp.description).join(' ') || ''
+    const experienceText = sections.experience?.map((exp: ExperienceItemType) => exp.description).join(' ') || ''
     const missingActionVerbs = analysis.actionVerbs.filter(verb =>
       !experienceText.toLowerCase().includes(verb.toLowerCase())
     )
@@ -308,7 +311,7 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
 
   // Generate optimized content
   const generateOptimizedContent = (analysis: JobAnalysis): OptimizationResult => {
-    const optimizedExperience = sections.experience?.map((exp: ExperienceItem) => {
+    const optimizedExperience = sections.experience?.map((exp: ExperienceItemType) => {
       const optimizedDescription = enhanceExperienceDescription(exp.description || '', analysis)
       return {
         ...exp,
@@ -367,10 +370,10 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
   }
 
   // Generate optimized skills
-  const generateOptimizedSkills = (analysis: JobAnalysis): SkillItem[] => {
+  const generateOptimizedSkills = (analysis: JobAnalysis): SkillItemType[] => {
     const currentSkills = sections.skills || []
     const missingSkills = analysis.requiredSkills.filter(skill =>
-      !currentSkills.some((s: SkillItem) => s.skills?.toLowerCase().includes(skill.toLowerCase()))
+      !currentSkills.some((s: SkillItemType) => s.skills?.toLowerCase().includes(skill.toLowerCase()))
     )
 
     if (missingSkills.length > 0) {
