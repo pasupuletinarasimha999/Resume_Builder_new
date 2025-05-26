@@ -40,10 +40,58 @@ interface ATSScore {
   suggestions: OptimizationSuggestion[]
 }
 
+interface ResumeData {
+  fullName: string
+  email: string
+  phone: string
+  location: string
+  linkedin: string
+  summary: string
+}
+
+interface ExperienceItem {
+  id: string
+  company?: string
+  position?: string
+  location?: string
+  startDate?: string
+  endDate?: string
+  description?: string
+  isPresent?: boolean
+}
+
+interface SkillItem {
+  id: string
+  category?: string
+  skills?: string
+}
+
+interface BaseItem {
+  id: string
+  [key: string]: string | boolean | undefined
+}
+
+interface ResumeSections {
+  experience: ExperienceItem[]
+  skills: SkillItem[]
+  education?: BaseItem[]
+  projects?: BaseItem[]
+  languages?: BaseItem[]
+  social?: BaseItem[]
+  awards?: BaseItem[]
+  certifications?: BaseItem[]
+}
+
+interface OptimizationResult {
+  summary?: string
+  experience?: ExperienceItem[]
+  skills?: SkillItem[]
+}
+
 interface ATSOptimizerProps {
-  resumeData: any
-  sections: any
-  onApplyOptimizations: (optimizations: any) => void
+  resumeData: ResumeData
+  sections: ResumeSections
+  onApplyOptimizations: (optimizations: OptimizationResult) => void
   isOpen: boolean
   onClose: () => void
 }
@@ -83,10 +131,12 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
     ]
 
     const skills = new Set<string>()
-    skillPatterns.forEach(pattern => {
+    for (const pattern of skillPatterns) {
       const matches = text.match(pattern) || []
-      matches.forEach(match => skills.add(match.toLowerCase()))
-    })
+      for (const match of matches) {
+        skills.add(match.toLowerCase())
+      }
+    }
 
     return Array.from(skills)
   }
@@ -122,9 +172,11 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
   const extractExperienceLevel = (text: string): string => {
     if (text.toLowerCase().includes('senior') || text.includes('5+') || text.includes('7+')) {
       return 'senior'
-    } else if (text.toLowerCase().includes('mid') || text.includes('3+') || text.includes('4+')) {
+    }
+    if (text.toLowerCase().includes('mid') || text.includes('3+') || text.includes('4+')) {
       return 'mid-level'
-    } else if (text.toLowerCase().includes('junior') || text.includes('1+') || text.includes('2+')) {
+    }
+    if (text.toLowerCase().includes('junior') || text.includes('1+') || text.includes('2+')) {
       return 'junior'
     }
     return 'mid-level'
@@ -183,7 +235,7 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
     const keywordScore = Math.min((keywordMatches / analysis.requiredSkills.length) * 100, 100)
 
     // Check skills section
-    const currentSkills = sections.skills?.flatMap((s: any) =>
+    const currentSkills = sections.skills?.flatMap((s: SkillItem) =>
       s.skills?.split(',').map((skill: string) => skill.trim().toLowerCase()) || []
     ) || []
 
@@ -192,19 +244,19 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
     )
 
     // Generate suggestions for missing skills
-    missingSkills.forEach(skill => {
+    for (const skill of missingSkills) {
       suggestions.push({
         type: 'add',
         section: 'skills',
         suggested: `Add "${skill}" to your skills section`,
-        reason: `This is a required skill mentioned in the job description`,
+        reason: "This is a required skill mentioned in the job description",
         impact: 'high',
         keywords: [skill]
       })
-    })
+    }
 
     // Check experience descriptions
-    const experienceText = sections.experience?.map((exp: any) => exp.description).join(' ') || ''
+    const experienceText = sections.experience?.map((exp: ExperienceItem) => exp.description).join(' ') || ''
     const missingActionVerbs = analysis.actionVerbs.filter(verb =>
       !experienceText.toLowerCase().includes(verb.toLowerCase())
     )
@@ -255,9 +307,9 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
   }
 
   // Generate optimized content
-  const generateOptimizedContent = (analysis: JobAnalysis) => {
-    const optimizedExperience = sections.experience?.map((exp: any) => {
-      const optimizedDescription = enhanceExperienceDescription(exp.description, analysis)
+  const generateOptimizedContent = (analysis: JobAnalysis): OptimizationResult => {
+    const optimizedExperience = sections.experience?.map((exp: ExperienceItem) => {
+      const optimizedDescription = enhanceExperienceDescription(exp.description || '', analysis)
       return {
         ...exp,
         description: optimizedDescription
@@ -315,10 +367,10 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
   }
 
   // Generate optimized skills
-  const generateOptimizedSkills = (analysis: JobAnalysis) => {
+  const generateOptimizedSkills = (analysis: JobAnalysis): SkillItem[] => {
     const currentSkills = sections.skills || []
     const missingSkills = analysis.requiredSkills.filter(skill =>
-      !currentSkills.some((s: any) => s.skills?.toLowerCase().includes(skill.toLowerCase()))
+      !currentSkills.some((s: SkillItem) => s.skills?.toLowerCase().includes(skill.toLowerCase()))
     )
 
     if (missingSkills.length > 0) {
@@ -412,7 +464,7 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
                   >
                     {isAnalyzing ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                         Analyzing...
                       </>
                     ) : (
@@ -457,8 +509,8 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
                         </CardHeader>
                         <CardContent>
                           <ul className="text-sm space-y-1">
-                            {jobAnalysis.keyResponsibilities.slice(0, 5).map((resp, idx) => (
-                              <li key={idx} className="flex items-start gap-2">
+                            {jobAnalysis.keyResponsibilities.slice(0, 5).map((resp) => (
+                              <li key={resp} className="flex items-start gap-2">
                                 <span className="text-gray-500">•</span>
                                 {resp}
                               </li>
@@ -520,8 +572,8 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
 
                       <div className="space-y-3">
                         <h4 className="font-semibold">Optimization Suggestions:</h4>
-                        {atsScore.suggestions.map((suggestion, idx) => (
-                          <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                        {atsScore.suggestions.map((suggestion) => (
+                          <div key={`${suggestion.section}-${suggestion.suggested}`} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                             {suggestion.impact === 'high' ? (
                               <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
                             ) : suggestion.impact === 'medium' ? (
@@ -589,7 +641,7 @@ export function ATSOptimizer({ resumeData, sections, onApplyOptimizations, isOpe
                     >
                       {isOptimizing ? (
                         <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                           Optimizing Resume...
                         </>
                       ) : (

@@ -1952,13 +1952,13 @@ export default function ResumePage() {
         onApplyOptimizations={(optimizations) => {
           // Apply the optimizations to the resume
           if (optimizations.summary) {
-            setResumeData(prev => ({ ...prev, summary: optimizations.summary }))
+            setResumeData(prev => ({ ...prev, summary: optimizations.summary || prev.summary }))
           }
           if (optimizations.experience) {
-            setSections(prev => ({ ...prev, experience: optimizations.experience }))
+            setSections(prev => ({ ...prev, experience: optimizations.experience || prev.experience }))
           }
           if (optimizations.skills) {
-            setSections(prev => ({ ...prev, skills: optimizations.skills }))
+            setSections(prev => ({ ...prev, skills: optimizations.skills || prev.skills }))
           }
           setShowATSOptimizer(false)
           alert('Resume optimized successfully! Check your summary, experience, and skills sections.')
