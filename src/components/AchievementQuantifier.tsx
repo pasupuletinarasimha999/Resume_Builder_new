@@ -74,15 +74,6 @@ export function AchievementQuantifier({ text, context, onApplyQuantification, cl
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!text.trim() || text.length < 20) {
-      setSuggestions([])
-      return
-    }
-
-    analyzeAchievements(text)
-  }, [text, context])
-
   const analyzeAchievements = useCallback(async (inputText: string) => {
     setIsAnalyzing(true)
 
@@ -130,6 +121,15 @@ export function AchievementQuantifier({ text, context, onApplyQuantification, cl
     setSuggestions(quantificationSuggestions)
     setIsAnalyzing(false)
   }, [context])
+
+  useEffect(() => {
+    if (!text.trim() || text.length < 20) {
+      setSuggestions([])
+      return
+    }
+
+    analyzeAchievements(text)
+  }, [text, analyzeAchievements])
 
   const generateQuantifiedVersions = (
     sentence: string,
@@ -237,7 +237,7 @@ export function AchievementQuantifier({ text, context, onApplyQuantification, cl
     <div className={className}>
       {isAnalyzing && (
         <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-          <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
           <span>Analyzing achievements for quantification...</span>
         </div>
       )}
@@ -274,8 +274,8 @@ export function AchievementQuantifier({ text, context, onApplyQuantification, cl
                     </div>
 
                     <div className="flex flex-wrap gap-1 mb-2">
-                      {suggestion.metrics.map((metric, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                      {suggestion.metrics.map((metric) => (
+                        <Badge key={`${metric.type}-${metric.value}-${metric.unit}`} variant="outline" className="text-xs">
                           {getMetricIcon(metric.type)}
                           <span className="ml-1">{metric.value} {metric.unit}</span>
                         </Badge>
@@ -292,7 +292,7 @@ export function AchievementQuantifier({ text, context, onApplyQuantification, cl
                         <div className="flex space-x-1">
                           {[...Array(5)].map((_, i) => (
                             <div
-                              key={i}
+                              key={`confidence-dot-${suggestion.id}-${i}`}
                               className={`w-2 h-2 rounded-full ${
                                 i < suggestion.confidence * 5 ? 'bg-green-500' : 'bg-gray-200'
                               }`}

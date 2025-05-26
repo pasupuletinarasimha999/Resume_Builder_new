@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -76,10 +76,11 @@ export function AIChatAssistant({ resumeData, onApplySuggestion }: AIChatAssista
   const [isOpen, setIsOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  }, [])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: messages is needed to trigger scroll when new messages arrive
   useEffect(() => {
     scrollToBottom()
   }, [messages, scrollToBottom])

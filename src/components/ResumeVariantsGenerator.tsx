@@ -206,8 +206,8 @@ export function ResumeVariantsGenerator({
   ): Record<string, string> => {
     const adjustments: Record<string, string> = {}
 
-    experience.forEach(exp => {
-      if (!exp.description) return
+    for (const exp of experience) {
+      if (!exp.description) continue
 
       const originalDesc = exp.description
       let enhancedDesc = originalDesc
@@ -227,7 +227,7 @@ export function ResumeVariantsGenerator({
       if (enhancedDesc !== originalDesc) {
         adjustments[exp.id] = enhancedDesc
       }
-    })
+    }
 
     return adjustments
   }
@@ -359,7 +359,7 @@ export function ResumeVariantsGenerator({
             >
               {isGenerating ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   Generating Variants...
                 </>
               ) : (
@@ -431,7 +431,7 @@ export function ResumeVariantsGenerator({
                           </label>
                           <div className="flex flex-wrap gap-1">
                             {variant.skillsEmphasis.slice(0, 8).map((skill, index) => (
-                              <Badge key={index} variant="outline" className="text-xs bg-purple-100 text-purple-700">
+                              <Badge key={`skill-${variant.id}-${index}-${skill.slice(0, 10)}`} variant="outline" className="text-xs bg-purple-100 text-purple-700">
                                 {skill}
                               </Badge>
                             ))}
@@ -444,7 +444,7 @@ export function ResumeVariantsGenerator({
                           </label>
                           <div className="flex flex-wrap gap-1">
                             {variant.keywordOptimizations.slice(0, 6).map((keyword, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
+                              <Badge key={`keyword-${variant.id}-${index}-${keyword.slice(0, 10)}`} variant="secondary" className="text-xs">
                                 {keyword}
                               </Badge>
                             ))}

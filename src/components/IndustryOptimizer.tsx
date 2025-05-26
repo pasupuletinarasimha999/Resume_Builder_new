@@ -319,7 +319,7 @@ export function IndustryOptimizer({
     <div className={className}>
       {isAnalyzing && (
         <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           <span>Analyzing industry fit...</span>
         </div>
       )}
@@ -417,7 +417,7 @@ export function IndustryOptimizer({
                   <>
                     <h4 className="text-xs font-medium text-blue-600 mb-2">Terminology Improvements</h4>
                     {optimizations.terminology.map((term, index) => (
-                      <div key={index} className="p-2 bg-blue-50 rounded space-y-2">
+                      <div key={`terminology-${index}-${term.original.slice(0, 10)}`} className="p-2 bg-blue-50 rounded space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="text-xs">
                             <span className="text-red-600 line-through">{term.original}</span>
@@ -448,7 +448,7 @@ export function IndustryOptimizer({
               <div className="space-y-2">
                 <h4 className="text-xs font-medium text-purple-600 mb-2">Industry-Specific Achievement Templates</h4>
                 {optimizations.achievements.map((achievement, index) => (
-                  <div key={index} className="p-2 bg-purple-50 rounded">
+                  <div key={`achievement-${index}-${achievement.slice(0, 15)}`} className="p-2 bg-purple-50 rounded">
                     <div className="flex items-start justify-between">
                       <div className="text-xs text-gray-700 flex-1">
                         {achievement}

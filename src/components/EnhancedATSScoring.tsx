@@ -44,16 +44,31 @@ interface ATSScore {
   }
 }
 
+interface WorkExperience {
+  company?: string
+  position?: string
+  description?: string
+  startDate?: string
+  endDate?: string
+}
+
+interface Education {
+  degree?: string
+  institution?: string
+  graduationDate?: string
+  gpa?: string
+}
+
 interface EnhancedATSScoringProps {
   resumeData: {
     personalInfo?: { email?: string; phone?: string; linkedin?: string; location?: string }
-    workExperience?: any[]
+    workExperience?: WorkExperience[]
     skills?: string[]
-    education?: any[]
+    education?: Education[]
   }
   jobDescription?: string
   industry?: string
-  jobRole?: string
+  targetRole?: string
   onScoreUpdate?: (score: ATSScore) => void
 }
 
@@ -85,7 +100,7 @@ export default function EnhancedATSScoring({
   resumeData,
   jobDescription = '',
   industry = 'technology',
-  jobRole = '',
+  targetRole = '',
   onScoreUpdate
 }: EnhancedATSScoringProps) {
   const [score, setScore] = useState<ATSScore | null>(null)
@@ -102,7 +117,7 @@ export default function EnhancedATSScoring({
     setScore(analysisResult)
     onScoreUpdate?.(analysisResult)
     setIsAnalyzing(false)
-  }, [resumeData, jobDescription, industry, jobRole, onScoreUpdate])
+  }, [onScoreUpdate])
 
   const runMLScoringModel = async (): Promise<ATSScore> => {
     // Simulate advanced ML analysis
@@ -164,7 +179,7 @@ export default function EnhancedATSScoring({
     if (experiences.length === 0) return 0
 
     // Simulate ML analysis of experience relevance
-    const roleRelevance = role ? 0.8 : 0.6
+    const roleRelevance = targetRole ? 0.8 : 0.6
     const industryBonus = industry === 'technology' ? 1.1 : 1.0
     const experienceDepth = Math.min(experiences.length * 15, 90)
 
@@ -187,9 +202,9 @@ export default function EnhancedATSScoring({
   const calculateFormatScore = (): number => {
     // Simulate format analysis
     const hasContact = resumeData.personalInfo?.email && resumeData.personalInfo?.phone
-    const hasWorkExp = resumeData.workExperience?.length > 0
-    const hasEducation = resumeData.education?.length > 0
-    const hasSkills = resumeData.skills?.length > 0
+    const hasWorkExp = (resumeData.workExperience?.length ?? 0) > 0
+    const hasEducation = (resumeData.education?.length ?? 0) > 0
+    const hasSkills = (resumeData.skills?.length ?? 0) > 0
 
     const formatFactors = [hasContact, hasWorkExp, hasEducation, hasSkills]
     return (formatFactors.filter(Boolean).length / formatFactors.length) * 100
@@ -200,7 +215,7 @@ export default function EnhancedATSScoring({
     if (education.length === 0) return 30
 
     // Simulate education relevance scoring
-    const hasRelevantDegree = education.some((edu: any) =>
+    const hasRelevantDegree = education.some((edu: Education) =>
       edu.degree?.toLowerCase().includes('computer') ||
       edu.degree?.toLowerCase().includes('engineer') ||
       edu.degree?.toLowerCase().includes('science')
@@ -395,7 +410,7 @@ export default function EnhancedATSScoring({
                 </h4>
                 <ul className="space-y-1">
                   {score.aiInsights.strengths.map((strength, index) => (
-                    <li key={index} className="text-sm text-muted-foreground pl-4">
+                    <li key={`strength-${index}-${strength.slice(0, 15)}`} className="text-sm text-muted-foreground pl-4">
                       • {strength}
                     </li>
                   ))}
@@ -409,7 +424,7 @@ export default function EnhancedATSScoring({
                 </h4>
                 <ul className="space-y-1">
                   {score.aiInsights.weaknesses.map((weakness, index) => (
-                    <li key={index} className="text-sm text-muted-foreground pl-4">
+                    <li key={`weakness-${index}-${weakness.slice(0, 15)}`} className="text-sm text-muted-foreground pl-4">
                       • {weakness}
                     </li>
                   ))}
@@ -423,7 +438,7 @@ export default function EnhancedATSScoring({
                 </h4>
                 <ul className="space-y-1">
                   {score.aiInsights.recommendations.map((recommendation, index) => (
-                    <li key={index} className="text-sm text-muted-foreground pl-4">
+                    <li key={`recommendation-${index}-${recommendation.slice(0, 15)}`} className="text-sm text-muted-foreground pl-4">
                       • {recommendation}
                     </li>
                   ))}

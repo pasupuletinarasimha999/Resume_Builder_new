@@ -1767,9 +1767,35 @@ export default function ResumePage() {
                 </Button>
               </div>
               <EnhancedATSScoring
-                resumeData={resumeData}
+                resumeData={{
+                  personalInfo: {
+                    email: resumeData.email,
+                    phone: resumeData.phone,
+                    linkedin: resumeData.linkedin,
+                    location: resumeData.location
+                  },
+                  workExperience: sections.experience?.map(exp => ({
+                    id: exp.id,
+                    company: exp.company || '',
+                    position: exp.position || '',
+                    startDate: exp.startDate || '',
+                    endDate: exp.endDate || '',
+                    description: exp.description || ''
+                  })),
+                  skills: sections.skills?.flatMap(skillGroup =>
+                    skillGroup.skills?.split(',').map(skill => skill.trim()) || []
+                  ) || [],
+                  education: sections.education?.map(edu => ({
+                    id: edu.id,
+                    school: edu.school || '',
+                    degree: edu.degree || '',
+                    field: edu.field || '',
+                    startDate: edu.startDate || '',
+                    endDate: edu.endDate || ''
+                  }))
+                }}
                 industry="technology"
-                jobRole="Software Engineer"
+                targetRole="Software Engineer"
               />
             </div>
           </div>
@@ -1820,7 +1846,7 @@ export default function ResumePage() {
               <KeywordOptimizationEngine
                 resumeText={JSON.stringify(resumeData) + JSON.stringify(sections)}
                 industry="technology"
-                jobRole="Software Engineer"
+                targetRole="Software Engineer"
                 onKeywordApply={(keyword, action, original) => {
                   // Handle keyword application logic
                   if (action === 'add') {
