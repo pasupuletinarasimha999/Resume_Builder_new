@@ -14,6 +14,9 @@ import dynamic from 'next/dynamic'
 import { AISuggestions } from '@/components/AISuggestions'
 import { EnhancedAISuggestions } from '@/components/EnhancedAISuggestions'
 import { JobMatcher } from '@/components/JobMatcher'
+import EnhancedATSScoring from '@/components/EnhancedATSScoring'
+import WritingAssistantEnhanced from '@/components/WritingAssistantEnhanced'
+import KeywordOptimizationEngine from '@/components/KeywordOptimizationEngine'
 
 const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor').then(mod => ({ default: mod.RichTextEditor })), {
   ssr: false,
@@ -229,6 +232,9 @@ export default function ResumePage() {
   const [showResumeChecker, setShowResumeChecker] = useState<boolean>(false)
   const [showJobMatcher, setShowJobMatcher] = useState<boolean>(false)
   const [showEnhancedAI, setShowEnhancedAI] = useState<boolean>(false)
+  const [showEnhancedATS, setShowEnhancedATS] = useState<boolean>(false)
+  const [showWritingAssistant, setShowWritingAssistant] = useState<boolean>(false)
+  const [showKeywordOptimizer, setShowKeywordOptimizer] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Convert resumeSections to state for reordering
@@ -1252,6 +1258,27 @@ export default function ResumePage() {
             >
               📊 Check Resume
             </Button>
+            <Button
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1"
+              onClick={() => setShowEnhancedATS(true)}
+            >
+              🧠 AI ATS Score
+            </Button>
+            <Button
+              size="sm"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1"
+              onClick={() => setShowWritingAssistant(true)}
+            >
+              ✍️ Writing Assistant
+            </Button>
+            <Button
+              size="sm"
+              className="bg-pink-600 hover:bg-pink-700 text-white text-xs px-3 py-1"
+              onClick={() => setShowKeywordOptimizer(true)}
+            >
+              🔍 Keywords
+            </Button>
             <PDFDownload resumeData={resumeData} sections={sections} sectionOrder={sectionOrder} />
           </div>
         </div>
@@ -1719,6 +1746,90 @@ export default function ResumePage() {
                 </Button>
               </div>
               <EnhancedAISuggestions onApplySuggestion={handleApplyEnhancedAISuggestion} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced ATS Scoring Modal */}
+      {showEnhancedATS && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-[90vw] max-w-6xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">AI-Enhanced ATS Scoring</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowEnhancedATS(false)}
+                >
+                  ×
+                </Button>
+              </div>
+              <EnhancedATSScoring
+                resumeData={resumeData}
+                industry="technology"
+                jobRole="Software Engineer"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Writing Assistant Modal */}
+      {showWritingAssistant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-[90vw] max-w-5xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">Real-time Writing Assistant</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowWritingAssistant(false)}
+                >
+                  ×
+                </Button>
+              </div>
+              <WritingAssistantEnhanced
+                text={resumeData.summary}
+                context="summary"
+                targetTone="professional"
+                onChange={(newText) => handleInputChange('summary', newText)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Keyword Optimization Modal */}
+      {showKeywordOptimizer && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-[90vw] max-w-6xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">Keyword Optimization Engine</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowKeywordOptimizer(false)}
+                >
+                  ×
+                </Button>
+              </div>
+              <KeywordOptimizationEngine
+                resumeText={JSON.stringify(resumeData) + JSON.stringify(sections)}
+                industry="technology"
+                jobRole="Software Engineer"
+                onKeywordApply={(keyword, action, original) => {
+                  // Handle keyword application logic
+                  if (action === 'add') {
+                    const currentSummary = resumeData.summary
+                    const newSummary = currentSummary + (currentSummary ? '. ' : '') + keyword
+                    handleInputChange('summary', newSummary)
+                  }
+                }}
+              />
             </div>
           </div>
         </div>

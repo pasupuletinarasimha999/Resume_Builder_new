@@ -82,7 +82,7 @@ export function AIChatAssistant({ resumeData, onApplySuggestion }: AIChatAssista
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages])
+  }, [messages, scrollToBottom])
 
   const generateChatResponse = async (userMessage: string): Promise<string> => {
     const context = {
@@ -161,7 +161,7 @@ Respond in plain text format (no markdown).`
     }
 
     if (lowerMessage.includes('skill') || lowerMessage.includes('technical')) {
-      return `Looking at your current skills, consider adding trending technologies in your field. For tech roles, skills like cloud platforms (AWS, Azure), containers (Docker, Kubernetes), and relevant programming frameworks are valuable. Make sure to organize them by category (Programming Languages, Frameworks, Tools, etc.).`
+      return "Looking at your current skills, consider adding trending technologies in your field. For tech roles, skills like cloud platforms (AWS, Azure), containers (Docker, Kubernetes), and relevant programming frameworks are valuable. Make sure to organize them by category (Programming Languages, Frameworks, Tools, etc.)."
     }
 
     if (lowerMessage.includes('experience') || lowerMessage.includes('work') || lowerMessage.includes('job')) {
@@ -262,9 +262,9 @@ Respond in plain text format (no markdown).`
           <div className="p-3 border-b bg-gray-50">
             <div className="text-xs text-gray-600 mb-2">Quick questions:</div>
             <div className="flex flex-wrap gap-1">
-              {QUICK_PROMPTS.map((prompt, index) => (
+              {QUICK_PROMPTS.map((prompt) => (
                 <Button
-                  key={index}
+                  key={prompt.text}
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuickPrompt(prompt.text)}
@@ -290,9 +290,9 @@ Respond in plain text format (no markdown).`
 
                   {message.suggestions && (
                     <div className="mt-2 space-y-1">
-                      {message.suggestions.map((suggestion, index) => (
+                      {message.suggestions.map((suggestion) => (
                         <Badge
-                          key={index}
+                          key={suggestion}
                           variant="secondary"
                           className="mr-1 mb-1 cursor-pointer hover:bg-blue-100 text-xs"
                           onClick={() => handleSuggestionClick(suggestion)}
@@ -312,9 +312,9 @@ Respond in plain text format (no markdown).`
                   <div className="flex items-center">
                     <Bot className="w-4 h-4 mr-2 text-blue-600" />
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}} />
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
                     </div>
                   </div>
                 </div>
