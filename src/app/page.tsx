@@ -1217,7 +1217,7 @@ export default function ResumePage() {
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <input
               ref={fileInputRef}
               type="file"
