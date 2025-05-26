@@ -153,7 +153,7 @@ Respond in plain text format (no markdown).`
     }
   }
 
-  const getFallbackResponse = (userMessage: string, context: any): string => {
+  const getFallbackResponse = (userMessage: string, context: unknown): string => {
     const lowerMessage = userMessage.toLowerCase()
 
     if (lowerMessage.includes('summary') || lowerMessage.includes('professional')) {

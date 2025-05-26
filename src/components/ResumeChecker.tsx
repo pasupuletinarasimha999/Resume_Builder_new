@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -93,7 +93,7 @@ export function ResumeChecker({ resumeData, sections, isOpen, onClose }: ResumeC
     }
   }, [isOpen, analysis])
 
-  const performAnalysis = async () => {
+  const performAnalysis = useCallback(async () => {
     setIsAnalyzing(true)
     // Simulate analysis time for better UX
     await new Promise(resolve => setTimeout(resolve, 2000))
@@ -101,7 +101,7 @@ export function ResumeChecker({ resumeData, sections, isOpen, onClose }: ResumeC
     const result = resumeAnalyzer.analyzeResume(resumeData, sections)
     setAnalysis(result)
     setIsAnalyzing(false)
-  }
+  }, [resumeData, sections])
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600'

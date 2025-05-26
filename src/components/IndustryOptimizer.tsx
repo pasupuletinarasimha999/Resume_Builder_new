@@ -288,21 +288,24 @@ export function IndustryOptimizer({
     setIsAnalyzing(false)
   }
 
-  const applyOptimization = (type: 'terminology' | 'keywords' | 'achievements', data: any) => {
+  const applyOptimization = (
+    type: 'terminology' | 'keywords' | 'achievements',
+    data: { original: string; improved: string } | string[] | string
+  ) => {
     let optimizedText = currentText
     const changes: string[] = []
 
-    if (type === 'terminology') {
-      const { original, improved } = data
+    if (type === 'terminology' && typeof data === 'object' && !Array.isArray(data) && data !== null) {
+      const { original, improved } = data as { original: string; improved: string }
       const regex = new RegExp(`\\b${original}\\b`, 'gi')
       optimizedText = optimizedText.replace(regex, improved)
       changes.push(`Replaced "${original}" with "${improved}"`)
-    } else if (type === 'keywords') {
+    } else if (type === 'keywords' && Array.isArray(data)) {
       // Add keywords naturally to the text
       const keywordsToAdd = data.slice(0, 3)
       optimizedText += ` Key focus areas include: ${keywordsToAdd.join(', ')}.`
       changes.push(`Added industry keywords: ${keywordsToAdd.join(', ')}`)
-    } else if (type === 'achievements') {
+    } else if (type === 'achievements' && typeof data === 'string') {
       optimizedText += `\n\n• ${data}`
       changes.push(`Added achievement template: ${data}`)
     }

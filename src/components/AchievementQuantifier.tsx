@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -83,7 +83,7 @@ export function AchievementQuantifier({ text, context, onApplyQuantification, cl
     analyzeAchievements(text)
   }, [text, context])
 
-  const analyzeAchievements = async (inputText: string) => {
+  const analyzeAchievements = useCallback(async (inputText: string) => {
     setIsAnalyzing(true)
 
     const sentences = inputText.split(/[.!?]+/).filter(s => s.trim().length > 10)
@@ -129,7 +129,7 @@ export function AchievementQuantifier({ text, context, onApplyQuantification, cl
 
     setSuggestions(quantificationSuggestions)
     setIsAnalyzing(false)
-  }
+  }, [context])
 
   const generateQuantifiedVersions = (
     sentence: string,
