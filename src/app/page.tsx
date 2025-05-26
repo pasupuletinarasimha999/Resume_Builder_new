@@ -18,6 +18,7 @@ import EnhancedATSScoring from '@/components/EnhancedATSScoring'
 import WritingAssistantEnhanced from '@/components/WritingAssistantEnhanced'
 import KeywordOptimizationEngine from '@/components/KeywordOptimizationEngine'
 import RedFlagDetector from '@/components/RedFlagDetector'
+import { ATSOptimizer } from '@/components/ATSOptimizer'
 
 const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor').then(mod => ({ default: mod.RichTextEditor })), {
   ssr: false,
@@ -237,6 +238,7 @@ export default function ResumePage() {
   const [showWritingAssistant, setShowWritingAssistant] = useState<boolean>(false)
   const [showKeywordOptimizer, setShowKeywordOptimizer] = useState<boolean>(false)
   const [showRedFlagDetector, setShowRedFlagDetector] = useState<boolean>(false)
+  const [showATSOptimizer, setShowATSOptimizer] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Convert resumeSections to state for reordering
@@ -1248,6 +1250,13 @@ export default function ResumePage() {
             </Button>
             <Button
               size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1"
+              onClick={() => setShowATSOptimizer(true)}
+            >
+              🎯 Smart ATS
+            </Button>
+            <Button
+              size="sm"
               className="bg-orange-600 hover:bg-orange-700 text-white text-xs px-3 py-1"
               onClick={() => setShowJobMatcher(true)}
             >
@@ -1933,6 +1942,28 @@ export default function ResumePage() {
           </div>
         </div>
       )}
+
+      {/* Smart ATS Optimizer Modal */}
+      <ATSOptimizer
+        resumeData={resumeData}
+        sections={sections}
+        isOpen={showATSOptimizer}
+        onClose={() => setShowATSOptimizer(false)}
+        onApplyOptimizations={(optimizations) => {
+          // Apply the optimizations to the resume
+          if (optimizations.summary) {
+            setResumeData(prev => ({ ...prev, summary: optimizations.summary }))
+          }
+          if (optimizations.experience) {
+            setSections(prev => ({ ...prev, experience: optimizations.experience }))
+          }
+          if (optimizations.skills) {
+            setSections(prev => ({ ...prev, skills: optimizations.skills }))
+          }
+          setShowATSOptimizer(false)
+          alert('Resume optimized successfully! Check your summary, experience, and skills sections.')
+        }}
+      />
     </div>
   )
 }
