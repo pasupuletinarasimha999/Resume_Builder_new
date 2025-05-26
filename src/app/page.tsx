@@ -12,7 +12,6 @@ import { ResumeChecker } from '@/components/ResumeChecker'
 import { renderRichText } from '@/components/ui/rich-text-editor'
 import dynamic from 'next/dynamic'
 import { AISuggestions } from '@/components/AISuggestions'
-import { EnhancedAISuggestions } from '@/components/EnhancedAISuggestions'
 import { JobMatcher } from '@/components/JobMatcher'
 
 const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor').then(mod => ({ default: mod.RichTextEditor })), {
@@ -228,7 +227,6 @@ export default function ResumePage() {
   const [showReorderModal, setShowReorderModal] = useState<boolean>(false)
   const [showResumeChecker, setShowResumeChecker] = useState<boolean>(false)
   const [showJobMatcher, setShowJobMatcher] = useState<boolean>(false)
-  const [showEnhancedAI, setShowEnhancedAI] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Convert resumeSections to state for reordering
@@ -554,24 +552,6 @@ export default function ResumePage() {
       setResumeData(prev => ({ ...prev, summary: content }))
     }
     // Add more cases as needed
-  }
-
-  const handleApplyEnhancedAISuggestion = (content: string, type: string) => {
-    // Handle different types of AI suggestions
-    switch (type) {
-      case 'summary':
-        setResumeData(prev => ({ ...prev, summary: content }))
-        break
-      case 'description':
-      case 'achievement':
-      case 'bullet_point':
-        // For now, just copy to clipboard and show notification
-        navigator.clipboard.writeText(content)
-        alert('Content copied to clipboard! You can paste it into the relevant section.')
-        break
-      default:
-        console.log('Unknown suggestion type:', type)
-    }
   }
 
   const handleApplyJobOptimizations = (optimizations: JobOptimizations) => {
@@ -1233,13 +1213,6 @@ export default function ResumePage() {
             </Button>
             <Button
               size="sm"
-              className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1"
-              onClick={() => setShowEnhancedAI(true)}
-            >
-              🪄 AI Content
-            </Button>
-            <Button
-              size="sm"
               className="bg-orange-600 hover:bg-orange-700 text-white text-xs px-3 py-1"
               onClick={() => setShowJobMatcher(true)}
             >
@@ -1702,27 +1675,6 @@ export default function ResumePage() {
         onClose={() => setShowJobMatcher(false)}
         onApplyOptimizations={handleApplyJobOptimizations}
       />
-
-      {/* Enhanced AI Suggestions Modal */}
-      {showEnhancedAI && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg w-[90vw] max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Enhanced AI Content Generator</h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowEnhancedAI(false)}
-                >
-                  ×
-                </Button>
-              </div>
-              <EnhancedAISuggestions onApplySuggestion={handleApplyEnhancedAISuggestion} />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
