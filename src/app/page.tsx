@@ -17,6 +17,7 @@ import { JobMatcher } from '@/components/JobMatcher'
 import EnhancedATSScoring from '@/components/EnhancedATSScoring'
 import WritingAssistantEnhanced from '@/components/WritingAssistantEnhanced'
 import KeywordOptimizationEngine from '@/components/KeywordOptimizationEngine'
+import RedFlagDetector from '@/components/RedFlagDetector'
 
 const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor').then(mod => ({ default: mod.RichTextEditor })), {
   ssr: false,
@@ -235,6 +236,7 @@ export default function ResumePage() {
   const [showEnhancedATS, setShowEnhancedATS] = useState<boolean>(false)
   const [showWritingAssistant, setShowWritingAssistant] = useState<boolean>(false)
   const [showKeywordOptimizer, setShowKeywordOptimizer] = useState<boolean>(false)
+  const [showRedFlagDetector, setShowRedFlagDetector] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Convert resumeSections to state for reordering
@@ -1279,6 +1281,13 @@ export default function ResumePage() {
             >
               🔍 Keywords
             </Button>
+            <Button
+              size="sm"
+              className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1"
+              onClick={() => setShowRedFlagDetector(true)}
+            >
+              🚩 Red Flags
+            </Button>
             <PDFDownload resumeData={resumeData} sections={sections} sectionOrder={sectionOrder} />
           </div>
         </div>
@@ -1854,6 +1863,70 @@ export default function ResumePage() {
                     const newSummary = currentSummary + (currentSummary ? '. ' : '') + keyword
                     handleInputChange('summary', newSummary)
                   }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Red Flag Detector Modal */}
+      {showRedFlagDetector && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-[90vw] max-w-6xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">Red Flag Detector - AI Resume Analysis</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowRedFlagDetector(false)}
+                >
+                  ×
+                </Button>
+              </div>
+              <RedFlagDetector
+                resumeData={{
+                  personalInfo: {
+                    fullName: resumeData.fullName,
+                    email: resumeData.email,
+                    phone: resumeData.phone,
+                    linkedin: resumeData.linkedin,
+                    location: resumeData.location
+                  },
+                  summary: resumeData.summary,
+                  workExperience: sections.experience?.map(exp => ({
+                    id: exp.id,
+                    company: exp.company || '',
+                    position: exp.position || '',
+                    startDate: exp.startDate || '',
+                    endDate: exp.endDate || '',
+                    description: exp.description || '',
+                    isPresent: exp.isPresent
+                  })),
+                  skills: sections.skills?.flatMap(skillGroup =>
+                    skillGroup.skills?.split(',').map(skill => skill.trim()) || []
+                  ) || [],
+                  education: sections.education?.map(edu => ({
+                    id: edu.id,
+                    school: edu.school || '',
+                    degree: edu.degree || '',
+                    field: edu.field || '',
+                    startDate: edu.startDate || '',
+                    endDate: edu.endDate || ''
+                  })),
+                  projects: sections.projects?.map(proj => ({
+                    id: proj.id,
+                    name: proj.name || '',
+                    technologies: proj.technologies || '',
+                    description: proj.description || ''
+                  }))
+                }}
+                targetIndustry="technology"
+                targetRole="Software Engineer"
+                onFlagsDetected={(analysis) => {
+                  console.log('Red flags detected:', analysis)
+                  // Could save analysis to state or show notifications
                 }}
               />
             </div>
